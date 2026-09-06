@@ -60,9 +60,9 @@ export const ONGOING_CAMPAIGN_EMPTY_STATE_CONTENT = [
     },
     sender: {
       id: 1,
-      name: 'Chatwoot',
+      name: 'Ormichat',
     },
-    message: 'Hi! Chatwoot here. Need help setting up? Let me know!',
+    message: 'Hi! Ormichat here. Need help setting up? Let me know!',
     campaign_status: 'active',
     enabled: false,
     campaign_type: 'ongoing',
@@ -114,7 +114,7 @@ export const ONE_OFF_CAMPAIGN_EMPTY_STATE_CONTENT = [
       provider: 'default',
     },
     message:
-      'Hello! Enjoying our product? Share your feedback on G2 and earn a $25 Amazon coupon: https://chwt.app/g2-review',
+      'Hello! Enjoying our product? Share your feedback on G2 and earn a $25 Amazon coupon!',
     campaign_status: 'active',
     enabled: true,
     campaign_type: 'one_off',
