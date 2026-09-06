@@ -52,13 +52,9 @@ const FORM_CONFIG = {
 const DEFAULT_COUNTRY = { id: 'DO', name: 'Dominican Republic' };
 
 const SOCIAL_CONFIG = {
-  LINKEDIN: 'i-ri-linkedin-box-fill',
   FACEBOOK: 'i-ri-facebook-circle-fill',
   INSTAGRAM: 'i-ri-instagram-line',
   TELEGRAM: 'i-ri-telegram-fill',
-  TIKTOK: 'i-ri-tiktok-fill',
-  TWITTER: 'i-ri-twitter-x-fill',
-  GITHUB: 'i-ri-github-fill',
 };
 
 const defaultState = {

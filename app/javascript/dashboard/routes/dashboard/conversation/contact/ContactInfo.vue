@@ -17,6 +17,7 @@ import ComposeConversation from 'dashboard/components-next/NewConversation/Compo
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import VoiceCallButton from 'dashboard/components-next/Contacts/VoiceCallButton.vue';
 import InlineInput from 'dashboard/components-next/inline-input/InlineInput.vue';
+import ImagePreviewDialog from 'dashboard/components-next/dialog/Dialog.vue';
 
 export default {
   components: {
@@ -30,6 +31,7 @@ export default {
     ContactDeleteModal,
     VoiceCallButton,
     InlineInput,
+    ImagePreviewDialog,
   },
   props: {
     contact: {
@@ -53,13 +55,26 @@ export default {
       showEditModal: false,
       isEditingName: false,
       editName: '',
+      previewImageSrc: '',
     };
   },
   computed: {
     ...mapGetters({
       uiFlags: 'contacts/getUIFlags',
       currentChat: 'getSelectedChat',
+      getAttributesByModel: 'attributes/getAttributesByModel',
     }),
+    loadedCustomAttributes() {
+      const values = this.contact.custom_attributes || {};
+      return this.getAttributesByModel('contact_attribute')
+        .filter(attribute => !!values[attribute.attribute_key])
+        .map(attribute => ({
+          key: attribute.attribute_key,
+          label: attribute.attribute_display_name,
+          type: attribute.attribute_display_type,
+          value: values[attribute.attribute_key],
+        }));
+    },
     contactProfileLink() {
       return `/app/accounts/${this.$route.params.accountId}/contacts/${this.contact.id}`;
     },
@@ -110,6 +125,19 @@ export default {
     dynamicTime,
     toggleEditModal() {
       this.showEditModal = !this.showEditModal;
+    },
+    isImageAttribute(attribute) {
+      return (
+        attribute.type === 'file' &&
+        /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i.test(attribute.value || '')
+      );
+    },
+    isPdfAttribute(attribute) {
+      return attribute.type === 'file' && /\.pdf$/i.test(attribute.value || '');
+    },
+    openAttributeImagePreview(src) {
+      this.previewImageSrc = src;
+      this.$refs.attributeImageDialog.open();
     },
     startEditingName() {
       this.editName = this.contact.name || '';
@@ -295,6 +323,79 @@ export default {
             :trailing-html="countryFlagHtml"
           />
           <SocialIcons :social-profiles="socialProfiles" />
+          <div
+            v-if="loadedCustomAttributes.length"
+            class="flex flex-col items-start w-full gap-2 pt-2 mt-1 border-t border-n-weak"
+          >
+            <div
+              v-for="attribute in loadedCustomAttributes"
+              :key="attribute.key"
+              class="flex items-center w-full min-w-0 gap-2"
+            >
+              <template v-if="isImageAttribute(attribute)">
+                <img
+                  :src="attribute.value"
+                  class="flex-shrink-0 object-cover w-6 h-6 rounded outline outline-1 outline-n-weak -outline-offset-1 cursor-pointer"
+                  @click="openAttributeImagePreview(attribute.value)"
+                />
+                <span
+                  class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-slate-11"
+                >
+                  {{ attribute.label }}
+                </span>
+              </template>
+              <a
+                v-else-if="isPdfAttribute(attribute)"
+                :href="attribute.value"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center min-w-0 gap-2 text-n-slate-11 hover:underline"
+              >
+                <span class="i-lucide-file-text text-sm flex-shrink-0" />
+                <span
+                  class="overflow-hidden text-sm whitespace-nowrap text-ellipsis"
+                >
+                  {{ attribute.label }}
+                </span>
+              </a>
+              <template v-else-if="attribute.type === 'file'">
+                <a
+                  :href="attribute.value"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center min-w-0 gap-2 text-n-slate-11 hover:underline"
+                >
+                  <span class="i-lucide-paperclip text-sm flex-shrink-0" />
+                  <span
+                    class="overflow-hidden text-sm whitespace-nowrap text-ellipsis"
+                  >
+                    {{ attribute.label }}
+                  </span>
+                </a>
+              </template>
+              <template v-else>
+                <span class="flex-shrink-0 text-sm font-medium text-n-slate-12">
+                  {{ attribute.label }}:
+                </span>
+                <span
+                  class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-slate-11"
+                >
+                  {{ attribute.value }}
+                </span>
+              </template>
+            </div>
+            <ImagePreviewDialog
+              ref="attributeImageDialog"
+              :show-cancel-button="false"
+              :show-confirm-button="false"
+              width="lg"
+            >
+              <img
+                :src="previewImageSrc"
+                class="w-full max-h-[70vh] object-contain rounded-lg"
+              />
+            </ImagePreviewDialog>
+          </div>
         </div>
       </div>
       <div class="flex items-center w-full mt-0.5 gap-2">
