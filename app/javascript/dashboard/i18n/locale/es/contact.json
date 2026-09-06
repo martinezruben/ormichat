@@ -22,7 +22,7 @@
     "CALL_FAILED": "No se puede iniciar la llamada. Por favor, inténtelo de nuevo.",
     "WHATSAPP_CALL_PERMISSION_REQUESTED": "Solicitud de permiso de llamada al contacto enviada. Inténtalo de nuevo una vez que acepten.",
     "WHATSAPP_CALL_PERMISSION_PENDING": "Solicitud de permiso de llamada ya enviada recientemente. Inténtelo de nuevo una vez que el contacto acepte.",
-    "CLICK_TO_EDIT": "Click to edit",
+    "CLICK_TO_EDIT": "Clic para editar",
     "VOICE_INBOX_PICKER": {
       "TITLE": "Seleccionar un buzón de entrada"
     },
@@ -59,7 +59,9 @@
       "CONTACT_LABELS": "Etiqueta de Contacto",
       "PREVIOUS_CONVERSATIONS": "Conversaciones anteriores",
       "NO_RECORDS_FOUND": "No se encontraron atributos"
-    }
+    },
+    "ADDRESS": "Dirección",
+    "VIEW_ON_MAPS": "Ver en Google Maps"
   },
   "EDIT_CONTACT": {
     "BUTTON_LABEL": "Editar Contacto",
@@ -112,7 +114,8 @@
       },
       "LOCATION": {
         "PLACEHOLDER": "Escriba la ubicación del contacto",
-        "LABEL": "Ubicación"
+        "LABEL": "Ubicación",
+        "INVALID": "No se pudieron leer las coordenadas de ese enlace. Ingréselas como lat,lng en su lugar."
       },
       "COMPANY_NAME": {
         "PLACEHOLDER": "Escriba el nombre de la empresa",
@@ -146,6 +149,10 @@
           "PLACEHOLDER": "Escriba el usuario de Github",
           "LABEL": "Github"
         }
+      },
+      "ADDRESS": {
+        "PLACEHOLDER": "Ingrese la dirección de entrega",
+        "LABEL": "Dirección"
       }
     },
     "DELETE_AVATAR": {
@@ -207,7 +214,9 @@
     "ACTIONS": {
       "COPY": "Copiar atributo",
       "DELETE": "Eliminar atributo",
-      "EDIT": "Editar atributo"
+      "EDIT": "Editar atributo",
+      "INSERT": "Insertar en el mensaje",
+      "INSERT_FILE_ERROR": "No se pudo adjuntar el archivo al mensaje. Inténtelo de nuevo."
     },
     "ADD": {
       "TITLE": "Crear atributo personalizado",
@@ -255,6 +264,12 @@
       "REQUIRED": "Se requiere un valor válido",
       "INVALID_URL": "URL inválida",
       "INVALID_INPUT": "Ingreso inválido"
+    },
+    "FILE": {
+      "UPLOAD": "Subir archivo",
+      "REPLACE": "Reemplazar archivo",
+      "UPLOADING": "Subiendo...",
+      "ERROR": "No se pudo subir el archivo. Inténtelo de nuevo."
     }
   },
   "MERGE_CONTACTS": {
@@ -275,7 +290,7 @@
       "ATTRIBUTE_WARNING": "Los datos de contacto de <strong>{primaryContactName}</strong> se copiarán en <strong>{parentContactName}</strong>."
     },
     "SEARCH": {
-      "ERROR_MESSAGE": "Something went wrong. Please try again later."
+      "ERROR_MESSAGE": "Algo salió mal. Inténtelo de nuevo más tarde."
     },
     "FORM": {
       "SUBMIT": " Combinar contactos",
@@ -443,6 +458,13 @@
           },
           "COMPANY_NAME": {
             "PLACEHOLDER": "Escriba el nombre de la empresa"
+          },
+          "ADDRESS": {
+            "PLACEHOLDER": "Ingrese la dirección de entrega"
+          },
+          "LOCATION": {
+            "PLACEHOLDER": "Pegue un enlace de Google Maps o Waze, o lat,lng",
+            "INVALID": "No se pudieron leer las coordenadas de ese enlace. Ingréselas como lat,lng en su lugar."
           }
         },
         "UPDATE_BUTTON": "Actualizar contacto",
@@ -510,7 +532,7 @@
         "ATTRIBUTES": "Atributos",
         "HISTORY": "Historial",
         "NOTES": "Notas",
-        "MEDIA": "Media",
+        "MEDIA": "Multimedia",
         "MERGE": "Combinar"
       },
       "HISTORY": {
@@ -539,6 +561,12 @@
           "DELETE_SUCCESS_MESSAGE": "Atributo eliminado correctamente",
           "UPDATE_ERROR": "No se puede actualizar el atributo. Por favor, inténtalo de nuevo más tarde",
           "DELETE_ERROR": "No se puede eliminar el atributo. Por favor, inténtalo de nuevo más tarde"
+        },
+        "FILE": {
+          "UPLOAD": "Subir archivo",
+          "REPLACE": "Reemplazar archivo",
+          "UPLOADING": "Subiendo...",
+          "ERROR": "No se pudo subir el archivo. Inténtelo de nuevo."
         }
       },
       "MERGE": {
@@ -566,12 +594,12 @@
         "WROTE": "escribió",
         "YOU": "Tú",
         "SAVE": "Guardar nota",
-        "ADD_NOTE": "Add contact note",
+        "ADD_NOTE": "Agregar nota del contacto",
         "EXPAND": "Expandir",
         "COLLAPSE": "Contraer",
         "NO_NOTES": "No hay notas, puede agregar notas desde la página de detalles de contacto.",
         "EMPTY_STATE": "No hay notas asociadas a este contacto. Puede añadir una nota escribiendo en el recuadro superior.",
-        "CONVERSATION_EMPTY_STATE": "There are no notes yet. Use the Add note button to create one."
+        "CONVERSATION_EMPTY_STATE": "Aún no hay notas. Use el botón Agregar nota para crear una."
       }
     },
     "EMPTY_STATE": {
@@ -588,23 +616,23 @@
     "ASSIGN_LABELS": "Asignar etiquetas",
     "REMOVE_LABELS": "Quitar etiquetas",
     "ASSIGN_LABELS_SUCCESS": "Etiquetas asignadas correctamente.",
-    "ASSIGN_LABELS_FAILED": "Failed to assign labels",
+    "ASSIGN_LABELS_FAILED": "No se pudieron asignar las etiquetas",
     "REMOVE_LABELS_SUCCESS": "Etiquetas removidas con éxito.",
     "REMOVE_LABELS_FAILED": "Error al eliminar las etiquetas",
-    "DESCRIPTION": "Select the labels you want to add to the selected contacts.",
-    "NO_LABELS_FOUND": "No labels available yet.",
-    "SELECTED_COUNT": "{count} selected",
-    "CLEAR_SELECTION": "Clear selection",
-    "SELECT_ALL": "Select all ({count})",
+    "DESCRIPTION": "Seleccione las etiquetas que desea agregar a los contactos seleccionados.",
+    "NO_LABELS_FOUND": "Aún no hay etiquetas disponibles.",
+    "SELECTED_COUNT": "{count} seleccionados",
+    "CLEAR_SELECTION": "Borrar selección",
+    "SELECT_ALL": "Seleccionar todos ({count})",
     "DELETE_CONTACTS": "Eliminar",
-    "DELETE_SUCCESS": "Contacts deleted successfully.",
-    "DELETE_FAILED": "Failed to delete contacts.",
+    "DELETE_SUCCESS": "Contactos eliminados correctamente.",
+    "DELETE_FAILED": "No se pudieron eliminar los contactos.",
     "DELETE_DIALOG": {
-      "TITLE": "Delete selected contacts",
-      "SINGULAR_TITLE": "Delete selected contact",
-      "DESCRIPTION": "This will permanently delete {count} selected contacts. This action cannot be undone.",
-      "SINGULAR_DESCRIPTION": "This will permanently delete the selected contact. This action cannot be undone.",
-      "CONFIRM_MULTIPLE": "Delete contacts",
+      "TITLE": "Eliminar contactos seleccionados",
+      "SINGULAR_TITLE": "Eliminar contacto seleccionado",
+      "DESCRIPTION": "Esto eliminará permanentemente {count} contactos seleccionados. Esta acción no se puede deshacer.",
+      "SINGULAR_DESCRIPTION": "Esto eliminará permanentemente el contacto seleccionado. Esta acción no se puede deshacer.",
+      "CONFIRM_MULTIPLE": "Eliminar contactos",
       "CONFIRM_SINGLE": "Eliminar contacto"
     }
   },
@@ -622,7 +650,7 @@
       "NO_INBOX_ALERT": "No hay bandejas de entrada disponibles para iniciar una conversación con este contacto.",
       "CONTACT_SELECTOR": {
         "LABEL": "Para:",
-        "TAG_INPUT_PLACEHOLDER": "Enter at least 2 characters to search by name, email, or phone number",
+        "TAG_INPUT_PLACEHOLDER": "Ingrese al menos 2 caracteres para buscar por nombre, correo o número de teléfono",
         "CONTACT_CREATING": "Creando contacto..."
       },
       "INBOX_SELECTOR": {
@@ -633,9 +661,9 @@
         "SUBJECT_LABEL": "Asunto :",
         "SUBJECT_PLACEHOLDER": "Introduzca el asunto de correo electrónico aquí",
         "CC_LABEL": "Cc:",
-        "CC_PLACEHOLDER": "Enter at least 2 characters to search by email",
+        "CC_PLACEHOLDER": "Ingrese al menos 2 caracteres para buscar por correo",
         "BCC_LABEL": "Bcc:",
-        "BCC_PLACEHOLDER": "Enter at least 2 characters to search by email",
+        "BCC_PLACEHOLDER": "Ingrese al menos 2 caracteres para buscar por correo",
         "BCC_BUTTON": "Bcc"
       },
       "MESSAGE_EDITOR": {
