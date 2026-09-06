@@ -52,6 +52,7 @@ services:
       - ./enterprise:/app/enterprise
       - ./db/migrate:/app/db/migrate
       - ./public/vite:/app/public/vite
+      - ./public/brand-assets:/app/public/brand-assets
     ports:
       - "3000:3000"
     depends_on:
@@ -88,6 +89,7 @@ services:
       - ./enterprise:/app/enterprise
       - ./db/migrate:/app/db/migrate
       - ./public/vite:/app/public/vite
+      - ./public/brand-assets:/app/public/brand-assets
     depends_on:
       postgres:
         condition: service_healthy
