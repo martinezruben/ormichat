@@ -7,8 +7,8 @@
     "HEADER_BTN_TXT": "Añadir una nueva macro",
     "HEADER_BTN_TXT_SAVE": "Guardar macro",
     "LOADING": "Obteniendo macros",
-    "SEARCH_PLACEHOLDER": "Search macros...",
-    "NO_RESULTS": "No macros found matching your search",
+    "SEARCH_PLACEHOLDER": "Buscar macros...",
+    "NO_RESULTS": "No se encontraron macros que coincidan con su búsqueda",
     "ERROR": "Algo salió mal. Por favor, inténtalo de nuevo",
     "ORDER_INFO": "Las macros se ejecutarán en el orden en que añadas sus acciones. Puede reorganizarlas arrastrándolas por el manejador al lado de cada nodo.",
     "ADD": {
@@ -96,11 +96,11 @@
     },
     "ACTIONS": {
       "ASSIGN_TEAM": "Asignar equipo",
-      "ASSIGN_AGENT": "Assign an Agent",
+      "ASSIGN_AGENT": "Asignar un agente",
       "ADD_LABEL": "Añadir etiqueta",
       "REMOVE_LABEL": "Eliminar etiqueta",
-      "REMOVE_ASSIGNED_AGENT": "Remove Assigned Agent",
-      "REMOVE_ASSIGNED_TEAM": "Remove Assigned Team",
+      "REMOVE_ASSIGNED_AGENT": "Quitar agente asignado",
+      "REMOVE_ASSIGNED_TEAM": "Quitar equipo asignado",
       "SEND_EMAIL_TRANSCRIPT": "Enviar transcripción por correo",
       "MUTE_CONVERSATION": "Silenciar Conversación",
       "SNOOZE_CONVERSATION": "Posponer conversación",
@@ -108,8 +108,9 @@
       "SEND_ATTACHMENT": "Enviar archivo adjunto",
       "SEND_MESSAGE": "Enviar mensaje",
       "CHANGE_PRIORITY": "Cambiar prioridad",
-      "ADD_PRIVATE_NOTE": "Add a Private Note",
-      "SEND_WEBHOOK_EVENT": "Enviar Evento de Webhook"
+      "ADD_PRIVATE_NOTE": "Agregar una nota privada",
+      "SEND_WEBHOOK_EVENT": "Enviar Evento de Webhook",
+      "CHANGE_STATUS": "Cambiar estado"
     },
     "PRIORITY_TYPES": {
       "NONE": "Ninguna",
