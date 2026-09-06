@@ -44,6 +44,7 @@ services:
       - ENABLE_ACCOUNT_SIGNUP=false
       - DEFAULT_LOCALE=es
       - ENABLE_PUSH_RELAY_SERVER=false
+      - RACK_TIMEOUT_SERVICE_TIMEOUT=120
     volumes:
       - ./app:/app/app
       - ./config:/app/config
