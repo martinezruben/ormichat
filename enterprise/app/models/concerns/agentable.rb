@@ -9,6 +9,8 @@ module Concerns::Agentable
       instructions: ->(context) { agent_instructions(context) },
       tools: agent_tools,
       model: agent_model,
+      provider: agent_provider,
+      assume_model_exists: agent_assume_model_exists?,
       temperature: temperature.presence&.to_f || DEFAULT_TEMPERATURE,
       response_schema: agent_response_schema
     )
@@ -55,6 +57,20 @@ module Concerns::Agentable
 
   def installation_model
     InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_MODEL')&.value
+  end
+
+  # Self-hosted installs point CAPTAIN_OPEN_AI_MODEL at a custom/self-hosted
+  # model (e.g. a local Ollama model) that isn't in ruby_llm's static model
+  # registry (config/llm_models.json). Without this, the ai-agents gem's
+  # underlying RubyLLM call raises RubyLLM::ModelNotFoundError for any such
+  # model - see Captain::BaseTaskService#resolve_chat for the same fix on
+  # the non-agentic Captain task services.
+  def agent_provider
+    :openai if ChatwootApp.self_hosted_enterprise?
+  end
+
+  def agent_assume_model_exists?
+    ChatwootApp.self_hosted_enterprise?
   end
 
   def agent_response_schema
