@@ -49,6 +49,7 @@ services:
       - ./config:/app/config
       - ./lib:/app/lib
       - ./enterprise:/app/enterprise
+      - ./public/vite:/app/public/vite
     ports:
       - "3000:3000"
     depends_on:
@@ -83,6 +84,7 @@ services:
       - ./config:/app/config
       - ./lib:/app/lib
       - ./enterprise:/app/enterprise
+      - ./public/vite:/app/public/vite
     depends_on:
       postgres:
         condition: service_healthy
