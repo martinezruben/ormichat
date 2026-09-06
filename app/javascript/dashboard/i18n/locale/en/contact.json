@@ -207,7 +207,8 @@
     "ACTIONS": {
       "COPY": "Copy attribute",
       "DELETE": "Delete attribute",
-      "EDIT": "Edit attribute"
+      "EDIT": "Edit attribute",
+      "INSERT": "Insert into message"
     },
     "FILE": {
       "UPLOAD": "Upload file",

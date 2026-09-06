@@ -11,6 +11,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { emitter } from 'shared/helpers/mitt';
 import { useAlert } from 'dashboard/composables';
 import { useCustomAttributeFileUpload } from 'dashboard/composables/useCustomAttributeFileUpload';
+import { INBOX_TYPES } from 'dashboard/helper/inbox';
 
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
@@ -54,7 +55,20 @@ export default {
   computed: {
     ...mapGetters({
       accountId: 'getCurrentAccountId',
+      currentChat: 'getSelectedChat',
+      getInbox: 'inboxes/getInbox',
     }),
+    conversationInboxType() {
+      return this.getInbox(this.currentChat.inbox_id)?.channel_type;
+    },
+    insertIntoRichEditor() {
+      return [INBOX_TYPES.WEB, INBOX_TYPES.EMAIL].includes(
+        this.conversationInboxType
+      );
+    },
+    insertLabel() {
+      return this.description || this.label;
+    },
     displayValue() {
       if (this.isAttributeTypeDate) {
         return this.value
@@ -229,6 +243,20 @@ export default {
     onCopy() {
       this.$emit('copy', this.value);
     },
+    onInsert() {
+      const isLinkLike = this.isAttributeTypeLink || this.isAttributeTypeFile;
+      if (this.insertIntoRichEditor) {
+        const content = isLinkLike
+          ? `[${this.insertLabel}](${this.value})`
+          : `${this.insertLabel}: ${this.displayValue}`;
+        emitter.emit(BUS_EVENTS.INSERT_INTO_RICH_EDITOR, content);
+      } else {
+        const content = `${this.insertLabel}: ${
+          isLinkLike ? this.value : this.displayValue
+        }`;
+        emitter.emit(BUS_EVENTS.INSERT_INTO_NORMAL_EDITOR, content);
+      }
+    },
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
@@ -352,6 +380,16 @@ export default {
             @click="onCopy"
           />
           <NextButton
+            v-if="showActions && hasValue"
+            v-tooltip="$t('CUSTOM_ATTRIBUTES.ACTIONS.INSERT')"
+            xs
+            slate
+            ghost
+            icon="i-lucide-message-square-plus"
+            class="hidden group-hover:flex flex-shrink-0"
+            @click="onInsert"
+          />
+          <NextButton
             v-if="showActions"
             v-tooltip.right="$t('CUSTOM_ATTRIBUTES.ACTIONS.EDIT')"
             xs
@@ -391,6 +429,16 @@ export default {
             : $t('CUSTOM_ATTRIBUTES.FILE.UPLOAD')
         "
         @click="triggerFileInput"
+      />
+      <NextButton
+        v-if="showActions && hasValue"
+        v-tooltip="$t('CUSTOM_ATTRIBUTES.ACTIONS.INSERT')"
+        xs
+        slate
+        ghost
+        icon="i-lucide-message-square-plus"
+        class="flex-shrink-0 ml-auto"
+        @click="onInsert"
       />
     </div>
     <div v-if="isAttributeTypeList">
