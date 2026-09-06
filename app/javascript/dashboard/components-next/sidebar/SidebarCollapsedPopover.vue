@@ -19,7 +19,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'mouseenter', 'mouseleave', 'sortToggle']);
 
 const router = useRouter();
-const { isAllowed, sidebarWidth } = useSidebarContext();
+const { isAllowed, isMenuItemVisible, sidebarWidth } = useSidebarContext();
 
 const expandedSubGroup = ref(null);
 const popoverRef = ref(null);
@@ -47,7 +47,7 @@ const navigateAndClose = to => {
 const isActive = child => props.activeChild?.name === child.name;
 
 const getAccessibleSubChildren = children =>
-  children.filter(c => isAllowed(c.to));
+  children.filter(c => isAllowed(c.to, c.name));
 
 const renderIcon = icon => ({
   component: typeof icon === 'object' ? icon : Icon,
@@ -70,9 +70,12 @@ const transition = computed(() =>
 const accessibleChildren = computed(() => {
   return props.children.filter(child => {
     if (child.children) {
-      return child.children.some(subChild => isAllowed(subChild.to));
+      return (
+        isMenuItemVisible(child.name) &&
+        child.children.some(subChild => isAllowed(subChild.to, subChild.name))
+      );
     }
-    return child.to && isAllowed(child.to);
+    return child.to && isAllowed(child.to, child.name);
   });
 });
 

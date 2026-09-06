@@ -55,6 +55,10 @@
         "LABEL": "Permissions",
         "ERROR": "Permissions are required."
       },
+      "MENU_ITEMS": {
+        "LABEL": "Visible menu items",
+        "DESCRIPTION": "Choose which sidebar items agents with this role can see. Leave everything checked to show the full menu."
+      },
       "CANCEL_BUTTON_TEXT": "Cancel",
       "API": {
         "ERROR_MESSAGE": "Could not connect to Woot server. Please try again."

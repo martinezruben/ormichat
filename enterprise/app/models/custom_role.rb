@@ -2,13 +2,14 @@
 #
 # Table name: custom_roles
 #
-#  id          :bigint           not null, primary key
-#  description :string
-#  name        :string
-#  permissions :text             default([]), is an Array
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  account_id  :bigint           not null
+#  id                  :bigint           not null, primary key
+#  description         :string
+#  name                :string
+#  permissions         :text             default([]), is an Array
+#  visible_menu_items  :text             default([]), not null, is an Array
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  account_id          :bigint           not null
 #
 # Indexes
 #
@@ -41,6 +42,12 @@ class CustomRole < ApplicationRecord
     knowledge_base_manage
   ].freeze
 
+  # `visible_menu_items` controls sidebar visibility only — it's a cosmetic
+  # nav-declutter layer on top of `permissions`, not a security boundary.
+  # Empty means unrestricted (show every item the role's permissions already
+  # allow). Keys match `name` in Sidebar.vue's static menu catalog; kept as a
+  # free-form array (no inclusion validation) so the frontend catalog is the
+  # single source of truth and doesn't need mirroring here.
   validates :name, presence: true
   validates :permissions, inclusion: { in: PERMISSIONS }
 

@@ -89,7 +89,7 @@ export function useSidebarContext() {
   }
 
   const router = useRouter();
-  const { shouldShow } = usePolicy();
+  const { shouldShow, isMenuItemVisible } = usePolicy();
 
   const resolvePath = to => {
     if (to) return router.resolve(to)?.path || '/';
@@ -138,12 +138,15 @@ export function useSidebarContext() {
     return router.resolve(to)?.meta?.installationTypes || [];
   };
 
-  const isAllowed = to => {
+  const isAllowed = (to, itemName) => {
     const permissions = resolvePermissions(to);
     const featureFlag = resolveFeatureFlag(to);
     const installationType = resolveInstallationType(to);
 
-    return shouldShow(featureFlag, permissions, installationType);
+    return (
+      shouldShow(featureFlag, permissions, installationType) &&
+      isMenuItemVisible(itemName)
+    );
   };
 
   return {
@@ -152,6 +155,7 @@ export function useSidebarContext() {
     resolvePermissions,
     resolveFeatureFlag,
     isAllowed,
+    isMenuItemVisible,
   };
 }
 

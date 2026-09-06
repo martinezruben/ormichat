@@ -27,6 +27,7 @@ const {
   resolvePermissions,
   resolveFeatureFlag,
   isAllowed,
+  isMenuItemVisible,
   isCollapsed,
   isResizing,
 } = useSidebarContext();
@@ -110,7 +111,7 @@ const handleWindowBlur = () => {
 
 const hasAccessibleSubChildren = child => {
   return child.children?.some(
-    subChild => subChild.to && isAllowed(subChild.to)
+    subChild => subChild.to && isAllowed(subChild.to, subChild.name)
   );
 };
 
@@ -118,9 +119,11 @@ const visibleChildren = computed(() => {
   if (!hasChildren.value) return [];
 
   return props.children.filter(child => {
-    if (child.children) return hasAccessibleSubChildren(child);
+    if (child.children) {
+      return isMenuItemVisible(child.name) && hasAccessibleSubChildren(child);
+    }
 
-    return child.to && isAllowed(child.to);
+    return child.to && isAllowed(child.to, child.name);
   });
 });
 
@@ -129,7 +132,7 @@ const accessibleItems = computed(() => {
 
   return visibleChildren.value
     .flatMap(child => child.children || child)
-    .filter(child => child.to && isAllowed(child.to));
+    .filter(child => child.to && isAllowed(child.to, child.name));
 });
 
 const hasAccessibleChildren = computed(() => {
@@ -245,7 +248,10 @@ watch(
 <!-- eslint-disable-next-line vue/no-root-v-if -->
 <template>
   <Policy
-    v-if="!hasChildren || hasAccessibleChildren"
+    v-if="
+      (!hasChildren || hasAccessibleChildren) &&
+      (hasChildren || isMenuItemVisible(name))
+    "
     :permissions="resolvePermissions(to)"
     :feature-flag="resolveFeatureFlag(to)"
     as="li"
@@ -322,7 +328,7 @@ watch(
             @update-sort="child.onSortChange"
           />
           <SidebarGroupLeaf
-            v-else-if="isAllowed(child.to)"
+            v-else-if="isAllowed(child.to, child.name)"
             v-show="isExpanded || activeChild?.name === child.name"
             v-bind="child"
             :active="activeChild?.name === child.name"

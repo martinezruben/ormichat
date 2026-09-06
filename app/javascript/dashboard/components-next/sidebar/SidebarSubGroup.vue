@@ -54,7 +54,7 @@ const hasActiveChild = computed(() =>
 
 const accessibleItems = computed(() =>
   props.children.filter(child => {
-    return child.to && isAllowed(child.to);
+    return child.to && isAllowed(child.to, child.name);
   })
 );
 

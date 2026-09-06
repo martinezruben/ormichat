@@ -4,6 +4,7 @@ import { useAccount } from 'dashboard/composables/useAccount';
 import { useConfig } from 'dashboard/composables/useConfig';
 import {
   getUserPermissions,
+  getUserVisibleMenuItems,
   hasPermissions,
 } from 'dashboard/helper/permissionsHelper';
 import { PREMIUM_FEATURES } from 'dashboard/featureFlags';
@@ -34,6 +35,19 @@ export function usePolicy() {
     if (!requiredPermissions || !requiredPermissions.length) return true;
     const userPermissions = getUserPermissionsForAccount();
     return hasPermissions(requiredPermissions, userPermissions);
+  };
+
+  // A custom role's `visible_menu_items` restricts sidebar visibility on
+  // top of the normal permission checks — a cosmetic nav-declutter layer,
+  // not a security boundary. Empty (the default) means unrestricted.
+  const isMenuItemVisible = itemName => {
+    if (!itemName) return true;
+    const visibleMenuItems = getUserVisibleMenuItems(
+      user.value,
+      accountId.value
+    );
+    if (!visibleMenuItems.length) return true;
+    return visibleMenuItems.includes(itemName);
   };
 
   const checkInstallationType = config => {
@@ -132,5 +146,6 @@ export function usePolicy() {
     shouldShowPaywall,
     isFeatureFlagEnabled,
     shouldShow,
+    isMenuItemVisible,
   };
 }

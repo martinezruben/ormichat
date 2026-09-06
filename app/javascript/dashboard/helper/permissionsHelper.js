@@ -16,6 +16,18 @@ export const getUserPermissions = (user, accountId) => {
   return currentAccount.permissions || [];
 };
 
+/**
+ * A custom role's `visible_menu_items` restricts which sidebar items an
+ * agent with that role can see, on top of the normal permission checks.
+ * Empty (the default, and every other role type) means unrestricted.
+ * @returns {string[]} menu item keys the user is restricted to, or [] for
+ *   no restriction.
+ */
+export const getUserVisibleMenuItems = (user, accountId) => {
+  const currentAccount = getCurrentAccount(user, accountId) || {};
+  return currentAccount.custom_role?.visible_menu_items || [];
+};
+
 export const getUserRole = (user, accountId) => {
   const currentAccount = getCurrentAccount(user, accountId) || {};
   if (currentAccount.custom_role_id) {

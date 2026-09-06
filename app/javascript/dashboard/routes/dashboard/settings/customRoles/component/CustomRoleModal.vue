@@ -11,6 +11,10 @@ import {
   CONVERSATION_UNASSIGNED_PERMISSIONS,
   CONVERSATION_PARTICIPATING_PERMISSIONS,
 } from 'dashboard/constants/permissions.js';
+import {
+  SIDEBAR_MENU_CATALOG,
+  ALL_SIDEBAR_MENU_ITEM_KEYS,
+} from 'dashboard/constants/sidebarMenuCatalog.js';
 
 import Button from 'dashboard/components-next/button/Button.vue';
 
@@ -34,6 +38,7 @@ const { t } = useI18n();
 const name = ref('');
 const description = ref('');
 const selectedPermissions = ref([]);
+const selectedMenuItems = ref([...ALL_SIDEBAR_MENU_ITEM_KEYS]);
 
 const nameInput = ref(null);
 
@@ -54,6 +59,7 @@ const resetForm = () => {
   name.value = '';
   description.value = '';
   selectedPermissions.value = [];
+  selectedMenuItems.value = [...ALL_SIDEBAR_MENU_ITEM_KEYS];
   v$.value.$reset();
 };
 
@@ -61,6 +67,48 @@ const populateEditForm = () => {
   name.value = props.selectedRole.name || '';
   description.value = props.selectedRole.description || '';
   selectedPermissions.value = props.selectedRole.permissions || [];
+  // Empty means "unrestricted" — reflect that as every box checked.
+  const visibleMenuItems = props.selectedRole.visible_menu_items || [];
+  selectedMenuItems.value = visibleMenuItems.length
+    ? visibleMenuItems
+    : [...ALL_SIDEBAR_MENU_ITEM_KEYS];
+};
+
+const isItemChecked = key => selectedMenuItems.value.includes(key);
+
+// Group headers (Conversation, Reports, Settings...) have no route of their
+// own — the live sidebar hides them automatically once every child is
+// hidden, so their checkbox here is a pure "select/deselect all children"
+// convenience; only leaf keys (a childless top-level item, or a child
+// within a group) are ever stored in selectedMenuItems.
+const isSectionChecked = section =>
+  !!section.children?.length &&
+  section.children.every(child => isItemChecked(child.key));
+
+const isSectionIndeterminate = section => {
+  if (!section.children?.length) return false;
+  const checkedCount = section.children.filter(child =>
+    isItemChecked(child.key)
+  ).length;
+  return checkedCount > 0 && checkedCount < section.children.length;
+};
+
+const toggleKey = (key, checked) => {
+  if (checked) {
+    if (!selectedMenuItems.value.includes(key)) {
+      selectedMenuItems.value = [...selectedMenuItems.value, key];
+    }
+  } else {
+    selectedMenuItems.value = selectedMenuItems.value.filter(k => k !== key);
+  }
+};
+
+const toggleSection = (section, checked) => {
+  if (section.children?.length) {
+    section.children.forEach(child => toggleKey(child.key, checked));
+  } else {
+    toggleKey(section.key, checked);
+  }
 };
 
 watch(
@@ -123,6 +171,12 @@ const handleCustomRole = async () => {
       name: name.value,
       description: description.value,
       permissions: selectedPermissions.value,
+      // Everything selected means unrestricted — store [] rather than the
+      // full list so newly added menu items aren't silently hidden later.
+      visible_menu_items:
+        selectedMenuItems.value.length === ALL_SIDEBAR_MENU_ITEM_KEYS.length
+          ? []
+          : selectedMenuItems.value,
     };
 
     if (props.mode === 'edit') {
@@ -206,6 +260,63 @@ const isSubmitDisabled = computed(
             <label :for="permission" class="text-sm font-normal">
               {{ $t(`CUSTOM_ROLE.PERMISSIONS.${permission.toUpperCase()}`) }}
             </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full">
+        <label>
+          {{ $t('CUSTOM_ROLE.FORM.MENU_ITEMS.LABEL') }}
+        </label>
+        <p class="text-xs text-n-slate-11 mt-0.5 mb-2">
+          {{ $t('CUSTOM_ROLE.FORM.MENU_ITEMS.DESCRIPTION') }}
+        </p>
+        <div
+          class="flex flex-col gap-3 mb-4 mt-2 max-h-64 overflow-y-auto pr-2"
+        >
+          <div
+            v-for="section in SIDEBAR_MENU_CATALOG"
+            :key="section.key"
+            class="flex flex-col gap-1.5"
+          >
+            <div class="flex items-center">
+              <input
+                :id="`menu-${section.key}`"
+                type="checkbox"
+                class="ltr:mr-2 rtl:ml-2"
+                :checked="
+                  section.children?.length
+                    ? isSectionChecked(section)
+                    : isItemChecked(section.key)
+                "
+                :indeterminate="isSectionIndeterminate(section)"
+                @change="toggleSection(section, $event.target.checked)"
+              />
+              <label :for="`menu-${section.key}`" class="text-sm font-medium">
+                {{ $t(section.labelKey) }}
+              </label>
+            </div>
+            <div
+              v-if="section.children?.length"
+              class="flex flex-col gap-1.5 ltr:pl-6 rtl:pr-6"
+            >
+              <div
+                v-for="child in section.children"
+                :key="child.key"
+                class="flex items-center"
+              >
+                <input
+                  :id="`menu-${child.key}`"
+                  type="checkbox"
+                  class="ltr:mr-2 rtl:ml-2"
+                  :checked="isItemChecked(child.key)"
+                  @change="toggleKey(child.key, $event.target.checked)"
+                />
+                <label :for="`menu-${child.key}`" class="text-sm font-normal">
+                  {{ $t(child.labelKey) }}
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       </div>

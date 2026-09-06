@@ -55,6 +55,10 @@
         "LABEL": "Permisos",
         "ERROR": "Permisos requeridos."
       },
+      "MENU_ITEMS": {
+        "LABEL": "Elementos visibles del menú",
+        "DESCRIPTION": "Elige qué elementos del menú lateral pueden ver los agentes con este rol. Deja todo marcado para mostrar el menú completo."
+      },
       "CANCEL_BUTTON_TEXT": "Cancelar",
       "API": {
         "ERROR_MESSAGE": "No se pudo conectar al servidor Woot, por favor inténtalo de nuevo más tarde"
