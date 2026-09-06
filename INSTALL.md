@@ -1,0 +1,295 @@
+# Ormichat — Instalación y configuración
+
+Este documento describe cómo está armado este deployment de **Ormichat** (fork independiente de Chatwoot 4.17.1), qué se le customizó respecto al Chatwoot original, y cómo levantarlo/mantenerlo. Pensado para que alguien sin contexto previo pueda reproducir o continuar este setup.
+
+## Índice
+
+1. [Arquitectura general](#1-arquitectura-general)
+2. [Requisitos previos](#2-requisitos-previos)
+3. [Levantar el entorno desde cero](#3-levantar-el-entorno-desde-cero)
+4. [Flujo de desarrollo (bind mounts)](#4-flujo-de-desarrollo-bind-mounts)
+5. [Módulos Enterprise habilitados](#5-módulos-enterprise-habilitados)
+6. [Feature custom: Custom Attribute tipo "File"](#6-feature-custom-custom-attribute-tipo-file)
+7. [Rebranding a Ormichat](#7-rebranding-a-ormichat)
+8. [Canales con webhook (Telegram, etc.) — HTTPS público requerido](#8-canales-con-webhook-telegram-etc--https-público-requerido)
+9. [Captain AI sobre Ollama local (gratis, sin OpenAI)](#9-captain-ai-sobre-ollama-local-gratis-sin-openai)
+10. [Telemetría deshabilitada](#10-telemetría-deshabilitada)
+11. [Control de versiones](#11-control-de-versiones)
+12. [Troubleshooting](#12-troubleshooting)
+
+---
+
+## 1. Arquitectura general
+
+- **Backend/Frontend**: Rails 7.2 + Vue 3, corriendo en Docker vía `docker-compose.yml`, imagen base `chatwoot/chatwoot:latest` (publicada por Chatwoot, NO se buildea desde este código — ver sección 4).
+- **Servicios**: `postgres` (con `pgvector`, necesario para Captain), `redis`, `rails`, `sidekiq`.
+- **Repo git**: propio, privado, sin ningún vínculo con `chatwoot/chatwoot` (ver sección 11).
+- **IA (Captain)**: corre 100% local sobre Ollama, sin depender de OpenAI (ver sección 9).
+
+## 2. Requisitos previos
+
+- Docker + Docker Compose.
+- Node.js y `pnpm` en el **host** (no en los contenedores — la imagen de producción no trae `node_modules`). Usado para compilar el frontend cuando se cambia algo en `app/javascript`.
+- [Ollama](https://ollama.com) instalado en el host si se quiere usar Captain AI gratis (sección 9).
+- Un archivo `.env` en la raíz del repo con:
+  ```
+  SECRET_KEY_BASE=<generar con: openssl rand -hex 64>
+  ```
+
+## 3. Levantar el entorno desde cero
+
+```bash
+docker compose up -d
+```
+
+Esto levanta `postgres`, `redis`, `rails` y `sidekiq`. La primera vez, correr las migraciones:
+
+```bash
+docker exec chatwoot-rails-1 bundle exec rails db:chatwoot_prepare
+```
+
+La app queda expuesta en `http://localhost:3000`.
+
+## 4. Flujo de desarrollo (bind mounts)
+
+**Hallazgo importante**: los contenedores corren desde la imagen `chatwoot/chatwoot:latest` (código horneado en el build de Chatwoot), **no** desde este repo. `docker-compose.yml` monta como bind mounts los directorios de código fuente que sí se editan acá, para que los cambios se reflejen sin tener que reconstruir la imagen:
+
+```yaml
+volumes:
+  - ./app:/app/app
+  - ./config:/app/config
+  - ./lib:/app/lib
+  - ./enterprise:/app/enterprise
+  - ./db/migrate:/app/db/migrate
+  - ./public/vite:/app/public/vite
+```
+
+**Lo que NO está montado** (y por qué): `vendor/bundle` (gemas Ruby) y `node_modules` — la imagen ya los trae instalados en las versiones correctas; montar esos directorios locales (vacíos o con otras versiones) rompería el arranque.
+
+### Cambios de backend (Ruby)
+
+Al ser `RAILS_ENV=production`, el código Ruby se carga una sola vez al bootear (no hay autoload). Después de editar algo en `app/`, `config/`, `lib/` o `enterprise/`:
+
+```bash
+docker restart chatwoot-rails-1 chatwoot-sidekiq-1
+```
+
+### Migraciones nuevas
+
+Como `db/migrate` está bind-mounteado, un archivo de migración nuevo ya es visible en el contenedor. Correr:
+
+```bash
+docker exec chatwoot-rails-1 bundle exec rails db:migrate
+```
+
+### Cambios de frontend (Vue/JS)
+
+El contenedor **no tiene toolchain de JS** (no hay `node`/`pnpm`/`vite` con `node_modules`). El build se hace en el **host**:
+
+```bash
+cd /home/ruben/chatwoot
+pnpm install                # solo la primera vez o si cambia package.json
+pnpm exec vite build
+```
+
+Como `public/vite` está bind-mounteado, el build queda visible al toque en el contenedor — solo falta reiniciar para que Puma sirva el `manifest.json` nuevo:
+
+```bash
+docker restart chatwoot-rails-1 chatwoot-sidekiq-1
+```
+
+> Vite no limpia el directorio de salida entre builds — de vez en cuando conviene borrar los `public/vite/assets/dashboard-*.js` viejos que ya no referencia `public/vite/.vite/manifest.json`, para no acumular basura.
+
+`public/manifest.json` (el manifest de la PWA, distinto del manifest de Vite) **no** está bind-mounteado — si se edita, hay que copiarlo a mano:
+
+```bash
+docker cp public/manifest.json chatwoot-rails-1:/app/public/manifest.json
+docker cp public/manifest.json chatwoot-sidekiq-1:/app/public/manifest.json
+```
+
+## 5. Módulos Enterprise habilitados
+
+Chatwoot Enterprise (`enterprise/`) ya viene en el código pero apagado por default en self-hosted. Se activó así:
+
+```ruby
+# 1. Plan de instalación (interruptor maestro)
+InstallationConfig.find_by(name: 'INSTALLATION_PRICING_PLAN').update!(value: 'enterprise')
+
+# 2. Features premium — activadas en todas las cuentas existentes
+premium = SuperAdmin::AccountFeaturesHelper.account_premium_features
+Account.find_each { |a| a.enable_features!(*premium) }
+
+# 3. Defaults para cuentas futuras (para no repetir el paso 2 cada vez)
+InstallationConfig.find_or_initialize_by(name: 'ACCOUNT_LEVEL_FEATURE_DEFAULTS').tap do |c|
+  c.value = premium.map { |name| { name: name, enabled: true } }
+  c.save!
+end
+
+GlobalConfig.clear_cache
+```
+
+**Features que necesitan infraestructura extra para funcionar de verdad** (el flag está prendido, pero sin esto no hacen nada):
+
+| Feature | Requiere |
+|---|---|
+| `advanced_search` / `advanced_search_indexing` | `OPENSEARCH_URL` configurada |
+| `saml` | Configurar `AccountSamlSettings` (IdP) por cuenta |
+| `captain_*` | Ver sección 9 (ya resuelto con Ollama) |
+| `channel_voice` | Credenciales de proveedor de voz (Twilio/Dyte) |
+
+## 6. Feature custom: Custom Attribute tipo "File"
+
+Se agregó un tipo de Custom Attribute nuevo (`file`) que permite subir un archivo como valor, disponible para `conversation_attribute` y `contact_attribute`. Diseño: el archivo se sube vía un endpoint de `direct_uploads` (ActiveStorage) y se guarda como valor del atributo la URL pública y permanente del blob (`/rails/active_storage/blobs/redirect/:signed_id/:filename`) — mismo patrón que ya usa el tipo `link`, sin necesitar cambios de esquema.
+
+**Archivos tocados:**
+- `app/models/custom_attribute_definition.rb` — `file: 8` agregado al enum `attribute_display_type`.
+- `config/routes.rb` + `app/controllers/api/v1/accounts/contacts/direct_uploads_controller.rb` — endpoint de upload nuevo para contactos (el de conversación ya existía).
+- `app/javascript/dashboard/routes/dashboard/settings/attributes/constants.js` — tipo `FILE` en el selector.
+- `app/javascript/dashboard/composables/useCustomAttributeFileUpload.js` — composable de subida (ActiveStorage `DirectUpload`).
+- `app/javascript/dashboard/components/CustomAttribute.vue` — UI de subida en el panel de conversación.
+- `app/javascript/dashboard/components-next/CustomAttributes/FileAttribute.vue` — UI de subida en el sidebar de perfil de contacto.
+
+Cómo usarlo: Settings → Custom Attributes → Add Custom Attribute → Type = "File".
+
+## 7. Rebranding a Ormichat
+
+- `InstallationConfig`: `INSTALLATION_NAME` y `BRAND_NAME` = `Ormichat` (esto activa el mecanismo de white-labeling nativo de Chatwoot — `useBranding().replaceInstallationName()` y `isACustomBrandedInstance`, que además ocultan solos los links de ayuda propios de Chatwoot).
+- Reemplazo directo del texto "Chatwoot" por "Ormichat" en: locale EN (dashboard/widget/survey), `config/locales/en.yml`, vistas de Super Admin, templates de email, `public/manifest.json`.
+- Se eliminaron todos los links hardcodeados a `chwt.app` (help center de Chatwoot): `config/features.yml`, `featureHelper.js`, empty-states de Captain, guías de migración de WhatsApp, datos de ejemplo de Campaigns.
+- **Se dejaron sin tocar a propósito** (renombrarlos rompería cosas): clases Ruby internas (`ChatwootHub`, `ChatwootApp`, etc.), `window.chatwootSDK` (API pública del widget embebible — la usan todos los sitios que ya tengan el snippet instalado), la feature flag `chatwoot_v4`, migraciones existentes en `db/migrate/`.
+
+## 8. Canales con webhook (Telegram, etc.) — HTTPS público requerido
+
+Los canales que usan webhooks (Telegram es el caso ya configurado) necesitan que `FRONTEND_URL` sea una **URL HTTPS públicamente accesible desde internet** — Telegram rechaza silenciosamente `http://localhost:3000` (el bug de fondo: `Channel::Telegram#setup_telegram_webhook` no valida el campo `ok` de la respuesta de Telegram, así que Chatwoot guarda el canal como si nada, sin avisar del error).
+
+**Setup actual (desarrollo/pruebas): ngrok**
+
+```bash
+ngrok http 3000 --url https://tiffiny-chondriosomal-chandra.ngrok-free.dev
+```
+
+`FRONTEND_URL` en `docker-compose.yml` (ambos servicios `rails` y `sidekiq`) apunta a esa URL de ngrok. **Si el túnel cambia de URL** (se cae, se reinicia sin dominio fijo reservado en la cuenta de ngrok), hay que:
+
+1. Actualizar `FRONTEND_URL` en `docker-compose.yml`.
+2. `docker compose up -d --force-recreate rails sidekiq`
+3. Re-registrar el webhook de cada canal Telegram existente:
+   ```ruby
+   Channel::Telegram.find_each(&:save!)   # dispara setup_telegram_webhook de nuevo
+   ```
+4. Verificar con la API de Telegram:
+   ```ruby
+   HTTParty.get("https://api.telegram.org/bot<TOKEN>/getWebhookInfo").parsed_response
+   # "url" no debe estar vacío, "pending_update_count" debe bajar a 0
+   ```
+
+**Para producción real**: reemplazar el túnel de ngrok por un dominio propio con SSL.
+
+## 9. Captain AI sobre Ollama local (gratis, sin OpenAI)
+
+Captain (el agente de IA de Chatwoot) corre íntegramente sobre un modelo local de Ollama, sin ningún costo ni dependencia de OpenAI/Anthropic/Gemini.
+
+### 9.1 Cómo funciona
+
+Todo el tráfico de Captain (chat + embeddings) pasa por un único endpoint "OpenAI-compatible" configurable, vía el gem `ruby_llm`. Ollama expone justamente una API compatible con el protocolo de OpenAI, así que se lo conecta ahí.
+
+### 9.2 Requisitos
+
+```bash
+# Instalar Ollama en el host: https://ollama.com
+ollama pull llama3.1:8b          # modelo de chat (8B, corre bien en CPU)
+ollama pull nomic-embed-text     # modelo de embeddings (274MB)
+```
+
+Verificar que escuche en todas las interfaces (no solo loopback), para que los contenedores lo alcancen:
+```bash
+ss -tlnp | grep 11434
+# debe verse: LISTEN ... *:11434 ...  (no 127.0.0.1:11434)
+```
+
+Los contenedores llegan al host vía el gateway de la red de Docker (`docker network inspect chatwoot_default` → `Gateway`, normalmente `172.19.0.1` o similar — verificar con `docker network inspect` si cambia).
+
+### 9.3 Cambios de código necesarios (ya aplicados en este repo)
+
+El código de Chatwoot, tal cual viene, **no permite** usar un modelo que no esté en el catálogo estático del gem `ruby_llm` (`config/llm_models.json`, ~1250 modelos conocidos de OpenAI/Anthropic/etc.) — cualquier nombre de modelo de un proveedor gratis (`llama3.1:8b`, etc.) hace que la librería tire `RubyLLM::ModelNotFoundError`. Se parchearon 3 archivos:
+
+- **`lib/llm/feature_router.rb`**: el override de modelo self-hosted (`CAPTAIN_OPEN_AI_MODEL`) antes solo aplicaba a 1 de las ~14 funciones de Captain (`conversation_completion`). Se sacó esa restricción para que aplique a todas (asistente, resúmenes, sugerencia de etiquetas, generación de FAQs, etc.).
+- **`lib/captain/base_task_service.rb`** y **`enterprise/app/services/captain/llm/embedding_service.rb`**: se agregó un fallback — si `ruby_llm` no reconoce el modelo, reintentar con `provider: :openai, assume_model_exists: true` (mecanismo que el propio gem provee para modelos self-hosted/custom). Los modelos conocidos (GPT, Claude, etc.) siguen su camino normal sin cambios.
+- **`lib/llm/config.rb`** / **`lib/captain/base_task_service.rb`**: normalización para que `CAPTAIN_OPEN_AI_ENDPOINT` siempre termine en `/v1` (requisito del cliente OpenAI-compatible), sin importar si el admin lo escribe con o sin esa barra.
+
+### 9.4 Migración de dimensión de embeddings — IMPORTANTE
+
+Las columnas `article_embeddings.embedding`, `captain_assistant_responses.embedding` y `captain_faq_suggestions.embedding` estaban fijadas en Postgres como `vector(1536)` (dimensión de `text-embedding-3-small` de OpenAI). Los modelos de embeddings locales tienen otra dimensión (`nomic-embed-text` = 768), y ese mismatch rompía **la sugerencia de respuesta completa** (no solo la función separada de Documents/RAG como se pensó al principio) — la herramienta interna `search_documentation` que Captain usa para buscar respuestas pasadas parecidas tira `Neighbor::Error: Expected 1536 dimensions, not 768` en cualquier cuenta, incluso vacía.
+
+Se agregó la migración `db/migrate/20260906130000_change_captain_embedding_dimension_to_768.rb`, que:
+1. Vacía los embeddings existentes (eran de 1536 dims, incompatibles con 768).
+2. Cambia las 3 columnas a `vector(768)`.
+3. Recrea los índices `ivfflat`.
+
+**Si se usa otro modelo de embeddings con otra dimensión**, hay que ajustar el `768` de esa migración (o escribir una nueva) para que coincida.
+
+### 9.5 Configuración
+
+```ruby
+{
+  'CAPTAIN_OPEN_AI_ENDPOINT' => 'http://172.19.0.1:11434',   # IP del gateway docker hacia el host — verificar la propia
+  'CAPTAIN_OPEN_AI_API_KEY'  => 'ollama-local',                # dummy, Ollama no valida auth pero el código exige un valor no vacío
+  'CAPTAIN_OPEN_AI_MODEL'    => 'llama3.1:8b',
+  'CAPTAIN_EMBEDDING_MODEL'  => 'nomic-embed-text',
+}.each { |k, v| InstallationConfig.find_by(name: k).update!(value: v) }
+GlobalConfig.clear_cache
+```
+
+También hace falta tener habilitada la feature `captain_tasks` en la cuenta (ya cubierto por `ACCOUNT_LEVEL_FEATURE_DEFAULTS`, sección 5).
+
+### 9.6 Elegir modelo — qué anduvo y qué no
+
+Probado empíricamente contra `Captain::ReplySuggestionService` con un caso real de soporte ("mi pedido no llega"):
+
+| Modelo | Resultado |
+|---|---|
+| `llama3.2:3b` (3B) | Responde y sigue el formato, pero calidad simple/genérica. |
+| `llama3.1:8b` (8B) | **Elegido.** Respuesta coherente, tono de agente correcto, en español. |
+| `deepseek-coder-v2:16b` | **No sirve.** Es un modelo de código (`Capabilities: completion, insert`, sin `tools`), no de chat — ignoró el formato pedido y no puede usar function-calling. |
+
+Para probar otro modelo de chat, alcanza con:
+```bash
+ollama pull <modelo>
+```
+```ruby
+InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_MODEL').update!(value: '<modelo>')
+GlobalConfig.clear_cache
+```
+Sin tocar código. Preferir modelos con capability `tools` en `ollama show <modelo>` (necesario para que el asistente pueda usar acciones como agregar nota, poner etiqueta, hacer handoff).
+
+### 9.7 Expectativas de calidad
+
+Los modelos locales chicos (3B–8B) responden notablemente más simple que GPT-4.1/5.x, sobre todo en tareas que requieren seguir instrucciones complejas (resúmenes estructurados, por ejemplo). Si el hardware da para más, modelos de 30B+ mejoran bastante la calidad a costa de más RAM/tiempo de respuesta.
+
+## 10. Telemetría deshabilitada
+
+Por defecto, Chatwoot pinguea diariamente `hub.2.chatwoot.com` con métricas de la instalación, y relaya push notifications móviles a través del mismo hub. Se desactivó:
+
+- `config/schedule.yml`: comentada la entrada `internal_check_new_versions_job` (el cron que dispara el ping diario). `sidekiq-cron` limpia automáticamente el job de Redis al no encontrarlo en el YAML tras un restart de `sidekiq`.
+- `ENABLE_PUSH_RELAY_SERVER=false` en `docker-compose.yml` (ambos servicios).
+
+**No tocado**: el registro único al hub durante el onboarding inicial (`installation/onboarding_controller.rb`), por ser un evento único no recurrente.
+
+## 11. Control de versiones
+
+Este directorio **no** es un fork git de `chatwoot/chatwoot` — es un `git init` local, propio, sin remote hacia el repo original, pusheado a `martinezruben/ormichat` (privado en GitHub).
+
+`.gitignore` excluye: `.env`, `node_modules`, `public/vite|packs|assets` (artefactos de build), gemas, logs, tmp.
+
+**Por qué privado**: `enterprise/` está bajo la Chatwoot Enterprise License, que prohíbe publicar/distribuir ese código sin una suscripción Enterprise válida. Usarlo en un repo privado para uso propio está OK; un repo público expondría ese código a terceros.
+
+## 12. Troubleshooting
+
+**"No veo mi cambio de código"** → revisar que el archivo esté bajo un directorio bind-mounteado (sección 4). Si es Ruby, reiniciar contenedores. Si es JS/Vue, correr `pnpm exec vite build` en el host y reiniciar.
+
+**"No veo mi cambio de frontend después de rebuildear"** → hard refresh en el navegador (Ctrl+Shift+R) o probar en incógnito — Chatwoot tiene un service worker (PWA) que cachea assets agresivamente.
+
+**"Los mensajes de Telegram no llegan"** → ver sección 8. Chequear `getWebhookInfo` de la API de Telegram; si `url` está vacío, `FRONTEND_URL` no es una URL HTTPS pública válida.
+
+**"Captain tira `Neighbor::Error: Expected 1536 dimensions, not 768`"** → falta correr la migración de la sección 9.4, o se cambió el modelo de embeddings sin ajustar la dimensión de las columnas.
+
+**"Error `RubyLLM::ModelNotFoundError`"** → el modelo configurado en `CAPTAIN_OPEN_AI_MODEL`/`CAPTAIN_EMBEDDING_MODEL` no existe en Ollama (`ollama pull <modelo>` primero) o el parche de la sección 9.3 no está aplicado en ese archivo (verificar que el bind mount de `lib/`/`enterprise/` esté activo y que se haya reiniciado el contenedor tras el cambio).
