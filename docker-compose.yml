@@ -40,7 +40,7 @@ services:
       - POSTGRES_PASSWORD=chatwoot
       - POSTGRES_DATABASE=chatwoot_production
       - REDIS_URL=redis://redis:6379
-      - FRONTEND_URL=http://localhost:3000
+      - FRONTEND_URL=https://tiffiny-chondriosomal-chandra.ngrok-free.dev
       - ENABLE_ACCOUNT_SIGNUP=false
       - DEFAULT_LOCALE=es
       - ENABLE_PUSH_RELAY_SERVER=false
@@ -75,7 +75,7 @@ services:
       - POSTGRES_PASSWORD=chatwoot
       - POSTGRES_DATABASE=chatwoot_production
       - REDIS_URL=redis://redis:6379
-      - FRONTEND_URL=http://localhost:3000
+      - FRONTEND_URL=https://tiffiny-chondriosomal-chandra.ngrok-free.dev
       - ENABLE_ACCOUNT_SIGNUP=false
       - DEFAULT_LOCALE=es
       - ENABLE_PUSH_RELAY_SERVER=false
