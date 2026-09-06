@@ -43,6 +43,7 @@ services:
       - FRONTEND_URL=http://localhost:3000
       - ENABLE_ACCOUNT_SIGNUP=false
       - DEFAULT_LOCALE=es
+      - ENABLE_PUSH_RELAY_SERVER=false
     volumes:
       - ./app:/app/app
       - ./config:/app/config
@@ -76,6 +77,7 @@ services:
       - FRONTEND_URL=http://localhost:3000
       - ENABLE_ACCOUNT_SIGNUP=false
       - DEFAULT_LOCALE=es
+      - ENABLE_PUSH_RELAY_SERVER=false
     volumes:
       - ./app:/app/app
       - ./config:/app/config
