@@ -5,6 +5,8 @@
 
 @import 'shared/assets/fonts/InterDisplay/inter-display';
 @import 'shared/assets/fonts/inter';
+@import 'shared/assets/fonts/manrope';
+@import 'shared/assets/fonts/space-grotesk';
 
 // Next Colors
 @import 'next-colors';
@@ -18,7 +20,7 @@
 html,
 body {
   font-family:
-    'Inter',
+    'Manrope',
     -apple-system,
     system-ui,
     BlinkMacSystemFont,

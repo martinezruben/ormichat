@@ -43,6 +43,8 @@ const tailwindConfig = {
         sans: defaultSansFonts,
         inter: ['Inter', ...defaultSansFonts],
         interDisplay: ['InterDisplay', ...defaultSansFonts],
+        manrope: ['Manrope', ...defaultSansFonts],
+        heading: ['"Space Grotesk"', ...defaultSansFonts],
       },
       fontWeight: {
         420: '420',
