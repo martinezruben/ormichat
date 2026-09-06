@@ -187,6 +187,9 @@ blockquote {
 @layer base {
   // NEXT COLORS START
   :root {
+    // brand (Ormichat accent — #4F46E5)
+    --brand-color: 79 70 229;
+
     // slate
     --slate-1: 252 252 253;
     --slate-2: 249 249 251;
@@ -297,6 +300,9 @@ blockquote {
   }
 
   .dark {
+    // brand (Ormichat accent — #8B85F0)
+    --brand-color: 139 133 240;
+
     // slate
     --slate-1: 17 17 19;
     --slate-2: 24 25 27;
