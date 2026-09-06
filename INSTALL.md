@@ -215,6 +215,7 @@ El código de Chatwoot, tal cual viene, **no permite** usar un modelo que no est
 - **`lib/llm/feature_router.rb`**: el override de modelo self-hosted (`CAPTAIN_OPEN_AI_MODEL`) antes solo aplicaba a 1 de las ~14 funciones de Captain (`conversation_completion`). Se sacó esa restricción para que aplique a todas (asistente, resúmenes, sugerencia de etiquetas, generación de FAQs, etc.).
 - **`lib/captain/base_task_service.rb`** y **`enterprise/app/services/captain/llm/embedding_service.rb`**: se agregó un fallback — si `ruby_llm` no reconoce el modelo, reintentar con `provider: :openai, assume_model_exists: true` (mecanismo que el propio gem provee para modelos self-hosted/custom). Los modelos conocidos (GPT, Claude, etc.) siguen su camino normal sin cambios.
 - **`lib/llm/config.rb`** / **`lib/captain/base_task_service.rb`**: normalización para que `CAPTAIN_OPEN_AI_ENDPOINT` siempre termine en `/v1` (requisito del cliente OpenAI-compatible), sin importar si el admin lo escribe con o sin esa barra.
+- **`enterprise/app/models/concerns/agentable.rb`**: el asistente automático de Captain (el que le responde solo a un cliente, sección 9.8) **no pasa** por `Captain::BaseTaskService` — usa el gem `ai-agents` (`Agents::Agent.new`), que hace sus propios llamados a `ruby_llm` de forma independiente. Sufre el mismo `RubyLLM::ModelNotFoundError`. El gem ya soporta `provider:`/`assume_model_exists:` nativamente, así que se los pasa (gateado con `ChatwootApp.self_hosted_enterprise?`, igual que el resto).
 
 ### 9.4 Migración de dimensión de embeddings — IMPORTANTE
 
@@ -233,7 +234,7 @@ Se agregó la migración `db/migrate/20260906130000_change_captain_embedding_dim
 {
   'CAPTAIN_OPEN_AI_ENDPOINT' => 'http://172.19.0.1:11434',   # IP del gateway docker hacia el host — verificar la propia
   'CAPTAIN_OPEN_AI_API_KEY'  => 'ollama-local',                # dummy, Ollama no valida auth pero el código exige un valor no vacío
-  'CAPTAIN_OPEN_AI_MODEL'    => 'llama3.1:8b',
+  'CAPTAIN_OPEN_AI_MODEL'    => 'qwen2.5:7b-instruct',
   'CAPTAIN_EMBEDDING_MODEL'  => 'nomic-embed-text',
 }.each { |k, v| InstallationConfig.find_by(name: k).update!(value: v) }
 GlobalConfig.clear_cache
@@ -243,13 +244,16 @@ También hace falta tener habilitada la feature `captain_tasks` en la cuenta (ya
 
 ### 9.6 Elegir modelo — qué anduvo y qué no
 
-Probado empíricamente contra `Captain::ReplySuggestionService` con un caso real de soporte ("mi pedido no llega"):
+Probado empíricamente contra `Captain::ReplySuggestionService` (botón "Suggest a reply") y contra el asistente automático real (sección 9.8), con casos reales de soporte:
 
 | Modelo | Resultado |
 |---|---|
 | `llama3.2:3b` (3B) | Responde y sigue el formato, pero calidad simple/genérica. |
-| `llama3.1:8b` (8B) | **Elegido.** Respuesta coherente, tono de agente correcto, en español. |
+| `llama3.1:8b` (8B) | Responde bien en `ReplySuggestionService` (tono correcto, en español). **Pero falla en el asistente automático**: al usar la herramienta `faq_lookup` arma mal los argumentos (`ArgumentError: missing keyword: :query`) — confunde el schema de la herramienta con el de su propia respuesta estructurada, y termina haciendo handoff. |
+| `qwen2.5:7b-instruct` (7.6B) | **Elegido.** Maneja bien la combinación de tools + salida estructurada que usa el asistente automático — sin errores, sin handoff espurio. |
 | `deepseek-coder-v2:16b` | **No sirve.** Es un modelo de código (`Capabilities: completion, insert`, sin `tools`), no de chat — ignoró el formato pedido y no puede usar function-calling. |
+
+**Conclusión práctica**: para el botón simple de "Suggest a reply" casi cualquier modelo instruct chico anda. Para el **asistente automático** (usa tools + JSON schema estructurado a la vez) hace falta un modelo con mejor adherencia a function-calling — `qwen2.5:7b-instruct` fue el primero que probamos que lo maneja bien; puede haber otros igual de buenos o mejores.
 
 Para probar otro modelo de chat, alcanza con:
 ```bash
@@ -259,11 +263,32 @@ ollama pull <modelo>
 InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_MODEL').update!(value: '<modelo>')
 GlobalConfig.clear_cache
 ```
-Sin tocar código. Preferir modelos con capability `tools` en `ollama show <modelo>` (necesario para que el asistente pueda usar acciones como agregar nota, poner etiqueta, hacer handoff).
+Sin tocar código. Preferir modelos con capability `tools` en `ollama show <modelo>` (necesario para que el asistente pueda usar acciones como agregar nota, poner etiqueta, hacer handoff) — es necesario pero no garantiza que arme bien los argumentos de la herramienta, como vimos con `llama3.1:8b`.
 
 ### 9.7 Expectativas de calidad
 
-Los modelos locales chicos (3B–8B) responden notablemente más simple que GPT-4.1/5.x, sobre todo en tareas que requieren seguir instrucciones complejas (resúmenes estructurados, por ejemplo). Si el hardware da para más, modelos de 30B+ mejoran bastante la calidad a costa de más RAM/tiempo de respuesta.
+Los modelos locales chicos (3B–8B) responden notablemente más simple que GPT-4.1/5.x, sobre todo en tareas que requieren seguir instrucciones complejas (resúmenes estructurados, function-calling con schema, etc.). Si el hardware da para más, modelos de 30B+ mejoran bastante la calidad a costa de más RAM/tiempo de respuesta.
+
+### 9.8 Activar la respuesta automática a clientes (Captain Assistant)
+
+El botón "Suggest a reply" del compose box (agent-assist) y la **respuesta automática a un cliente** son dos cosas distintas. Para lo segundo:
+
+1. Dashboard → Captain → Assistants → crear un Assistant (nombre + descripción son obligatorios).
+2. Desde la página del Assistant, ir a la sección de Inboxes y asignarlo al inbox deseado (API: `POST /captain/assistants/:id/inboxes`, tabla `captain_inboxes`, un assistant por inbox).
+3. **La conversación tiene que estar en estado `pending`** (sin asignar) para que Captain la atienda — si ya tiene un agente asignado o está `open`, Captain no interviene (mismo criterio que un Agent Bot). Conversaciones nuevas entrantes, sin reglas de auto-asignación, arrancan en `pending` por default.
+4. El procesamiento es 100% asíncrono (`Captain::Conversation::ResponseBuilderJob` vía Sidekiq) — no pasa por Puma/rack-timeout, así que no importa cuánto tarde Ollama.
+
+Si Captain responde "Transferring to another agent for further assistance." en vez de contestar, mirar los logs de `sidekiq` (`docker logs chatwoot-sidekiq-1`) buscando `[Captain V2] Agent result` — el campo `error` te dice la causa real (`RubyLLM::ModelNotFoundError` = falta el fix de 9.3, `ArgumentError` = el modelo no maneja bien function-calling, ver 9.6).
+
+### 9.9 Timeout de requests HTTP (solo afecta al botón "Suggest a reply", no al asistente automático)
+
+`rack-timeout` corta cualquier request HTTP a los **15 segundos por default** (`RACK_TIMEOUT_SERVICE_TIMEOUT`). Un modelo local en CPU puede tardar más que eso, lo que mataba silenciosamente el botón "Suggest a reply" (HTTP 500 a los 15s, mientras el service en sí funcionaba bien). Se subió a 120s en `docker-compose.yml` (servicio `rails`):
+
+```yaml
+- RACK_TIMEOUT_SERVICE_TIMEOUT=120
+```
+
+Esto **no afecta** al asistente automático de la sección 9.8, que corre en Sidekiq (sin límite de tiempo por este middleware).
 
 ## 10. Telemetría deshabilitada
 
@@ -292,4 +317,8 @@ Este directorio **no** es un fork git de `chatwoot/chatwoot` — es un `git init
 
 **"Captain tira `Neighbor::Error: Expected 1536 dimensions, not 768`"** → falta correr la migración de la sección 9.4, o se cambió el modelo de embeddings sin ajustar la dimensión de las columnas.
 
-**"Error `RubyLLM::ModelNotFoundError`"** → el modelo configurado en `CAPTAIN_OPEN_AI_MODEL`/`CAPTAIN_EMBEDDING_MODEL` no existe en Ollama (`ollama pull <modelo>` primero) o el parche de la sección 9.3 no está aplicado en ese archivo (verificar que el bind mount de `lib/`/`enterprise/` esté activo y que se haya reiniciado el contenedor tras el cambio).
+**"Error `RubyLLM::ModelNotFoundError`"** → el modelo configurado en `CAPTAIN_OPEN_AI_MODEL`/`CAPTAIN_EMBEDDING_MODEL` no existe en Ollama (`ollama pull <modelo>` primero) o el parche de la sección 9.3 no está aplicado en ese archivo (verificar que el bind mount de `lib/`/`enterprise/` esté activo y que se haya reiniciado el contenedor tras el cambio). Si el error aparece específicamente en el **asistente automático** (`[Captain V2] Agent result: ... error=#<RubyLLM::ModelNotFoundError...`) y no en el botón de sugerencia, revisar que el parche de `enterprise/app/models/concerns/agentable.rb` (sección 9.3) esté aplicado — es una ruta de código separada.
+
+**"El botón 'Suggest a reply' no responde nada (sin error visible)"** → ver sección 9.9. `rack-timeout` corta el request a los 15s por default; confirmar `RACK_TIMEOUT_SERVICE_TIMEOUT=120` en el servicio `rails` de `docker-compose.yml`, y confirmar en `docker logs chatwoot-rails-1` si aparece `source=rack-timeout ... state=timed_out`.
+
+**"El asistente responde 'Transferring to another agent for further assistance.' en vez de contestar"** → eso es un handoff automático, no un bug de configuración en sí. Ver sección 9.8: revisar `docker logs chatwoot-sidekiq-1` buscando `[Captain V2] Agent result` para ver el `error` real detrás del handoff (`ModelNotFoundError`, `ArgumentError` de function-calling, etc.) — también puede pasar simplemente porque la conversación no estaba en estado `pending`.
