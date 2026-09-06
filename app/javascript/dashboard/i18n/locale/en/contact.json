@@ -110,9 +110,14 @@
         "DIAL_CODE_ERROR": "Please select a dial code from the list",
         "DUPLICATE": "This phone number is in use for another contact."
       },
+      "ADDRESS": {
+        "PLACEHOLDER": "Enter the delivery address",
+        "LABEL": "Address"
+      },
       "LOCATION": {
-        "PLACEHOLDER": "Enter the location of the contact",
-        "LABEL": "Location"
+        "PLACEHOLDER": "Paste a Google Maps or Waze link, or lat,lng",
+        "LABEL": "Location (coordinates)",
+        "INVALID": "Could not read coordinates from that link. Enter them as lat,lng instead."
       },
       "COMPANY_NAME": {
         "PLACEHOLDER": "Enter the company name",
@@ -452,6 +457,13 @@
           },
           "COMPANY_NAME": {
             "PLACEHOLDER": "Enter the company name"
+          },
+          "ADDRESS": {
+            "PLACEHOLDER": "Enter the delivery address"
+          },
+          "LOCATION": {
+            "PLACEHOLDER": "Paste a Google Maps or Waze link, or lat,lng",
+            "INVALID": "Could not read coordinates from that link. Enter them as lat,lng instead."
           }
         },
         "UPDATE_BUTTON": "Update contact",

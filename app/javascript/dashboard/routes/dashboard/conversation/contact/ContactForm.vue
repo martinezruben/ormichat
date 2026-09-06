@@ -7,11 +7,15 @@ import {
 import { required, email } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import countries from 'shared/constants/countries.js';
+import { extractCoordinates } from 'shared/helpers/locationHelper';
 import { isPhoneNumberValid } from 'shared/helpers/Validators';
 import parsePhoneNumber from 'libphonenumber-js';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import Avatar from 'next/avatar/Avatar.vue';
 import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
+
+// Contacts here are, by default, based in the Dominican Republic.
+const DEFAULT_COUNTRY = { id: 'DO', name: 'Dominican Republic' };
 
 export default {
   components: {
@@ -49,10 +53,12 @@ export default {
       avatarFile: null,
       avatarUrl: '',
       country: {
-        id: '',
-        name: '',
+        id: DEFAULT_COUNTRY.id,
+        name: DEFAULT_COUNTRY.name,
       },
       city: '',
+      address: '',
+      location: '',
       socialProfileUserNames: {
         facebook: '',
         twitter: '',
@@ -143,6 +149,17 @@ export default {
         ? { id: selected.id, name: selected.name }
         : { id: '', name: '' };
     },
+    handleLocationBlur() {
+      const rawValue = this.location.trim();
+      if (!rawValue) return;
+
+      const coordinates = extractCoordinates(rawValue);
+      if (coordinates) {
+        this.location = coordinates;
+      } else if (/^https?:\/\//i.test(rawValue)) {
+        useAlert(this.$t('CONTACT_FORM.FORM.LOCATION.INVALID'));
+      }
+    },
     setDialCode() {
       if (
         this.phoneNumber !== '' &&
@@ -166,12 +183,12 @@ export default {
       this.phoneNumber = phoneNumber || '';
       this.companyName = additionalAttributes.company_name || '';
       this.country = {
-        id: additionalAttributes.country_code || '',
-        name:
-          additionalAttributes.country ||
-          this.$t('CONTACT_FORM.FORM.COUNTRY.SELECT_COUNTRY'),
+        id: additionalAttributes.country_code || DEFAULT_COUNTRY.id,
+        name: additionalAttributes.country || DEFAULT_COUNTRY.name,
       };
       this.city = additionalAttributes.city || '';
+      this.address = additionalAttributes.address || '';
+      this.location = additionalAttributes.location || '';
       this.description = additionalAttributes.description || '';
       this.avatarUrl = this.contact.thumbnail || '';
       const {
@@ -206,12 +223,10 @@ export default {
           description: this.description,
           company_name: this.companyName,
           country_code: this.country.id,
-          country:
-            this.country.name ===
-            this.$t('CONTACT_FORM.FORM.COUNTRY.SELECT_COUNTRY')
-              ? ''
-              : this.country.name,
+          country: this.country.name,
           city: this.city,
+          address: this.address,
+          location: this.location,
           social_profiles: this.socialProfileUserNames,
         },
       };
@@ -398,6 +413,19 @@ export default {
       class="w-full"
       :label="$t('CONTACT_FORM.FORM.CITY.LABEL')"
       :placeholder="$t('CONTACT_FORM.FORM.CITY.PLACEHOLDER')"
+    />
+    <woot-input
+      v-model="address"
+      class="w-full"
+      :label="$t('CONTACT_FORM.FORM.ADDRESS.LABEL')"
+      :placeholder="$t('CONTACT_FORM.FORM.ADDRESS.PLACEHOLDER')"
+    />
+    <woot-input
+      v-model="location"
+      class="w-full"
+      :label="$t('CONTACT_FORM.FORM.LOCATION.LABEL')"
+      :placeholder="$t('CONTACT_FORM.FORM.LOCATION.PLACEHOLDER')"
+      @blur="handleLocationBlur"
     />
 
     <div class="w-full">

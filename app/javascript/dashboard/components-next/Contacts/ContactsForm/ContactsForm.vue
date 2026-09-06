@@ -5,6 +5,8 @@ import { required, email } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { splitName } from '@chatwoot/utils';
 import countries from 'shared/constants/countries.js';
+import { extractCoordinates } from 'shared/helpers/locationHelper';
+import { useAlert } from 'dashboard/composables';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { useAccount } from 'dashboard/composables/useAccount';
 import Input from 'dashboard/components-next/input/Input.vue';
@@ -42,7 +44,12 @@ const FORM_CONFIG = {
   COUNTRY: { field: 'additionalAttributes.countryCode' },
   BIO: { field: 'additionalAttributes.description' },
   COMPANY_NAME: { field: 'additionalAttributes.companyName' },
+  ADDRESS: { field: 'additionalAttributes.address' },
+  LOCATION: { field: 'additionalAttributes.location' },
 };
+
+// Contacts here are, by default, based in the Dominican Republic.
+const DEFAULT_COUNTRY = { id: 'DO', name: 'Dominican Republic' };
 
 const SOCIAL_CONFIG = {
   LINKEDIN: 'i-ri-linkedin-box-fill',
@@ -65,9 +72,11 @@ const defaultState = {
   additionalAttributes: {
     description: '',
     companyName: '',
-    countryCode: '',
-    country: '',
+    countryCode: DEFAULT_COUNTRY.id,
+    country: DEFAULT_COUNTRY.name,
     city: '',
+    address: '',
+    location: '',
     socialProfiles: {
       facebook: '',
       github: '',
@@ -128,6 +137,8 @@ const prepareStateBasedOnProps = () => {
     countryCode = '',
     country = '',
     city = '',
+    address = '',
+    location = '',
     socialTelegramUserName = '',
     socialProfiles = {},
   } = additionalAttributes || {};
@@ -146,9 +157,11 @@ const prepareStateBasedOnProps = () => {
     additionalAttributes: {
       description,
       companyName,
-      countryCode,
-      country,
+      countryCode: countryCode || DEFAULT_COUNTRY.id,
+      country: country || DEFAULT_COUNTRY.name,
       city,
+      address,
+      location,
       socialProfiles: {
         ...socialProfiles,
         telegram: telegramUsername,
@@ -241,6 +254,19 @@ const handleCountrySelection = value => {
   emit('update', state);
 };
 
+const handleLocationBlur = () => {
+  const rawValue = state.additionalAttributes.location.trim();
+  if (!rawValue) return;
+
+  const coordinates = extractCoordinates(rawValue);
+  if (coordinates) {
+    state.additionalAttributes.location = coordinates;
+    emitContactUpdate();
+  } else if (/^https?:\/\//i.test(rawValue)) {
+    useAlert(t('CONTACTS_LAYOUT.CARD.EDIT_DETAILS_FORM.FORM.LOCATION.INVALID'));
+  }
+};
+
 const handleCompanySelection = async ({ id, name }) => {
   state.companyId = id || '';
   state.additionalAttributes.companyName = name || '';
@@ -305,6 +331,18 @@ defineExpose({
             :selected-name="state.additionalAttributes.companyName"
             :is-details-view="isDetailsView"
             @select="handleCompanySelection"
+          />
+          <Input
+            v-else-if="item.key === 'LOCATION'"
+            v-model="getFormBinding(item.key).value"
+            :placeholder="item.placeholder"
+            :custom-input-class="`h-8 !pt-1 !pb-1 ${
+              !isDetailsView
+                ? '[&:not(.error,.focus)]:!outline-transparent'
+                : ''
+            }`"
+            class="w-full"
+            @blur="handleLocationBlur"
           />
           <Input
             v-else
