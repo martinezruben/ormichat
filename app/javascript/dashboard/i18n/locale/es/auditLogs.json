@@ -72,6 +72,36 @@
     },
     "CONVERSATION": {
       "DELETE": "{agentName} ha eliminado la conversación #{id}"
+    },
+    "COUNT": "{n} evento | {n} eventos",
+    "FILTERS": {
+      "SEARCH_PLACEHOLDER": "Buscar por nombre o correo",
+      "ALL_EVENTS": "Todos los eventos",
+      "DATE_RANGE": "Rango de fechas",
+      "CLEAR_ALL": "Borrar filtros",
+      "EVENT_TYPE_GROUPS": {
+        "ACCESS": "Acceso",
+        "AGENTS_TEAMS": "Agentes y equipos",
+        "CONFIGURATION": "Configuración",
+        "CONVERSATIONS": "Conversaciones"
+      },
+      "EVENT_TYPES": {
+        "SIGN_IN_OUT": "Inicio / cierre de sesión",
+        "AGENTS": "Agentes",
+        "TEAMS": "Equipos",
+        "TEAM_MEMBERS": "Miembros del equipo",
+        "INBOX_MEMBERS": "Colaboradores de la bandeja de entrada",
+        "ACCOUNT": "Configuración de la cuenta",
+        "INBOXES": "Bandejas de entrada",
+        "WEBHOOKS": "Webhooks",
+        "AUTOMATION_RULES": "Reglas de automatización",
+        "MACROS": "Macros",
+        "CONVERSATION_DELETIONS": "Eliminaciones de conversaciones"
+      },
+      "SORT": {
+        "NEWEST": "Más recientes primero",
+        "OLDEST": "Más antiguos primero"
+      }
     }
   }
 }
