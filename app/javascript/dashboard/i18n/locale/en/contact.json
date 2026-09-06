@@ -208,7 +208,8 @@
       "COPY": "Copy attribute",
       "DELETE": "Delete attribute",
       "EDIT": "Edit attribute",
-      "INSERT": "Insert into message"
+      "INSERT": "Insert into message",
+      "INSERT_FILE_ERROR": "Could not attach the file to the message. Please try again."
     },
     "FILE": {
       "UPLOAD": "Upload file",

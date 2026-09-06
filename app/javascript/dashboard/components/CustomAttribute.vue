@@ -14,6 +14,7 @@ import { useCustomAttributeFileUpload } from 'dashboard/composables/useCustomAtt
 import { INBOX_TYPES } from 'dashboard/helper/inbox';
 
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import ImagePreviewDialog from 'dashboard/components-next/dialog/Dialog.vue';
 
 const DATE_FORMAT = 'yyyy-MM-dd';
 
@@ -22,6 +23,7 @@ export default {
     MultiselectDropdown,
     HelperTextPopup,
     NextButton,
+    ImagePreviewDialog,
   },
   props: {
     label: { type: String, required: true },
@@ -50,6 +52,7 @@ export default {
       isEditing: false,
       editedValue: null,
       isUploading: false,
+      isInserting: false,
     };
   },
   computed: {
@@ -120,6 +123,10 @@ export default {
       } catch {
         return this.value;
       }
+    },
+    isImageFile() {
+      if (!this.isAttributeTypeFile || !this.hasValue) return false;
+      return /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i.test(this.fileDisplayName);
     },
     directUploadUrl() {
       return this.attributeModel === 'contact_attribute'
@@ -244,7 +251,12 @@ export default {
       this.$emit('copy', this.value);
     },
     onInsert() {
-      const isLinkLike = this.isAttributeTypeLink || this.isAttributeTypeFile;
+      if (this.isAttributeTypeFile) {
+        this.attachFileIntoComposer();
+        return;
+      }
+
+      const isLinkLike = this.isAttributeTypeLink;
       if (this.insertIntoRichEditor) {
         const content = isLinkLike
           ? `[${this.insertLabel}](${this.value})`
@@ -256,6 +268,30 @@ export default {
         }`;
         emitter.emit(BUS_EVENTS.INSERT_INTO_NORMAL_EDITOR, content);
       }
+    },
+    async attachFileIntoComposer() {
+      this.isInserting = true;
+      try {
+        const response = await fetch(this.value);
+        if (!response.ok) throw new Error('Failed to fetch file');
+        const blob = await response.blob();
+        const file = new File([blob], this.fileDisplayName, {
+          type: blob.type,
+        });
+        emitter.emit(BUS_EVENTS.ATTACH_FILE_TO_COMPOSER, {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          file,
+        });
+      } catch {
+        useAlert(this.$t('CUSTOM_ATTRIBUTES.ACTIONS.INSERT_FILE_ERROR'));
+      } finally {
+        this.isInserting = false;
+      }
+    },
+    openImagePreview() {
+      this.$refs.imagePreviewDialog.open();
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
@@ -403,6 +439,12 @@ export default {
       </div>
     </div>
     <div v-if="isAttributeTypeFile" class="flex items-center gap-2 px-4 pb-3">
+      <img
+        v-if="isImageFile"
+        :src="value"
+        class="flex-shrink-0 object-cover w-6 h-6 rounded outline outline-1 outline-n-weak -outline-offset-1 cursor-pointer"
+        @click="openImagePreview"
+      />
       <a
         v-if="hasValue"
         :href="value"
@@ -436,10 +478,23 @@ export default {
         xs
         slate
         ghost
+        :is-loading="isInserting"
         icon="i-lucide-message-square-plus"
         class="flex-shrink-0 ml-auto"
         @click="onInsert"
       />
+      <ImagePreviewDialog
+        v-if="isImageFile"
+        ref="imagePreviewDialog"
+        :show-cancel-button="false"
+        :show-confirm-button="false"
+        width="lg"
+      >
+        <img
+          :src="value"
+          class="w-full max-h-[70vh] object-contain rounded-lg"
+        />
+      </ImagePreviewDialog>
     </div>
     <div v-if="isAttributeTypeList">
       <MultiselectDropdown
