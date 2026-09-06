@@ -17,7 +17,8 @@
     "MORE_INBOXES": "+{n}",
     "FILTERS": {
       "ALL_INBOXES": "Todas las bandejas",
-      "ALL_LANGUAGES": "Todos los idiomas"
+      "ALL_LANGUAGES": "Todos los idiomas",
+      "ALL_TYPES": "Todos los tipos"
     },
     "TYPES": {
       "TEXT": "Texto",
@@ -42,6 +43,13 @@
       "LANGUAGE": "Idioma",
       "INBOXES": "Bandejas de entrada",
       "LAST_SYNC_ATTEMPT": "Último intento de sincronización"
+    },
+    "SYNC_TEMPLATES": "Sincronizar plantillas",
+    "SYNC_SUCCESS": "Se inició la sincronización de plantillas para todas las bandejas de entrada de WhatsApp. Las actualizaciones pueden tardar un par de minutos.",
+    "PARTIAL_SYNC_ERROR": "Se inició la sincronización de plantillas para algunas bandejas de entrada de WhatsApp, pero otras no se pudieron sincronizar.",
+    "SYNC_ERROR": "No se pudo iniciar la sincronización de plantillas. Inténtelo de nuevo.",
+    "STATUSES": {
+      "UNSUBMITTED": "No enviado para aprobación de WhatsApp"
     }
   }
 }
