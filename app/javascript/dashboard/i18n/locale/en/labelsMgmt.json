@@ -38,6 +38,9 @@
       "SHOW_ON_SIDEBAR": {
         "LABEL": "Show label on sidebar"
       },
+      "SELECTABLE": {
+        "LABEL": "Selectable by agents (uncheck to use only in automations)"
+      },
       "EDIT": "Edit",
       "CREATE": "Create",
       "DELETE": "Delete",

@@ -74,8 +74,8 @@ export default {
       return this.$t('LABEL_MGMT.SUGGESTIONS.ADD_ALL_LABELS');
     },
     preparedLabels() {
-      return this.allLabels.filter(label =>
-        this.suggestedLabels.includes(label.title)
+      return this.allLabels.filter(
+        label => label.selectable && this.suggestedLabels.includes(label.title)
       );
     },
     shouldShowSuggestions() {

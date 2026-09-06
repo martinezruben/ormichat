@@ -72,7 +72,9 @@ const isLabelSelected = labelTitle => {
 
 const visibleLabels = computed(() => {
   if (!isRemoveAction.value || props.appliedLabels === null) {
-    return labels.value;
+    // Assigning: only labels agents are allowed to pick — non-selectable
+    // ones are reserved for automations.
+    return labels.value.filter(label => label.selectable);
   }
 
   const applied = new Set(props.appliedLabels);

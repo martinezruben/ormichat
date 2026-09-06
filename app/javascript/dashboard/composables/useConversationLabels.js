@@ -28,6 +28,16 @@ export function useConversationLabels() {
   const accountLabels = computed(() => getters['labels/getLabels'].value);
 
   /**
+   * Labels agents are allowed to pick from when adding a new label — labels
+   * marked non-selectable are reserved for automations and stay hidden from
+   * this picker, though they still display normally if already applied.
+   * @type {import('vue').ComputedRef<Array>}
+   */
+  const selectableAccountLabels = computed(() =>
+    accountLabels.value.filter(label => label.selectable)
+  );
+
+  /**
    * Labels currently saved to the conversation
    * @type {import('vue').ComputedRef<Array>}
    */
@@ -91,6 +101,7 @@ export function useConversationLabels() {
 
   return {
     accountLabels,
+    selectableAccountLabels,
     savedLabels,
     activeLabels,
     inactiveLabels,

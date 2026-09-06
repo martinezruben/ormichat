@@ -20,7 +20,7 @@ export default {
     const {
       savedLabels,
       activeLabels,
-      accountLabels,
+      selectableAccountLabels,
       addLabelToConversation,
       removeLabelFromConversation,
     } = useConversationLabels();
@@ -56,7 +56,7 @@ export default {
       isAdmin,
       savedLabels,
       activeLabels,
-      accountLabels,
+      selectableAccountLabels,
       addLabelToConversation,
       removeLabelFromConversation,
       showSearchDropdownLabel,
@@ -111,7 +111,7 @@ export default {
         >
           <LabelDropdown
             v-if="showSearchDropdownLabel"
-            :account-labels="accountLabels"
+            :account-labels="selectableAccountLabels"
             :selected-labels="savedLabels"
             :allow-creation="isAdmin"
             @add="addLabelToConversation"

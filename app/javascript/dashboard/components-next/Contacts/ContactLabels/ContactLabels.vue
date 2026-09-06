@@ -33,8 +33,14 @@ const savedLabels = computed(() => {
   );
 });
 
+// Labels marked non-selectable are reserved for automations and stay out
+// of this picker, though they still show normally if already applied.
+const selectableLabels = computed(() =>
+  allLabels.value?.filter(label => label.selectable)
+);
+
 const labelMenuItems = computed(() => {
-  return allLabels.value
+  return selectableLabels.value
     ?.map(label => ({
       label: label.title,
       value: label.id,
