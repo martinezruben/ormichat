@@ -1,3 +1,13 @@
+# Rails' default (5 minutes) is meant for URLs regenerated on every request
+# (e.g. Attachment#file_url, recomputed fresh each time a message is
+# serialized). Our custom-attribute file links are stored once as the
+# permanent /rails/active_storage/blobs/redirect/:signed_id route, which
+# itself never expires — but browsers resolve that redirect to the actual
+# disk-service URL (visible in "copy link", "open in new tab", etc.), and
+# THAT resolved URL 404s once its embedded expiry passes. Extending it here
+# makes any resolved/copied link stay valid long enough to be useful.
+Rails.application.config.active_storage.service_urls_expire_in = 1.year
+
 # Allow audio attachments (call recordings, voice notes) to serve inline so the
 # in-app <audio> player can stream them. Without this, ActiveStorage's blob model
 # forces Content-Disposition: attachment for any MIME outside the default allowlist
