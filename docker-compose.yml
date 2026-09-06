@@ -49,6 +49,7 @@ services:
       - ./config:/app/config
       - ./lib:/app/lib
       - ./enterprise:/app/enterprise
+      - ./db/migrate:/app/db/migrate
       - ./public/vite:/app/public/vite
     ports:
       - "3000:3000"
@@ -84,6 +85,7 @@ services:
       - ./config:/app/config
       - ./lib:/app/lib
       - ./enterprise:/app/enterprise
+      - ./db/migrate:/app/db/migrate
       - ./public/vite:/app/public/vite
     depends_on:
       postgres:
