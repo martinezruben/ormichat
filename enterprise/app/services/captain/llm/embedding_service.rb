@@ -17,7 +17,7 @@ class Captain::Llm::EmbeddingService
     return [] if content.blank?
 
     instrument_embedding_call(instrumentation_params(content, model)) do
-      RubyLLM.embed(content, model: model).vectors
+      embed(content, model)
     end
   rescue RubyLLM::Error => e
     Rails.logger.error "Embedding API Error: #{e.message}"
@@ -25,6 +25,14 @@ class Captain::Llm::EmbeddingService
   end
 
   private
+
+  # See Captain::BaseTaskService#resolve_chat: custom/self-hosted embedding
+  # models aren't in ruby_llm's static model registry either.
+  def embed(content, model)
+    RubyLLM.embed(content, model: model).vectors
+  rescue RubyLLM::ModelNotFoundError
+    RubyLLM.embed(content, model: model, provider: :openai, assume_model_exists: true).vectors
+  end
 
   def instrumentation_params(content, model)
     {

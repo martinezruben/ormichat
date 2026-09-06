@@ -34,7 +34,7 @@ module Llm::Config
     def configure_ruby_llm
       RubyLLM.configure do |config|
         config.openai_api_key = system_api_key if system_api_key.present?
-        config.openai_api_base = openai_endpoint.chomp('/') if openai_endpoint.present?
+        config.openai_api_base = normalized_openai_endpoint if openai_endpoint.present?
         config.model_registry_file = Rails.root.join('config/llm_models.json').to_s
         config.logger = Rails.logger
       end
@@ -46,6 +46,13 @@ module Llm::Config
 
     def openai_endpoint
       InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_ENDPOINT')&.value
+    end
+
+    # ruby_llm's OpenAI provider expects `openai_api_base` to already include
+    # the `/v1` suffix (its own default is 'https://api.openai.com/v1').
+    def normalized_openai_endpoint
+      base = openai_endpoint.chomp('/')
+      base.end_with?('/v1') ? base : "#{base}/v1"
     end
   end
 end
