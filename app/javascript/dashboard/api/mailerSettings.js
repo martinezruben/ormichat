@@ -18,8 +18,8 @@ class MailerSettingsAPI extends ApiClient {
     return axios.post(`${this.url}/reload`);
   }
 
-  test(settings) {
-    return axios.post(`${this.url}/test`, { settings });
+  test(settings, to) {
+    return axios.post(`${this.url}/test`, { settings, to });
   }
 }
 

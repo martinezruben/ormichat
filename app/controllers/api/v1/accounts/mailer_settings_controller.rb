@@ -17,8 +17,9 @@ class Api::V1::Accounts::MailerSettingsController < Api::V1::Accounts::BaseContr
   end
 
   def test
-    MailerSettingsService.deliver_test_email(to: Current.user.email, overrides: test_overrides)
-    head :ok
+    to = params[:to].presence || Current.user.email
+    MailerSettingsService.deliver_test_email(to: to, overrides: test_overrides)
+    render json: { to: to }
   rescue StandardError => e
     render json: { error: e.message }, status: :unprocessable_entity
   end

@@ -754,6 +754,11 @@
       "SAVE_BUTTON": "Save",
       "RELOAD_BUTTON": "Reload configuration",
       "TEST_BUTTON": "Send test email",
+      "TEST_EMAIL": {
+        "LABEL": "Send test email to",
+        "HELP": "Uses whatever is currently in the form above, saved or not",
+        "PLACEHOLDER": "you@example.com"
+      },
       "API": {
         "ERROR_LOADING": "Could not load the email settings",
         "SAVE_SUCCESS": "Email settings saved. Click \"Reload configuration\" to apply them.",

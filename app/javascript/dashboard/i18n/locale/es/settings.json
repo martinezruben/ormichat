@@ -754,6 +754,11 @@
       "SAVE_BUTTON": "Guardar",
       "RELOAD_BUTTON": "Recargar configuración",
       "TEST_BUTTON": "Enviar correo de prueba",
+      "TEST_EMAIL": {
+        "LABEL": "Enviar correo de prueba a",
+        "HELP": "Usa lo que esté ahora mismo en el formulario de arriba, guardado o no",
+        "PLACEHOLDER": "tu@ejemplo.com"
+      },
       "API": {
         "ERROR_LOADING": "No se pudo cargar la configuración de correo",
         "SAVE_SUCCESS": "Configuración de correo guardada. Presiona \"Recargar configuración\" para aplicarla.",

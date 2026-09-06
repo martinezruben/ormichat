@@ -33,6 +33,8 @@ const formState = reactive({
   senderEmail: '',
 });
 
+const testEmail = ref('');
+
 const authenticationOptions = [
   { value: '', label: t('SECURITY_SETTINGS.MAILER.AUTHENTICATION.NONE') },
   { value: 'plain', label: 'Plain' },
@@ -111,20 +113,23 @@ const handleSendTest = async () => {
   try {
     isSendingTest.value = true;
     const payload = buildSettingsPayload();
-    await mailerSettingsAPI.test({
-      address: payload.SMTP_ADDRESS,
-      port: payload.SMTP_PORT,
-      user_name: payload.SMTP_USERNAME,
-      password: payload.SMTP_PASSWORD || undefined,
-      authentication: payload.SMTP_AUTHENTICATION || undefined,
-      domain: payload.SMTP_DOMAIN || undefined,
-      enable_starttls_auto: payload.SMTP_ENABLE_STARTTLS_AUTO,
-      ssl: payload.SMTP_SSL,
-      from: payload.MAILER_SENDER_EMAIL || undefined,
-    });
+    await mailerSettingsAPI.test(
+      {
+        address: payload.SMTP_ADDRESS,
+        port: payload.SMTP_PORT,
+        user_name: payload.SMTP_USERNAME,
+        password: payload.SMTP_PASSWORD || undefined,
+        authentication: payload.SMTP_AUTHENTICATION || undefined,
+        domain: payload.SMTP_DOMAIN || undefined,
+        enable_starttls_auto: payload.SMTP_ENABLE_STARTTLS_AUTO,
+        ssl: payload.SMTP_SSL,
+        from: payload.MAILER_SENDER_EMAIL || undefined,
+      },
+      testEmail.value
+    );
     useAlert(
       t('SECURITY_SETTINGS.MAILER.API.TEST_SUCCESS', {
-        email: currentUser.value.email,
+        email: testEmail.value,
       })
     );
   } catch (error) {
@@ -138,6 +143,7 @@ const handleSendTest = async () => {
 };
 
 onMounted(() => {
+  testEmail.value = currentUser.value.email;
   loadSettings();
 });
 </script>
@@ -249,14 +255,34 @@ onMounted(() => {
           :label="t('SECURITY_SETTINGS.MAILER.RELOAD_BUTTON')"
           @click="handleReload"
         />
-        <NextButton
-          faded
-          slate
-          type="button"
-          :is-loading="isSendingTest"
-          :label="t('SECURITY_SETTINGS.MAILER.TEST_BUTTON')"
-          @click="handleSendTest"
-        />
+      </div>
+
+      <div class="pt-4 mt-2 border-t border-n-weak grid gap-3">
+        <WithLabel
+          name="testEmail"
+          :label="t('SECURITY_SETTINGS.MAILER.TEST_EMAIL.LABEL')"
+          :help-message="t('SECURITY_SETTINGS.MAILER.TEST_EMAIL.HELP')"
+        >
+          <div class="flex flex-wrap gap-2">
+            <TextInput
+              v-model="testEmail"
+              class="w-full max-w-xs"
+              type="email"
+              :placeholder="
+                t('SECURITY_SETTINGS.MAILER.TEST_EMAIL.PLACEHOLDER')
+              "
+            />
+            <NextButton
+              faded
+              slate
+              type="button"
+              :is-loading="isSendingTest"
+              :disabled="!testEmail"
+              :label="t('SECURITY_SETTINGS.MAILER.TEST_BUTTON')"
+              @click="handleSendTest"
+            />
+          </div>
+        </WithLabel>
       </div>
     </form>
   </SectionLayout>
