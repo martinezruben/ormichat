@@ -134,7 +134,7 @@ const handleCreateAssistant = () => {
               <div class="flex items-center gap-2">
                 <span
                   v-if="!isFetchingAssistants"
-                  class="text-xl font-medium truncate text-n-slate-12"
+                  class="text-xl font-medium font-heading truncate text-n-slate-12"
                 >
                   {{ activeAssistantName }}
                 </span>
@@ -172,7 +172,7 @@ const handleCreateAssistant = () => {
               />
               <span
                 v-if="headerTitle"
-                class="text-xl font-medium text-n-slate-12"
+                class="text-xl font-medium font-heading text-n-slate-12"
               >
                 {{ headerTitle }}
               </span>

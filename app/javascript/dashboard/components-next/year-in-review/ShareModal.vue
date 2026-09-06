@@ -196,7 +196,7 @@ defineExpose({ handleOpen });
         @click.stop
       >
         <div class="flex items-center justify-between">
-          <h3 class="text-xl font-medium text-white">
+          <h3 class="text-xl font-medium font-heading text-white">
             {{ t('YEAR_IN_REVIEW.SHARE_MODAL.TITLE') }}
           </h3>
           <button

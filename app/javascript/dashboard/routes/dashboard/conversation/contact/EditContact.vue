@@ -47,7 +47,7 @@ useKeyboardEvents({
     >
       <div class="flex items-center justify-between px-8 pt-8 pb-2">
         <div>
-          <h2 class="text-lg font-medium text-n-slate-12 mb-1">
+          <h2 class="text-lg font-medium font-heading text-n-slate-12 mb-1">
             {{
               `${$t('EDIT_CONTACT.TITLE')} - ${contact.name || contact.email}`
             }}

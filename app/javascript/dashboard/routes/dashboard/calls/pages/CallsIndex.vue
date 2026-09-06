@@ -131,7 +131,7 @@ onMounted(async () => {
   >
     <header class="shrink-0">
       <div class="w-full px-6 pt-6">
-        <h1 class="text-xl font-medium text-n-slate-12">
+        <h1 class="text-xl font-medium font-heading text-n-slate-12">
           {{ t('CALLS_PAGE.HEADER') }}
         </h1>
       </div>

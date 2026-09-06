@@ -130,7 +130,7 @@ const requestEmbeddedSignupAccess = () => {
   <div class="overflow-auto col-span-6 p-6 w-full h-full">
     <div v-if="showProviderSelection">
       <div class="mb-10 text-left">
-        <h1 class="mb-2 text-lg font-medium text-n-slate-12">
+        <h1 class="mb-2 text-lg font-medium font-heading text-n-slate-12">
           {{ $t('INBOX_MGMT.ADD.WHATSAPP.SELECT_PROVIDER.TITLE') }}
         </h1>
         <p class="text-sm leading-relaxed text-n-slate-11">

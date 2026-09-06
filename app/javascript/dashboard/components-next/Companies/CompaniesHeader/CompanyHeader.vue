@@ -20,7 +20,7 @@ const emit = defineEmits(['search', 'update:sort', 'create']);
     <div
       class="flex items-start sm:items-center justify-between w-full py-6 gap-2 mx-auto max-w-5xl"
     >
-      <span class="text-xl font-medium truncate text-n-slate-12">
+      <span class="text-xl font-medium font-heading truncate text-n-slate-12">
         {{ headerTitle }}
       </span>
       <div class="flex items-center flex-col sm:flex-row flex-shrink-0 gap-4">
