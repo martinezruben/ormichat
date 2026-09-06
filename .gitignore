@@ -1,0 +1,36 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+config/master.key
+
+# Ruby / bundler
+/vendor/bundle
+/.bundle
+*.gem
+
+# Rails
+/log/*
+/tmp/*
+!/tmp/qa/.keep
+/storage/*
+!/storage/.keep
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# Node / frontend build output
+/node_modules
+/public/vite
+/public/packs
+/public/packs-test
+/public/assets
+/public/vite-dev
+/public/vite-test
+
+# Docker / local dev
+.overmind.sock
+.git_sha
+
+# OS / editor
+.DS_Store
+*.swp
