@@ -36,11 +36,17 @@ class MailerSettingsService
     def update!(params)
       CONFIG_KEYS.each do |key|
         next unless params.key?(key)
+
+        value = params[key]
+        # Stray leading/trailing whitespace from copy-pasted credentials
+        # (e.g. a space before the host) silently breaks DNS resolution --
+        # trim before it ever reaches ActionMailer.
+        value = value.strip if value.is_a?(String)
         # Blank password means "leave the existing one alone" -- there's no
         # way to re-enter it blindly since it's never sent back to the form.
-        next if key == 'SMTP_PASSWORD' && params[key].blank?
+        next if key == 'SMTP_PASSWORD' && value.blank?
 
-        InstallationConfig.find_or_initialize_by(name: key).update!(value: params[key], locked: false)
+        InstallationConfig.find_or_initialize_by(name: key).update!(value: value, locked: false)
       end
       GlobalConfig.clear_cache
     end
