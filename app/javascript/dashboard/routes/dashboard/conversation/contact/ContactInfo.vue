@@ -66,18 +66,20 @@ export default {
     additionalAttributes() {
       return this.contact.additional_attributes || {};
     },
-    location() {
-      const {
-        country = '',
-        city = '',
-        country_code: countryCode,
-      } = this.additionalAttributes;
-      const cityAndCountry = [city, country].filter(item => !!item).join(', ');
+    countryFlagHtml() {
+      const { country_code: countryCode } = this.additionalAttributes;
+      if (!countryCode) return '';
+      const code = countryCode.toLowerCase();
+      return `<span class="fi fi-${code} size-3.5"></span>`;
+    },
+    googleMapsUrl() {
+      const rawLocation = (this.additionalAttributes.location || '').trim();
+      if (!rawLocation) return '';
+      if (/^https?:\/\//i.test(rawLocation)) return rawLocation;
 
-      if (!cityAndCountry) {
-        return '';
-      }
-      return this.findCountryFlag(countryCode, cityAndCountry);
+      const [lat, lng] = rawLocation.split(',').map(part => part.trim());
+      if (!lat || !lng) return '';
+      return `https://www.google.com/maps?q=${lat},${lng}`;
     },
     socialProfiles() {
       const {
@@ -108,18 +110,6 @@ export default {
     dynamicTime,
     toggleEditModal() {
       this.showEditModal = !this.showEditModal;
-    },
-    findCountryFlag(countryCode, cityAndCountry) {
-      try {
-        if (!countryCode) {
-          return `${cityAndCountry} 🌎`;
-        }
-
-        const code = countryCode?.toLowerCase();
-        return `${cityAndCountry} <span class="fi fi-${code} size-3.5"></span>`;
-      } catch (error) {
-        return '';
-      }
     },
     startEditingName() {
       this.editName = this.contact.name || '';
@@ -280,27 +270,29 @@ export default {
             :title="$t('CONTACT_PANEL.IDENTIFIER')"
           />
           <ContactInfoRow
-            :value="additionalAttributes.company_name"
-            icon="building-bank"
-            emoji="🏢"
-            :title="$t('CONTACT_PANEL.COMPANY')"
+            :value="additionalAttributes.address"
+            icon="location"
+            emoji="📍"
+            :title="$t('CONTACT_PANEL.ADDRESS')"
             editable
             @update="
               value =>
                 updateContactField({
                   additional_attributes: {
                     ...additionalAttributes,
-                    company_name: value,
+                    address: value,
                   },
                 })
             "
           />
           <ContactInfoRow
-            v-if="location || additionalAttributes.location"
-            :value="location || additionalAttributes.location"
+            v-if="googleMapsUrl"
+            :href="googleMapsUrl"
+            :value="$t('CONTACT_PANEL.VIEW_ON_MAPS')"
             icon="map"
             emoji="🌍"
             :title="$t('CONTACT_PANEL.LOCATION')"
+            :trailing-html="countryFlagHtml"
           />
           <SocialIcons :social-profiles="socialProfiles" />
         </div>

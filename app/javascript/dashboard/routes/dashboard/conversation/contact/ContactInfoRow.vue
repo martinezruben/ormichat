@@ -40,6 +40,10 @@ export default {
       type: String,
       default: '',
     },
+    trailingHtml: {
+      type: String,
+      default: '',
+    },
   },
   emits: ['update'],
   data() {
@@ -101,6 +105,11 @@ export default {
     <a
       v-else-if="href"
       :href="href"
+      v-bind="
+        href.startsWith('http')
+          ? { target: '_blank', rel: 'noopener noreferrer' }
+          : {}
+      "
       class="flex items-center gap-2 text-n-slate-11 hover:underline"
     >
       <EmojiOrIcon
@@ -119,6 +128,11 @@ export default {
       <span v-else class="text-sm text-n-slate-11">
         {{ $t('CONTACT_PANEL.NOT_AVAILABLE') }}
       </span>
+      <span
+        v-if="trailingHtml"
+        v-dompurify-html="trailingHtml"
+        class="flex-shrink-0"
+      />
       <NextButton
         v-if="showCopy"
         ghost
