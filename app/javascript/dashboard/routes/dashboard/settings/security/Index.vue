@@ -4,11 +4,14 @@ import BaseSettingsHeader from '../components/BaseSettingsHeader.vue';
 import SettingsLayout from '../SettingsLayout.vue';
 import SamlSettings from './components/SamlSettings.vue';
 import SamlPaywall from './components/SamlPaywall.vue';
+import MailerSettings from './components/MailerSettings.vue';
 
 import { usePolicy } from 'dashboard/composables/usePolicy';
+import { useAdmin } from 'dashboard/composables/useAdmin';
 import { INSTALLATION_TYPES } from 'dashboard/constants/installationTypes';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 const { shouldShow, shouldShowPaywall } = usePolicy();
+const { isAdmin } = useAdmin();
 
 const allowedLoginMethods = computed(
   () => window.chatwootConfig.allowedLoginMethods || ['email']
@@ -46,6 +49,7 @@ const showPaywall = computed(() => shouldShowPaywall('saml'));
       <div v-else class="mt-6 text-sm text-slate-600">
         {{ $t('SECURITY_SETTINGS.SAML_DISABLED_MESSAGE') }}
       </div>
+      <MailerSettings v-if="isAdmin" class="mt-8" />
     </template>
   </SettingsLayout>
 </template>

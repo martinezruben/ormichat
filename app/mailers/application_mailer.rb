@@ -19,7 +19,7 @@ class ApplicationMailer < ActionMailer::Base
   rescue_from(*ExceptionList::SMTP_EXCEPTIONS, with: :handle_smtp_exceptions)
 
   def smtp_config_set_or_development?
-    ENV.fetch('SMTP_ADDRESS', nil).present? || Rails.env.development?
+    MailerSettingsService.configured? || Rails.env.development?
   end
 
   private

@@ -713,6 +713,56 @@
         "TITLE": "Service Provider Information",
         "TOOLTIP": "Copy these values and configure them in your Identity Provider to establish the SAML connection"
       }
+    },
+    "MAILER": {
+      "TITLE": "Outgoing email (SMTP)",
+      "NOTE": "Configure the SMTP server used to send emails from this installation (password resets, invitations, conversation notifications, etc.). Saving only stores the settings — click \"Reload configuration\" to apply them.",
+      "ADDRESS": {
+        "LABEL": "SMTP host",
+        "PLACEHOLDER": "smtp.example.com"
+      },
+      "PORT": {
+        "LABEL": "Port"
+      },
+      "USERNAME": {
+        "LABEL": "Username"
+      },
+      "PASSWORD": {
+        "LABEL": "Password",
+        "PLACEHOLDER_SET": "•••••••• (already set, leave blank to keep it)",
+        "PLACEHOLDER_UNSET": "Enter a password"
+      },
+      "AUTHENTICATION": {
+        "LABEL": "Authentication",
+        "NONE": "None"
+      },
+      "DOMAIN": {
+        "LABEL": "HELO domain",
+        "PLACEHOLDER": "Optional"
+      },
+      "SENDER": {
+        "LABEL": "Sender address",
+        "HELP": "Shown as the \"From\" on every email this installation sends",
+        "PLACEHOLDER": "Ormichat <no-reply@yourdomain.com>"
+      },
+      "STARTTLS": {
+        "LABEL": "Enable STARTTLS"
+      },
+      "SSL": {
+        "LABEL": "Use SSL"
+      },
+      "SAVE_BUTTON": "Save",
+      "RELOAD_BUTTON": "Reload configuration",
+      "TEST_BUTTON": "Send test email",
+      "API": {
+        "ERROR_LOADING": "Could not load the email settings",
+        "SAVE_SUCCESS": "Email settings saved. Click \"Reload configuration\" to apply them.",
+        "SAVE_ERROR": "Could not save the email settings",
+        "RELOAD_SUCCESS": "Email configuration reloaded",
+        "RELOAD_ERROR": "Could not reload the email configuration",
+        "TEST_SUCCESS": "Test email sent to {email}",
+        "TEST_ERROR": "Could not send the test email"
+      }
     }
   },
   "CONVERSATION_WORKFLOW": {

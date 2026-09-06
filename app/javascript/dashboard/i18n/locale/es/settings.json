@@ -713,6 +713,56 @@
         "TITLE": "Información del proveedor de servicios",
         "TOOLTIP": "Copie estos valores y configúrelos en su proveedor de identidad para establecer la conexión SAML"
       }
+    },
+    "MAILER": {
+      "TITLE": "Correo saliente (SMTP)",
+      "NOTE": "Configura el servidor SMTP que se usa para enviar correos desde esta instalación (recuperación de contraseña, invitaciones, notificaciones de conversación, etc.). Guardar solo almacena los valores — presiona \"Recargar configuración\" para aplicarlos.",
+      "ADDRESS": {
+        "LABEL": "Host SMTP",
+        "PLACEHOLDER": "smtp.ejemplo.com"
+      },
+      "PORT": {
+        "LABEL": "Puerto"
+      },
+      "USERNAME": {
+        "LABEL": "Usuario"
+      },
+      "PASSWORD": {
+        "LABEL": "Contraseña",
+        "PLACEHOLDER_SET": "•••••••• (ya configurada, deja en blanco para mantenerla)",
+        "PLACEHOLDER_UNSET": "Ingresa una contraseña"
+      },
+      "AUTHENTICATION": {
+        "LABEL": "Autenticación",
+        "NONE": "Ninguna"
+      },
+      "DOMAIN": {
+        "LABEL": "Dominio HELO",
+        "PLACEHOLDER": "Opcional"
+      },
+      "SENDER": {
+        "LABEL": "Dirección del remitente",
+        "HELP": "Se muestra como el \"De\" en cada correo que envía esta instalación",
+        "PLACEHOLDER": "Ormichat <no-reply@tudominio.com>"
+      },
+      "STARTTLS": {
+        "LABEL": "Habilitar STARTTLS"
+      },
+      "SSL": {
+        "LABEL": "Usar SSL"
+      },
+      "SAVE_BUTTON": "Guardar",
+      "RELOAD_BUTTON": "Recargar configuración",
+      "TEST_BUTTON": "Enviar correo de prueba",
+      "API": {
+        "ERROR_LOADING": "No se pudo cargar la configuración de correo",
+        "SAVE_SUCCESS": "Configuración de correo guardada. Presiona \"Recargar configuración\" para aplicarla.",
+        "SAVE_ERROR": "No se pudo guardar la configuración de correo",
+        "RELOAD_SUCCESS": "Configuración de correo recargada",
+        "RELOAD_ERROR": "No se pudo recargar la configuración de correo",
+        "TEST_SUCCESS": "Correo de prueba enviado a {email}",
+        "TEST_ERROR": "No se pudo enviar el correo de prueba"
+      }
     }
   },
   "CONVERSATION_WORKFLOW": {
