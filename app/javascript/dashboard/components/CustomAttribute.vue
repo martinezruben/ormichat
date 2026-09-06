@@ -334,7 +334,16 @@ export default {
               v$.editedValue.$error ? 'text-n-ruby-11' : 'text-n-slate-12'
             "
           >
-            {{ label }}
+            <a
+              v-if="isAttributeTypeFile && hasValue"
+              :href="value"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:underline text-n-blue-11"
+            >
+              {{ label }}
+            </a>
+            <template v-else>{{ label }}</template>
             <HelperTextPopup
               v-if="description"
               :message="description"
@@ -442,18 +451,9 @@ export default {
       <img
         v-if="isImageFile"
         :src="value"
-        class="flex-shrink-0 object-cover w-6 h-6 rounded outline outline-1 outline-n-weak -outline-offset-1 cursor-pointer"
+        class="flex-shrink-0 object-cover w-8 h-8 rounded outline outline-1 outline-n-weak -outline-offset-1 cursor-pointer"
         @click="openImagePreview"
       />
-      <a
-        v-if="hasValue"
-        :href="value"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="truncate hover:underline text-n-blue-11"
-      >
-        {{ fileDisplayName }}
-      </a>
       <input
         ref="fileInput"
         type="file"
