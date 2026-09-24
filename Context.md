@@ -1,85 +1,118 @@
-# Context.md — Chatwoot
+# Context.md — Ormichat
 
 Documento de contexto general del proyecto para orientarse rápido antes de hacer cambios.
-Para convenciones de código, estilo, i18n y flujo de PR ya existe **`AGENTS.md`** (symlink `CLAUDE.md`) — este archivo no lo duplica, se enfoca en la arquitectura y el mapa del repo.
+
+- Convenciones de código, estilo, i18n y flujo de PR → **`AGENTS.md`** (`CLAUDE.md` es un symlink a este).
+- Deployment, Docker, Captain/Ollama, webhooks y troubleshooting → **`INSTALL.md`**.
+- Este archivo no duplica esos dos: se enfoca en qué es el proyecto, el mapa del repo y qué se customizó respecto a Chatwoot.
 
 ## Qué es
 
-Chatwoot es una plataforma de atención al cliente open-source (alternativa a Intercom/Zendesk), self-hosted. Versión actual: `4.17.1` (ver `VERSION_CW`).
+**Ormichat** es un fork independiente de **Chatwoot 4.17.1** (ver `VERSION_CW`), plataforma de atención al cliente open-source y self-hosted (alternativa a Intercom/Zendesk).
 
-No es un repositorio git en esta ruta (`/home/ruben/chatwoot` no tiene `.git`) — es un checkout plano del código.
+- Repo git propio: `github.com/martinezruben/ormichat`, sin vínculo con `chatwoot/chatwoot` (no se hacen merges de upstream).
+- El primer commit (`Initial commit: independent fork of Chatwoot 4.17.1`) es el código original; todo lo posterior son customizaciones de Ormichat (ver sección más abajo o `git log`).
+- En el código interno muchos nombres siguen siendo "Chatwoot" (clases, contenedores, variables de entorno); el rebranding es solo de la capa de presentación.
 
 ## Stack técnico
 
-- **Backend**: Ruby on Rails 7.2 (`Gemfile`), PostgreSQL (`pg`), Redis, Sidekiq (workers), Searchkick + OpenSearch (búsqueda), Devise (auth), ActionCable (websockets/tiempo real).
-- **Frontend**: Vue 3 (Composition API), Vite como bundler (`vite.config.ts`, `vite.lib.config.ts`, `vite.sdk.analyze.config.mts`), TailwindCSS (única fuente de estilos, sin CSS custom/scoped), Vitest para tests JS, Histoire para componentes (`histoire.config.ts`).
-- **Gestor de paquetes JS**: `pnpm` (`pnpm-lock.yaml`). Ruby vía `bundler` + `rbenv` (versión en `.ruby-version`).
-- **Orquestación local**: `overmind` / `foreman` sobre `Procfile.dev` (`pnpm dev`).
-- **Docker**: `docker-compose.yml` define servicios `postgres`, `redis`, `rails`, `sidekiq` (+ volúmenes `postgres_data`, `redis_data`).
-- **Config de entorno**: `.env` (local, con `SECRET_KEY_BASE`; el resto de variables de Chatwoot se documentan en `.env.example` / `config/`).
+- **Backend**: Ruby on Rails 7.2, PostgreSQL (con `pgvector`, requerido por Captain), Redis, Sidekiq, Searchkick + OpenSearch, Devise, ActionCable.
+- **Frontend**: Vue 3 (Composition API, `<script setup>`), Vite, TailwindCSS (única fuente de estilos), Vitest, Histoire.
+- **Paquetes**: `pnpm` para JS; Ruby vía `bundler` + `rbenv` (`.ruby-version`).
+- **Ejecución**: Docker (`docker-compose.yml`: `postgres`, `redis`, `rails`, `sidekiq`) sobre la imagen `chatwoot/chatwoot:latest` con **bind mounts** del código de este repo (`app/`, `config/`, `public/vite`, `public/brand-assets`, …). El frontend se compila en el host con `pnpm` y se sirve desde `public/vite`. Detalle en `INSTALL.md` §3–4.
+- **IA**: Captain corre sobre un modelo local de **Ollama** (no OpenAI). Detalle en `INSTALL.md` §9.
 
 ## Estructura de alto nivel
 
 ```
 app/
-  controllers/    API pública (api/v1), dashboard, webhooks (twilio, slack, instagram, tiktok, shopify, notion, linear, microsoft...), auth, super_admin, public
-  models/         ~98 tablas (ver db/schema.rb). Núcleo: Account, Conversation, Contact, Inbox, AgentBot, AutomationRule, CannedResponse, Campaign, CustomAttributeDefinition...
-  services/       lógica de negocio (auto_assignment, automation_rules, conversations, contacts, crm, data_import, email...)
-  jobs/           Sidekiq jobs (organizados por dominio: campaigns, channels, conversations, contacts, crm, data_imports...)
-  listeners/       event listeners (pub/sub interno)
-  policies/       autorización (Pundit-style)
+  controllers/    API (api/v1), dashboard, webhooks por proveedor, auth, super_admin, public
+  models/         núcleo: Account, Conversation, Contact, Inbox, Label, AgentBot, AutomationRule, Campaign, CustomAttributeDefinition...
+  services/       lógica de negocio por dominio
+  jobs/           Sidekiq jobs por dominio
+  listeners/      event listeners (pub/sub interno)
+  policies/       autorización
   javascript/
-    dashboard/    app principal del agente/admin (Vue 3) — api, components, components-next (nuevo, usar para message bubbles), store/stores, routes, i18n
-    v3/           nueva superficie/rediseño en construcción (api, components, store, views)
-    widget/       widget de chat embebible para sitios de clientes
-    sdk/          SDK JS que se inyecta en sitios externos para cargar el widget
-    portal/       Help Center / base de conocimiento pública
-    design-system/ componentes de diseño compartidos
-enterprise/       overlay de Chatwoot Enterprise (ver más abajo)
-lib/              utilidades transversales (llm/, captain/, integrations/, webhooks/, custom_exceptions/, redis/, seeders/...)
-config/           routes.rb (~770 líneas), application.rb, initializers, etc.
-db/               schema.rb (~98 tablas) y migraciones
-swagger/          documentación OpenAPI de la API pública
-tests/ , spec/    tests (Vitest para JS/Vue, RSpec para Ruby — ver AGENTS.md para comandos)
+    dashboard/      app principal del agente/admin (Vue 3) — api, components, components-next, store, routes, i18n
+    v3/             superficie nueva/rediseño
+    widget/         widget de chat embebible
+    sdk/            SDK JS que carga el widget en sitios externos
+    portal/         Help Center público
+    design-system/  componentes compartidos
+    shared/         helpers, composables, constantes y fuentes compartidas
+enterprise/       overlay Enterprise (ver abajo)
+lib/              utilidades transversales (llm/, captain/, integrations/, custom_exceptions/, seeders/...)
+config/           routes.rb, application.rb, initializers
+db/               schema.rb y migraciones
+swagger/          OpenAPI de la API pública
+spec/ , tests/    RSpec (Ruby) y Vitest (JS/Vue)
 ```
 
 ## Mecanismo Enterprise (importante antes de tocar código "core")
 
-- `enterprise/` es un **overlay** que extiende/sobreescribe el código OSS: `config/application.rb` agrega `enterprise/lib`, `enterprise/listeners` y todo `enterprise/app/**` a los `eager_load_paths`.
-- Enterprise tiene su propia estructura paralela: `enterprise/app/{models,controllers,services,jobs,listeners,policies,presenters,builders,dispatchers,drops,fields,finders,helpers,mailers,validators,views}`.
-- El patrón típico de extensión es `prepend_mod_with` (mixins que Enterprise puede prependear sobre clases OSS) más hooks/feature flags — evitar forks duros.
-- **Regla práctica**: antes de modificar un modelo/servicio/controlador "core", buscar si existe contraparte en `enterprise/` (`rg -n "NombreClase" app enterprise`) y mantener compatibilidad en ambos árboles.
+- `enterprise/` es un **overlay** que extiende/sobreescribe el código OSS; `config/application.rb` lo agrega a los `eager_load_paths`.
+- Estructura paralela: `enterprise/app/{models,controllers,services,jobs,...}`.
+- Extensión típica vía `prepend_mod_with` + hooks/feature flags — evitar forks duros.
+- En este deployment los módulos Enterprise están **habilitados** (plan y features premium activados en todas las cuentas, `INSTALL.md` §5). Ej.: custom roles vive en `enterprise/app/models/custom_role.rb`.
+- **Regla práctica**: antes de modificar un modelo/servicio/controlador core, buscar contraparte con `rg -n "NombreClase" app enterprise`.
 
 ## Multi-tenancy y dominio
 
-- Todo gira en torno a `Account` (tenant). La mayoría de modelos (`Conversation`, `Contact`, `Inbox`, `AgentBot`, etc.) están scopeados por `account_id`.
-- Canales de entrada (`Inbox`) soportan múltiples proveedores: email, widget web, Facebook, Instagram, WhatsApp/Twilio, Slack, Line, Telegram, SMS, API genérica, etc. — ver `app/models/channel/` y los controllers de webhooks por proveedor.
-- `Captain` es la funcionalidad de agente de IA (mencionada en README y presente como módulo en `lib/captain/`, `enterprise/app/models/captain/`, `app/models/article_embedding` sugiere uso de embeddings/RAG para la IA).
+- Todo gira en torno a `Account` (tenant); casi todos los modelos están scopeados por `account_id`.
+- `Inbox` soporta muchos canales (email, widget, WhatsApp, Telegram, Facebook, Instagram, SMS, API...) — ver `app/models/channel/`. Los canales con webhook (p. ej. Telegram) necesitan `FRONTEND_URL` HTTPS público (túnel ngrok, `INSTALL.md` §8).
+- `Captain` es el agente de IA (`lib/captain/`, `enterprise/app/models/captain/`, embeddings con pgvector).
 
-## Puntos de entrada útiles para explorar antes de cambiar algo
+## Customizaciones de Ormichat (respecto a Chatwoot 4.17.1)
+
+**Infra / deployment**
+- Bind mounts de `public/vite` y `public/brand-assets` para que builds y logos sobrevivan a la recreación de contenedores.
+- Telemetría al hub de Chatwoot y push relay deshabilitados.
+- `FRONTEND_URL` apuntando al túnel ngrok (webhooks de Telegram).
+- `rack-timeout` ampliado para inferencia local lenta.
+- Signed URLs de ActiveStorage con expiración de 1 año (en vez de 5 min).
+
+**Captain AI sobre Ollama**
+- Captain enrutado a un modelo local de Ollama; migración que reduce columnas de embeddings a 768 dims; fix del gem `ai-agents` para modelos self-hosted.
+
+**Branding y design system**
+- Presentación rebrandeada a "Ormichat"; eliminados links a chatwoot.com / chwt.app.
+- Design System Ormichat: color de acento, paleta neutra, radios y sombras, tipografía **Manrope** (texto) + **Space Grotesk** (`font-heading` en títulos). Fuentes en `app/javascript/shared/assets/fonts/`, tokens en `tailwind.config.js`.
+
+**Features**
+- **Custom attribute tipo "File"**: adjunta el archivo como binario al compositor y previsualiza imágenes; botón para insertar un custom attribute en el compositor (`dashboard/components/CustomAttribute.vue`).
+- **Contactos**: campos de dirección y ubicación (link a Maps), país por defecto República Dominicana (`shared/helpers/locationHelper.js`); panel de contacto simplificado.
+- **Labels "selectable"**: flag para ocultar labels que son solo para automatizaciones de los selectores manuales (`app/models/label.rb`, `useConversationLabels.js`).
+- **Custom roles → visibilidad del sidebar**: un rol puede restringir qué ítems del menú ve (`visible_menu_items` en `custom_roles`, catálogo en `dashboard/constants/sidebarMenuCatalog.js`, `usePolicy.js`).
+- **SMTP configurable desde Settings > Security**: `MailerSettingsService`, `ReloadMailerSettingsJob`, `Api::V1::Accounts::MailerSettingsController`, UI en `settings/security/components/MailerSettings.vue` (trim de campos y email de prueba editable).
+
+**i18n**
+- Traducción al español (`es`) completada en todo el dashboard, Captain, campañas, reportes, settings, etc. Nota: `AGENTS.md` dice que normalmente solo se editan `en.yml`/`en.json` (Crowdin), pero en este fork los strings nuevos también se traducen a `es` a mano.
+
+## Puntos de entrada útiles
 
 - Rutas: `config/routes.rb`
-- API pública documentada: `swagger/`
-- Autenticación: `app/controllers/auth/`, `devise_overrides/`, gem `devise`
+- API pública: `swagger/`
+- Auth: `app/controllers/auth/`, `devise_overrides/`
 - Tiempo real: ActionCable + `app/jobs/action_cable_broadcast_job.rb`
 - Feature flags frontend: `app/javascript/dashboard/featureFlags.js`
-- Branding/white-label: composable `shared/composables/useBranding` (`replaceInstallationName`)
-- i18n: backend `en.yml`, frontend `en.json` (solo estos se editan a mano; el resto lo gestiona Crowdin)
+- Branding: `shared/composables/useBranding` (`replaceInstallationName`), `public/brand-assets/`
+- Permisos frontend: `dashboard/composables/usePolicy.js`, `dashboard/helper/permissionsHelper.js`
 
-## Comandos rápidos (detalle completo en AGENTS.md)
+## Comandos rápidos (detalle en AGENTS.md / INSTALL.md)
 
 ```bash
-bundle install && pnpm install       # setup
-pnpm dev                             # levanta rails+vite+sidekiq vía overmind
-bundle exec rspec spec/path_spec.rb  # test Ruby puntual
-pnpm test                            # tests JS/Vue (vitest)
-bundle exec rubocop -a               # lint Ruby con autofix
-pnpm eslint:fix                      # lint JS/Vue con autofix
+docker compose up -d                                                   # levanta el stack
+docker exec chatwoot-rails-1 bundle exec rails db:chatwoot_prepare     # migraciones
+bundle install && pnpm install                                         # setup local
+bundle exec rspec spec/path_spec.rb                                    # test Ruby puntual
+pnpm test                                                              # tests JS/Vue
+bundle exec rubocop -a                                                 # lint Ruby
+pnpm eslint:fix                                                        # lint JS/Vue
 ```
 
 ## Notas para hacer cambios
 
-- Seguir siempre las guías de `AGENTS.md` (estilo, PR format, reglas de Enterprise, i18n, Tailwind-only).
-- Componentes de mensajes: usar `components-next/` (el resto de componentes de mensaje está en deprecación).
-- Vue: Composition API con `<script setup>` siempre.
-- No hay `.git` en este checkout — si se necesita versionar cambios, confirmar con el usuario cómo quiere manejarlo (¿inicializar git, aplicar patch, o es un mount temporal de otro repo?).
+- Seguir `AGENTS.md` (estilo, Conventional Commits, formato de PR, reglas Enterprise, Tailwind-only).
+- Mensajes: usar `components-next/` (el resto está en deprecación).
+- Cambios de backend: reiniciar `rails`/`sidekiq`; migraciones nuevas: correrlas dentro del contenedor; cambios de frontend: recompilar con `pnpm` en el host (`INSTALL.md` §4).
+- Al agregar una customización relevante, anotarla en la sección "Customizaciones de Ormichat" de este archivo.
