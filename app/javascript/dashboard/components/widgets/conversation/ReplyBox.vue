@@ -593,7 +593,7 @@ export default {
       this.onNewConversationModalActive
     );
     emitter.on(BUS_EVENTS.INSERT_INTO_NORMAL_EDITOR, this.addIntoEditor);
-    emitter.on(BUS_EVENTS.ATTACH_FILE_TO_COMPOSER, this.onFileUpload);
+    emitter.on(BUS_EVENTS.ATTACH_FILE_TO_COMPOSER, this.attachAttributeFile);
     emitter.on(CMD_AI_ASSIST, this.executeCopilotAction);
   },
   unmounted() {
@@ -601,7 +601,7 @@ export default {
     document.removeEventListener('keydown', this.handleKeyEvents);
     emitter.off(BUS_EVENTS.TOGGLE_REPLY_TO_MESSAGE, this.onReplyToMessage);
     emitter.off(BUS_EVENTS.INSERT_INTO_NORMAL_EDITOR, this.addIntoEditor);
-    emitter.off(BUS_EVENTS.ATTACH_FILE_TO_COMPOSER, this.onFileUpload);
+    emitter.off(BUS_EVENTS.ATTACH_FILE_TO_COMPOSER, this.attachAttributeFile);
     emitter.off(
       BUS_EVENTS.NEW_CONVERSATION_MODAL,
       this.onNewConversationModalActive
@@ -807,29 +807,39 @@ export default {
       // Filter valid files (non-zero size)
       Array.from(e.clipboardData.files)
         .filter(file => file.size > 0)
-        .filter(file => {
-          const isAllowed = isFileTypeAllowedForChannel(file, {
-            channelType: this.channelType || this.inbox?.channel_type,
-            medium: this.inbox?.medium,
-            conversationType: this.conversationType,
-            isInstagramChannel: this.isAnInstagramChannel,
-            isOnPrivateNote: this.isOnPrivateNote,
-          });
-
-          if (!isAllowed) {
-            useAlert(
-              this.$t('CONVERSATION.FILE_TYPE_NOT_SUPPORTED', {
-                fileName: file.name,
-              })
-            );
-          }
-
-          return isAllowed;
-        })
+        .filter(this.isFileTypeAllowed)
         .forEach(file => {
           const { name, type, size } = file;
           this.onFileUpload({ name, type, size, file });
         });
+    },
+    isFileTypeAllowed(file) {
+      const isAllowed = isFileTypeAllowedForChannel(file, {
+        channelType: this.channelType || this.inbox?.channel_type,
+        medium: this.inbox?.medium,
+        conversationType: this.conversationType,
+        isInstagramChannel: this.isAnInstagramChannel,
+        isOnPrivateNote: this.isOnPrivateNote,
+      });
+
+      if (!isAllowed) {
+        useAlert(
+          this.$t('CONVERSATION.FILE_TYPE_NOT_SUPPORTED', {
+            fileName: file.name,
+          })
+        );
+      }
+
+      return isAllowed;
+    },
+    attachAttributeFile(attachment) {
+      if (!this.showFileUpload && !this.isOnPrivateNote) {
+        useAlert(this.$t('CONVERSATION.ATTACHMENTS_NOT_SUPPORTED'));
+        return;
+      }
+      if (!this.isFileTypeAllowed(attachment.file)) return;
+
+      this.onFileUpload(attachment);
     },
     toggleUserMention(currentMentionState) {
       this.showUserMentions = currentMentionState;
