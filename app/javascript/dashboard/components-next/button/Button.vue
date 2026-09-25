@@ -101,7 +101,7 @@ const STYLE_CONFIG = {
   colors: {
     blue: {
       solid:
-        'bg-n-brand text-n-brand-foreground hover:enabled:brightness-110 focus-visible:brightness-110 outline-transparent',
+        'bg-n-brand text-n-brand-foreground shadow-sm hover:enabled:bg-n-brand/90 focus-visible:bg-n-brand/90 outline-transparent',
       faded:
         'bg-n-brand/10 text-n-blue-11 hover:enabled:bg-n-brand/20 focus-visible:bg-n-brand/20 outline-transparent',
       outline: 'text-n-blue-11 outline-n-brand',
@@ -133,7 +133,7 @@ const STYLE_CONFIG = {
     },
     slate: {
       solid:
-        'bg-n-button-color dark:hover:enabled:bg-n-solid-2 dark:focus-visible:bg-n-solid-2 hover:enabled:bg-n-alpha-2 focus-visible:bg-n-alpha-2 text-n-slate-12 outline-n-container',
+        'bg-n-button-color shadow-sm dark:hover:enabled:bg-n-solid-2 dark:focus-visible:bg-n-solid-2 hover:enabled:bg-n-alpha-2 focus-visible:bg-n-alpha-2 text-n-slate-12 outline-n-container',
       faded:
         'bg-n-slate-9/10 text-n-slate-12 hover:enabled:bg-n-slate-9/20 focus-visible:bg-n-slate-9/20 outline-transparent',
       outline:
@@ -175,10 +175,10 @@ const STYLE_CONFIG = {
     },
   },
   fontSize: {
-    xs: 'text-xs',
-    sm: 'text-sm',
+    xs: 'text-xs font-medium',
+    sm: 'text-sm font-medium',
     md: 'text-sm font-medium',
-    lg: 'text-base',
+    lg: 'text-base font-medium',
   },
   clickAnimation: {
     xs: 'active:enabled:scale-[0.97]',
@@ -191,7 +191,7 @@ const STYLE_CONFIG = {
     center: 'justify-center',
     end: 'justify-end',
   },
-  base: 'inline-flex items-center min-w-0 gap-2 transition-all duration-100 ease-out border-0 rounded-lg outline-1 outline disabled:opacity-50',
+  base: 'inline-flex items-center min-w-0 gap-2 transition-all duration-100 ease-out border-0 rounded-md outline-1 outline focus-visible:ring-[3px] focus-visible:ring-n-slate-9/40 disabled:opacity-50',
 };
 
 const variantClasses = computed(() => {
