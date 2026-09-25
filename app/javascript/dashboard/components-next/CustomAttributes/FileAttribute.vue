@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 import { useAlert } from 'dashboard/composables';
 import { useMapGetter } from 'dashboard/composables/store';
 import { useCustomAttributeFileUpload } from 'dashboard/composables/useCustomAttributeFileUpload';
+import { isActiveStorageBlobPath } from 'dashboard/helper/URLHelper';
 
 import Button from 'dashboard/components-next/button/Button.vue';
 
@@ -73,7 +74,7 @@ const onFileSelected = async event => {
     }"
   >
     <a
-      v-if="hasValue"
+      v-if="isActiveStorageBlobPath(attribute.value)"
       :href="attribute.value"
       target="_blank"
       rel="noopener noreferrer"

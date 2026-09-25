@@ -18,6 +18,8 @@ import NextButton from 'dashboard/components-next/button/Button.vue';
 import VoiceCallButton from 'dashboard/components-next/Contacts/VoiceCallButton.vue';
 import InlineInput from 'dashboard/components-next/inline-input/InlineInput.vue';
 import ImagePreviewDialog from 'dashboard/components-next/dialog/Dialog.vue';
+import { buildMapsUrl } from 'shared/helpers/locationHelper';
+import { isActiveStorageBlobPath } from 'dashboard/helper/URLHelper';
 
 export default {
   components: {
@@ -67,7 +69,13 @@ export default {
     loadedCustomAttributes() {
       const values = this.contact.custom_attributes || {};
       return this.getAttributesByModel('contact_attribute')
-        .filter(attribute => !!values[attribute.attribute_key])
+        .filter(attribute => {
+          const value = values[attribute.attribute_key];
+          if (attribute.attribute_display_type === 'file') {
+            return isActiveStorageBlobPath(value);
+          }
+          return !!value;
+        })
         .map(attribute => ({
           key: attribute.attribute_key,
           label: attribute.attribute_display_name,
@@ -88,13 +96,7 @@ export default {
       return `<span class="fi fi-${code} size-3.5"></span>`;
     },
     googleMapsUrl() {
-      const rawLocation = (this.additionalAttributes.location || '').trim();
-      if (!rawLocation) return '';
-      if (/^https?:\/\//i.test(rawLocation)) return rawLocation;
-
-      const [lat, lng] = rawLocation.split(',').map(part => part.trim());
-      if (!lat || !lng) return '';
-      return `https://www.google.com/maps?q=${lat},${lng}`;
+      return buildMapsUrl((this.additionalAttributes.location || '').trim());
     },
     socialProfiles() {
       const {

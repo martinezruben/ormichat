@@ -66,6 +66,12 @@ export const isValidURL = value => {
   return URL_REGEX.test(value);
 };
 
+// File-type custom attributes store the ActiveStorage redirect path built by
+// useCustomAttributeFileUpload. Their values can also be set from the widget
+// SDK, so only that same-origin path is trusted as a link or image source.
+export const isActiveStorageBlobPath = value =>
+  typeof value === 'string' && value.startsWith('/rails/active_storage/blobs/');
+
 export const getArticleSearchURL = ({
   host,
   portalSlug,

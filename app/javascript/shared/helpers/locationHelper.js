@@ -41,3 +41,35 @@ export const extractCoordinates = value => {
 
   return matchedPair ? `${matchedPair[1]},${matchedPair[2]}` : null;
 };
+
+const MAPS_HOSTS = [
+  'google.com',
+  'www.google.com',
+  'maps.google.com',
+  'goo.gl',
+  'maps.app.goo.gl',
+  'waze.com',
+  'www.waze.com',
+];
+
+const isMapsLink = value => {
+  try {
+    const { protocol, hostname } = new URL(value);
+    return protocol === 'https:' && MAPS_HOSTS.includes(hostname);
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Builds the link shown for a contact's stored location. The location can be
+ * set from the widget SDK, so anything that isn't coordinates or a known
+ * Google Maps/Waze link is ignored instead of being rendered as a link.
+ * @param {string} value - Stored "lat,lng" coordinates or a Maps/Waze URL.
+ * @returns {string} Link to open, or '' if the value isn't a usable location.
+ */
+export const buildMapsUrl = value => {
+  const coordinates = extractCoordinates(value);
+  if (coordinates) return `https://www.google.com/maps?q=${coordinates}`;
+  return isMapsLink(value) ? value : '';
+};
