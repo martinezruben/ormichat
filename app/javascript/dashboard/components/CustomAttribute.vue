@@ -5,7 +5,11 @@ import { mapGetters } from 'vuex';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import MultiselectDropdown from 'shared/components/ui/MultiselectDropdown.vue';
 import HelperTextPopup from 'dashboard/components/ui/HelperTextPopup.vue';
-import { isValidURL, isActiveStorageBlobPath } from '../helper/URLHelper';
+import {
+  isValidURL,
+  getFileAttributeURL,
+  isImageFileURL,
+} from '../helper/URLHelper';
 import { getRegexp } from 'shared/helpers/Validators';
 import { useVuelidate } from '@vuelidate/core';
 import { emitter } from 'shared/helpers/mitt';
@@ -125,11 +129,11 @@ export default {
       }
     },
     fileURL() {
-      return isActiveStorageBlobPath(this.value) ? this.value : '';
+      return getFileAttributeURL(this.value);
     },
     isImageFile() {
       if (!this.isAttributeTypeFile || !this.fileURL) return false;
-      return /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i.test(this.fileDisplayName);
+      return isImageFileURL(this.fileDisplayName);
     },
     directUploadUrl() {
       return this.attributeModel === 'contact_attribute'
@@ -454,6 +458,7 @@ export default {
       <img
         v-if="isImageFile"
         :src="fileURL"
+        :alt="label"
         class="flex-shrink-0 object-cover w-8 h-8 rounded outline outline-1 outline-n-weak -outline-offset-1 cursor-pointer"
         @click="openImagePreview"
       />
@@ -495,6 +500,7 @@ export default {
       >
         <img
           :src="fileURL"
+          :alt="label"
           class="w-full max-h-[70vh] object-contain rounded-lg"
         />
       </ImagePreviewDialog>

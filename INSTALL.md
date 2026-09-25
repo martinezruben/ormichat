@@ -139,7 +139,7 @@ GlobalConfig.clear_cache
 
 ## 6. Feature custom: Custom Attribute tipo "File"
 
-Se agregó un tipo de Custom Attribute nuevo (`file`) que permite subir un archivo como valor, disponible para `conversation_attribute` y `contact_attribute`. Diseño: el archivo se sube vía un endpoint de `direct_uploads` (ActiveStorage) y se guarda como valor del atributo la URL pública y permanente del blob (`/rails/active_storage/blobs/redirect/:signed_id/:filename`) — mismo patrón que ya usa el tipo `link`, sin necesitar cambios de esquema.
+Se agregó un tipo de Custom Attribute nuevo (`file`) que permite subir un archivo como valor, disponible para `conversation_attribute` y `contact_attribute`. Diseño: el archivo se sube vía un endpoint de `direct_uploads` (ActiveStorage) y se guarda como valor del atributo la URL pública y permanente del blob (`/rails/active_storage/blobs/proxy/:signed_id/:filename`) — mismo patrón que ya usa el tipo `link`, sin necesitar cambios de esquema. Se usa la ruta `proxy` (Rails sirve el archivo) en vez de `redirect`, porque la redirección lleva a una URL firmada que expira a los 5 minutos; los valores viejos con `redirect` se reescriben a `proxy` al mostrarlos. Por seguridad, el dashboard solo muestra como enlace/imagen valores que empiezan con `/rails/active_storage/blobs/` (los atributos también se pueden escribir desde el SDK del widget).
 
 **Archivos tocados:**
 - `app/models/custom_attribute_definition.rb` — `file: 8` agregado al enum `attribute_display_type`.

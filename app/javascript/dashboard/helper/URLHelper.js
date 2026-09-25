@@ -66,11 +66,27 @@ export const isValidURL = value => {
   return URL_REGEX.test(value);
 };
 
-// File-type custom attributes store the ActiveStorage redirect path built by
+const BLOB_PATH_PREFIX = '/rails/active_storage/blobs/';
+const IMAGE_FILE_PATTERN = /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i;
+const PDF_FILE_PATTERN = /\.pdf$/i;
+
+export const isImageFileURL = url => IMAGE_FILE_PATTERN.test(url);
+export const isPdfFileURL = url => PDF_FILE_PATTERN.test(url);
+
+// File-type custom attributes store an ActiveStorage blob path built by
 // useCustomAttributeFileUpload. Their values can also be set from the widget
 // SDK, so only that same-origin path is trusted as a link or image source.
-export const isActiveStorageBlobPath = value =>
-  typeof value === 'string' && value.startsWith('/rails/active_storage/blobs/');
+// Older values use the redirect route, whose resolved storage URL expires;
+// they are served through the proxy route instead so links keep working.
+export const getFileAttributeURL = value => {
+  if (typeof value !== 'string' || !value.startsWith(BLOB_PATH_PREFIX)) {
+    return '';
+  }
+  return value.replace(
+    `${BLOB_PATH_PREFIX}redirect/`,
+    `${BLOB_PATH_PREFIX}proxy/`
+  );
+};
 
 export const getArticleSearchURL = ({
   host,

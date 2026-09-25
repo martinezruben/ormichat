@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router';
 import { useAlert } from 'dashboard/composables';
 import { useMapGetter } from 'dashboard/composables/store';
 import { useCustomAttributeFileUpload } from 'dashboard/composables/useCustomAttributeFileUpload';
-import { isActiveStorageBlobPath } from 'dashboard/helper/URLHelper';
+import { getFileAttributeURL } from 'dashboard/helper/URLHelper';
 
 import Button from 'dashboard/components-next/button/Button.vue';
 
@@ -31,6 +31,7 @@ const fileInput = ref(null);
 const isUploading = ref(false);
 
 const hasValue = computed(() => !!props.attribute.value);
+const fileURL = computed(() => getFileAttributeURL(props.attribute.value));
 
 const fileDisplayName = computed(() => {
   if (!hasValue.value) return '';
@@ -74,8 +75,8 @@ const onFileSelected = async event => {
     }"
   >
     <a
-      v-if="isActiveStorageBlobPath(attribute.value)"
-      :href="attribute.value"
+      v-if="fileURL"
+      :href="fileURL"
       target="_blank"
       rel="noopener noreferrer"
       class="min-w-0 text-sm truncate hover:underline text-n-blue-11"

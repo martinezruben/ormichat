@@ -69,7 +69,6 @@ spec/ , tests/    RSpec (Ruby) y Vitest (JS/Vue)
 - Telemetría al hub de Chatwoot y push relay deshabilitados.
 - `FRONTEND_URL` apuntando al túnel ngrok (webhooks de Telegram).
 - `rack-timeout` ampliado para inferencia local lenta.
-- Signed URLs de ActiveStorage con expiración de 1 año (en vez de 5 min).
 
 **Captain AI sobre Ollama**
 - Captain enrutado a un modelo local de Ollama; migración que reduce columnas de embeddings a 768 dims; fix del gem `ai-agents` para modelos self-hosted.
