@@ -3,10 +3,7 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-@import 'shared/assets/fonts/InterDisplay/inter-display';
-@import 'shared/assets/fonts/inter';
-@import 'shared/assets/fonts/manrope';
-@import 'shared/assets/fonts/space-grotesk';
+@import 'shared/assets/fonts/geist';
 
 // Next Colors
 @import 'next-colors';
@@ -20,7 +17,7 @@
 html,
 body {
   font-family:
-    'Manrope',
+    'Geist',
     -apple-system,
     system-ui,
     BlinkMacSystemFont,

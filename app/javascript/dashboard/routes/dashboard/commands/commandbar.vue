@@ -268,24 +268,18 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+// Theme the command bar from the app tokens so it follows light/dark mode
 ninja-keys {
-  --ninja-accent-color: rgba(39, 129, 246, 1);
-  --ninja-font-family: 'Inter';
+  --ninja-accent-color: rgb(var(--brand-color));
+  --ninja-font-family: 'Geist';
+  --ninja-overflow-background: rgba(var(--overlay));
+  --ninja-modal-background: rgb(var(--solid-1));
+  --ninja-secondary-background-color: rgb(var(--slate-3));
+  --ninja-selected-background: rgb(var(--slate-3));
+  --ninja-footer-background: rgb(var(--slate-1));
+  --ninja-text-color: rgb(var(--slate-12));
+  --ninja-icon-color: rgb(var(--slate-11));
+  --ninja-secondary-text-color: rgb(var(--slate-11));
   z-index: 9999;
-}
-
-// Wrapped with body.dark to avoid overriding the default theme
-// If OS is in dark theme and app is in light mode, It will prevent showing dark theme in command bar
-body.dark {
-  ninja-keys {
-    --ninja-overflow-background: rgba(26, 29, 30, 0.5);
-    --ninja-modal-background: #151718;
-    --ninja-secondary-background-color: #26292b;
-    --ninja-selected-background: #26292b;
-    --ninja-footer-background: #2b2f31;
-    --ninja-text-color: #f8faf9;
-    --ninja-icon-color: #f8faf9;
-    --ninja-secondary-text-color: #c2c9c6;
-  }
 }
 </style>

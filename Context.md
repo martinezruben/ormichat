@@ -75,7 +75,10 @@ spec/ , tests/    RSpec (Ruby) y Vitest (JS/Vue)
 
 **Branding y design system**
 - Presentación rebrandeada a "Ormichat"; eliminados links a chatwoot.com / chwt.app.
-- Design System Ormichat: color de acento, paleta neutra, radios y sombras, tipografía **Manrope** (texto) + **Space Grotesk** (`font-heading` en títulos). Fuentes en `app/javascript/shared/assets/fonts/`, tokens en `tailwind.config.js`.
+- **Tema shadcn/ui** (reemplazó al Design System Ormichat índigo): paleta neutral de shadcn en claro/oscuro, primario neutral (`bg-n-brand` + `text-n-brand-foreground` para el texto encima), rojo destructivo, radios shadcn, sombras por defecto de Tailwind y tipografía **Geist** en todas las superficies (`font-inter`/`font-heading`/etc. apuntan a Geist). No se instaló shadcn-vue: el look se logra con tokens.
+  - Tokens: `dashboard/assets/scss/_next-colors.scss` (dashboard, portal, encuestas, v3), `widget/assets/scss/woot.scss` y `dashboard/assets/scss/super_admin/index.scss` — mantenerlos alineados.
+  - Componentes base con estilo shadcn (solo clases): `components-next/` Button, Input, TextArea, Checkbox, Dialog, DropdownMenu, y formularios legacy en `_base.scss`.
+  - Colores con significado propio se mantienen (tipos de archivo, Linear, color del portal/widget configurable, logo).
 
 **Features**
 - **Custom attribute tipo "File"**: adjunta el archivo como binario al compositor y previsualiza imágenes; botón para insertar un custom attribute en el compositor (`dashboard/components/CustomAttribute.vue`).

@@ -46,7 +46,7 @@ const showPaywall = computed(() => shouldShowPaywall('saml'));
     <template #body>
       <SamlPaywall v-if="showPaywall" />
       <SamlSettings v-else-if="shouldShowSaml" />
-      <div v-else class="mt-6 text-sm text-slate-600">
+      <div v-else class="mt-6 text-sm text-n-slate-11">
         {{ $t('SECURITY_SETTINGS.SAML_DISABLED_MESSAGE') }}
       </div>
       <MailerSettings v-if="isAdmin" class="mt-8" />

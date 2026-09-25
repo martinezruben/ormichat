@@ -2,22 +2,23 @@
 @layer base {
   // NEXT COLORS START
   :root {
-    // brand (Ormichat accent — #4F46E5)
-    --brand-color: 79 70 229;
+    // brand (shadcn/ui neutral primary)
+    --brand-color: 23 23 23;
+    --brand-foreground: 250 250 250;
 
-    // slate (Ormichat Design System neutral ramp — hue 275, oklch-derived)
-    --slate-1: 246 247 249;
-    --slate-2: 242 243 247;
-    --slate-3: 238 240 246;
-    --slate-4: 234 235 239;
-    --slate-5: 227 228 233;
-    --slate-6: 220 222 227;
-    --slate-7: 192 193 200;
-    --slate-8: 165 166 173;
-    --slate-9: 138 140 148;
-    --slate-10: 117 119 127;
-    --slate-11: 97 99 106;
-    --slate-12: 34 36 41;
+    // slate (shadcn/ui neutral ramp)
+    --slate-1: 250 250 250;
+    --slate-2: 247 247 247;
+    --slate-3: 245 245 245;
+    --slate-4: 240 240 240;
+    --slate-5: 235 235 235;
+    --slate-6: 229 229 229;
+    --slate-7: 212 212 212;
+    --slate-8: 190 190 190;
+    --slate-9: 163 163 163;
+    --slate-10: 138 138 138;
+    --slate-11: 115 115 115;
+    --slate-12: 10 10 10;
 
     --iris-1: 253 253 255;
     --iris-2: 248 248 255;
@@ -32,31 +33,31 @@
     --iris-11: 87 83 198;
     --iris-12: 39 41 98;
 
-    --blue-1: 251 253 255;
-    --blue-2: 245 249 255;
-    --blue-3: 233 243 255;
-    --blue-4: 218 236 255;
-    --blue-5: 201 226 255;
-    --blue-6: 181 213 255;
-    --blue-7: 155 195 252;
-    --blue-8: 117 171 247;
-    --blue-9: 39 129 246;
-    --blue-10: 16 115 233;
-    --blue-11: 8 109 224;
-    --blue-12: 11 50 101;
+    --blue-1: 250 250 250;
+    --blue-2: 245 245 245;
+    --blue-3: 240 240 240;
+    --blue-4: 235 235 235;
+    --blue-5: 229 229 229;
+    --blue-6: 212 212 212;
+    --blue-7: 190 190 190;
+    --blue-8: 163 163 163;
+    --blue-9: 23 23 23;
+    --blue-10: 38 38 38;
+    --blue-11: 23 23 23;
+    --blue-12: 10 10 10;
 
-    --ruby-1: 255 252 253;
-    --ruby-2: 255 247 248;
-    --ruby-3: 254 234 237;
-    --ruby-4: 255 220 225;
-    --ruby-5: 255 206 214;
-    --ruby-6: 248 191 200;
-    --ruby-7: 239 172 184;
-    --ruby-8: 229 146 163;
-    --ruby-9: 229 70 102;
-    --ruby-10: 220 59 93;
-    --ruby-11: 202 36 77;
-    --ruby-12: 100 23 43;
+    --ruby-1: 255 252 252;
+    --ruby-2: 255 247 247;
+    --ruby-3: 254 235 236;
+    --ruby-4: 255 219 220;
+    --ruby-5: 255 205 206;
+    --ruby-6: 253 189 190;
+    --ruby-7: 244 169 170;
+    --ruby-8: 235 142 144;
+    --ruby-9: 220 38 38;
+    --ruby-10: 200 30 30;
+    --ruby-11: 185 28 28;
+    --ruby-12: 100 23 35;
 
     --amber-1: 254 253 251;
     --amber-2: 254 251 233;
@@ -110,43 +111,43 @@
     --violet-11: 101 85 183;
     --violet-12: 47 38 95;
 
-    --background-color: 246 247 249;
-    --surface-1: 254 254 254;
-    --surface-2: 238 240 246;
-    --surface-active: 226 234 255;
-    --background-input-box: 0, 0, 0, 0.03;
-    --text-blue: 1 22 44;
+    --background-color: 255 255 255;
+    --surface-1: 255 255 255;
+    --surface-2: 245 245 245;
+    --surface-active: 245 245 245;
+    --background-input-box: 0, 0, 0, 0;
+    --text-blue: 10 10 10;
     --text-purple: 2 4 49;
     --text-amber: 37 24 1;
-    --border-container: 236 236 236;
-    --border-strong: 220 222 227;
-    --border-weak: 234 235 239;
-    --border-blue-strong: 18 61 117;
+    --border-container: 229 229 229;
+    --border-strong: 212 212 212;
+    --border-weak: 229 229 229;
+    --border-blue-strong: 23 23 23;
     --solid-1: 255 255 255;
     --solid-2: 255 255 255;
     --solid-3: 255 255 255;
-    --solid-active: 255 255 255;
+    --solid-active: 245 245 245;
     --solid-amber: 255 228 181;
-    --solid-blue: 218 236 255;
-    --solid-blue-2: 251 253 255;
+    --solid-blue: 245 245 245;
+    --solid-blue-2: 250 250 250;
     --solid-iris: 230 231 255;
     --solid-purple: 230 231 255;
     --solid-red: 254 200 201;
     --solid-amber-button: 255 221 141;
     --card-color: 255 255 255;
-    --overlay: 0, 0, 0, 0.12;
+    --overlay: 0, 0, 0, 0.5;
     --overlay-avatar: 255, 255, 255, 0.67;
     --button-color: 255 255 255;
     --button-hover-color: 255, 255, 255, 0.2;
-    --label-background: 247 247 247;
-    --label-border: 0, 0, 0, 0.04;
+    --label-background: 245 245 245;
+    --label-border: 0, 0, 0, 0.06;
 
-    --alpha-1: 215, 215, 215, 0.22;
-    --alpha-2: 196, 197, 198, 0.22;
+    --alpha-1: 0, 0, 0, 0.04;
+    --alpha-2: 0, 0, 0, 0.05;
     --alpha-3: 255, 255, 255, 0.96;
     --black-alpha-1: 0, 0, 0, 0.12;
     --black-alpha-2: 0, 0, 0, 0.04;
-    --border-blue: 39, 129, 246, 0.5;
+    --border-blue: 163, 163, 163, 0.6;
     --white-alpha: 255, 255, 255, 0.8;
 
     // Voice call widget - light mode
@@ -157,22 +158,23 @@
   }
 
   .dark {
-    // brand (Ormichat accent — #8B85F0)
-    --brand-color: 139 133 240;
+    // brand (shadcn/ui neutral primary)
+    --brand-color: 229 229 229;
+    --brand-foreground: 23 23 23;
 
-    // slate (Ormichat Design System neutral ramp — hue 275, oklch-derived)
-    --slate-1: 7 8 13;
-    --slate-2: 14 15 20;
-    --slate-3: 20 22 28;
-    --slate-4: 26 27 34;
-    --slate-5: 30 32 39;
-    --slate-6: 39 41 47;
-    --slate-7: 51 53 60;
-    --slate-8: 78 79 87;
-    --slate-9: 106 107 115;
-    --slate-10: 130 132 140;
-    --slate-11: 156 158 166;
-    --slate-12: 241 242 245;
+    // slate (shadcn/ui neutral ramp)
+    --slate-1: 10 10 10;
+    --slate-2: 18 18 18;
+    --slate-3: 23 23 23;
+    --slate-4: 30 30 30;
+    --slate-5: 38 38 38;
+    --slate-6: 46 46 46;
+    --slate-7: 64 64 64;
+    --slate-8: 82 82 82;
+    --slate-9: 115 115 115;
+    --slate-10: 140 140 140;
+    --slate-11: 163 163 163;
+    --slate-12: 250 250 250;
 
     --iris-1: 19 19 30;
     --iris-2: 23 22 37;
@@ -187,18 +189,18 @@
     --iris-11: 158 177 255;
     --iris-12: 224 223 254;
 
-    --blue-1: 10 17 28;
-    --blue-2: 15 24 38;
-    --blue-3: 15 39 72;
-    --blue-4: 10 49 99;
-    --blue-5: 18 61 117;
-    --blue-6: 29 84 134;
-    --blue-7: 40 89 156;
-    --blue-8: 48 106 186;
-    --blue-9: 39 129 246;
-    --blue-10: 21 116 231;
-    --blue-11: 126 182 255;
-    --blue-12: 205 227 255;
+    --blue-1: 18 18 18;
+    --blue-2: 23 23 23;
+    --blue-3: 30 30 30;
+    --blue-4: 38 38 38;
+    --blue-5: 46 46 46;
+    --blue-6: 64 64 64;
+    --blue-7: 82 82 82;
+    --blue-8: 115 115 115;
+    --blue-9: 82 82 82;
+    --blue-10: 100 100 100;
+    --blue-11: 229 229 229;
+    --blue-12: 250 250 250;
 
     --ruby-1: 25 17 19;
     --ruby-2: 30 21 23;
@@ -208,9 +210,9 @@
     --ruby-6: 111 37 57;
     --ruby-7: 136 52 71;
     --ruby-8: 179 68 90;
-    --ruby-9: 229 70 102;
-    --ruby-10: 236 90 114;
-    --ruby-11: 255 148 157;
+    --ruby-9: 220 38 38;
+    --ruby-10: 239 68 68;
+    --ruby-11: 248 113 113;
     --ruby-12: 254 210 225;
 
     --amber-1: 22 18 12;
@@ -265,43 +267,43 @@
     --violet-11: 169 153 236;
     --violet-12: 226 221 254;
 
-    --background-color: 14 15 20;
-    --surface-1: 20 22 28;
-    --surface-2: 30 32 39;
-    --surface-active: 35 41 85;
-    --background-input-box: 255, 255, 255, 0.02;
-    --text-blue: 213 234 255;
+    --background-color: 10 10 10;
+    --surface-1: 23 23 23;
+    --surface-2: 30 30 30;
+    --surface-active: 38 38 38;
+    --background-input-box: 255, 255, 255, 0.045;
+    --text-blue: 250 250 250;
     --text-purple: 232 233 254;
     --text-amber: 255 247 234;
-    --border-strong: 51 53 60;
-    --border-weak: 39 41 47;
-    --border-blue-strong: 201 226 255;
-    --solid-1: 23 23 26;
-    --solid-2: 29 30 36;
-    --solid-3: 44 45 54;
-    --solid-active: 53 57 66;
+    --border-strong: 51 51 51;
+    --border-weak: 38 38 38;
+    --border-blue-strong: 229 229 229;
+    --solid-1: 23 23 23;
+    --solid-2: 28 28 28;
+    --solid-3: 38 38 38;
+    --solid-active: 46 46 46;
     --solid-amber: 56 50 41;
-    --solid-blue: 15 57 102;
-    --solid-blue-2: 26 29 35;
+    --solid-blue: 38 38 38;
+    --solid-blue-2: 23 23 23;
     --solid-iris: 38 42 101;
     --solid-purple: 51 51 107;
     --solid-red: 90 33 34;
     --solid-amber-button: 255 221 141;
-    --card-color: 20 22 28;
-    --overlay: 0, 0, 0, 0.4;
+    --card-color: 23 23 23;
+    --overlay: 0, 0, 0, 0.6;
     --overlay-avatar: 0, 0, 0, 0.05;
-    --button-color: 42 43 51;
+    --button-color: 30 30 30;
     --button-hover-color: 0, 0, 0, 0.15;
-    --label-background: 36 38 45;
-    --label-border: 255, 255, 255, 0.03;
+    --label-background: 38 38 38;
+    --label-border: 255, 255, 255, 0.06;
 
-    --alpha-1: 35, 36, 42, 0.8;
-    --alpha-2: 147, 153, 176, 0.12;
-    --alpha-3: 33, 34, 38, 0.95;
+    --alpha-1: 38, 38, 38, 0.8;
+    --alpha-2: 255, 255, 255, 0.06;
+    --alpha-3: 23, 23, 23, 0.95;
     --black-alpha-1: 0, 0, 0, 0.3;
     --black-alpha-2: 0, 0, 0, 0.2;
-    --border-blue: 39, 129, 246, 0.5;
-    --border-container: 255, 255, 255, 0;
+    --border-blue: 163, 163, 163, 0.5;
+    --border-container: 255, 255, 255, 0.1;
     --white-alpha: 255, 255, 255, 0.1;
 
     // Voice call widget - dark mode
