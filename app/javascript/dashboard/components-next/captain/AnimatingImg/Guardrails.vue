@@ -942,14 +942,14 @@ const toggle = () => {
 
 <style scoped>
 svg {
-  --gradient-start: #fcfcfd;
-  --gradient-end: #fcfcfd;
+  --gradient-start: #ffffff;
+  --gradient-end: #ffffff;
 }
 
 body.dark svg,
 .htw-dark svg {
-  --gradient-start: #121213;
-  --gradient-end: #121213;
+  --gradient-start: #0a0a0a;
+  --gradient-end: #0a0a0a;
 }
 
 .svg-wrapper {

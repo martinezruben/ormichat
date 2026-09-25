@@ -16,8 +16,8 @@ import { LocalStorage } from 'shared/helpers/localStorage';
 import { LOCAL_STORAGE_KEYS } from 'dashboard/constants/localStorage';
 import { CAPTAIN_EVENTS } from '../../../../helper/AnalyticsHelper/events';
 
-// Ormichat accent (indigo) used to highlight a picked suggestion.
-const SELECTED_LABEL_COLOR = '#4F46E5';
+// shadcn/ui neutral primary used to highlight a picked suggestion.
+const SELECTED_LABEL_COLOR = '#171717';
 
 export default {
   name: 'LabelSuggestion',
