@@ -18,9 +18,10 @@ describe('useConversationLabels', () => {
       getSelectedChat: { value: { id: 1 } },
       'labels/getLabels': {
         value: [
-          { id: 1, title: 'Label 1' },
-          { id: 2, title: 'Label 2' },
-          { id: 3, title: 'Label 3' },
+          { id: 1, title: 'Label 1', selectable: true },
+          { id: 2, title: 'Label 2', selectable: true },
+          { id: 3, title: 'Label 3', selectable: true },
+          { id: 4, title: 'Automation', selectable: false },
         ],
       },
     };
@@ -40,10 +41,12 @@ describe('useConversationLabels', () => {
     expect(accountLabels.value).toEqual(getters['labels/getLabels'].value);
     expect(savedLabels.value).toEqual(['Label 1', 'Label 2']);
     expect(activeLabels.value).toEqual([
-      { id: 1, title: 'Label 1' },
-      { id: 2, title: 'Label 2' },
+      { id: 1, title: 'Label 1', selectable: true },
+      { id: 2, title: 'Label 2', selectable: true },
     ]);
-    expect(inactiveLabels.value).toEqual([{ id: 3, title: 'Label 3' }]);
+    expect(inactiveLabels.value).toEqual([
+      { id: 3, title: 'Label 3', selectable: true },
+    ]);
   });
 
   it('should update labels correctly', async () => {
@@ -62,7 +65,7 @@ describe('useConversationLabels', () => {
     ]);
     const { addLabelToConversation } = useConversationLabels();
 
-    addLabelToConversation({ title: 'Label 2' });
+    addLabelToConversation({ title: 'Label 2', selectable: true });
 
     expect(store.dispatch).toHaveBeenCalledWith('conversationLabels/update', {
       conversationId: 1,

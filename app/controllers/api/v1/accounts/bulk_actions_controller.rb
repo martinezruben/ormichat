@@ -1,4 +1,6 @@
 class Api::V1::Accounts::BulkActionsController < Api::V1::Accounts::BaseController
+  before_action :reject_non_selectable_labels, only: :create
+
   def create
     case normalized_type
     when 'Conversation'
@@ -14,6 +16,17 @@ class Api::V1::Accounts::BulkActionsController < Api::V1::Accounts::BaseControll
   end
 
   private
+
+  # Non-selectable labels are reserved for automations, so agents can't bulk-add them.
+  def reject_non_selectable_labels
+    titles = Array(params.dig(:labels, :add)).map { |title| title.to_s.downcase }
+    return if titles.empty?
+
+    restricted_labels = @current_account.labels.where(title: titles, selectable: false).pluck(:title)
+    return if restricted_labels.empty?
+
+    render_could_not_create_error(I18n.t('errors.labels.not_selectable', labels: restricted_labels.join(', ')))
+  end
 
   def normalized_type
     params[:type].to_s.camelize

@@ -56,11 +56,11 @@ export function useConversationLabels() {
   );
 
   /**
-   * Labels available but not active on the conversation
+   * Selectable labels available but not active on the conversation
    * @type {import('vue').ComputedRef<Array>}
    */
   const inactiveLabels = computed(() =>
-    accountLabels.value.filter(
+    selectableAccountLabels.value.filter(
       ({ title }) => !savedLabels.value.includes(title)
     )
   );

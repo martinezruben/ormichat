@@ -5,7 +5,11 @@ import { mapGetters } from 'vuex';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import MultiselectDropdown from 'shared/components/ui/MultiselectDropdown.vue';
 import HelperTextPopup from 'dashboard/components/ui/HelperTextPopup.vue';
-import { isValidURL } from '../helper/URLHelper';
+import {
+  isValidURL,
+  getFileAttributeURL,
+  isImageFileURL,
+} from '../helper/URLHelper';
 import { getRegexp } from 'shared/helpers/Validators';
 import { useVuelidate } from '@vuelidate/core';
 import { emitter } from 'shared/helpers/mitt';
@@ -124,9 +128,12 @@ export default {
         return this.value;
       }
     },
+    fileURL() {
+      return getFileAttributeURL(this.value);
+    },
     isImageFile() {
-      if (!this.isAttributeTypeFile || !this.hasValue) return false;
-      return /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i.test(this.fileDisplayName);
+      if (!this.isAttributeTypeFile || !this.fileURL) return false;
+      return isImageFileURL(this.fileDisplayName);
     },
     directUploadUrl() {
       return this.attributeModel === 'contact_attribute'
@@ -272,7 +279,7 @@ export default {
     async attachFileIntoComposer() {
       this.isInserting = true;
       try {
-        const response = await fetch(this.value);
+        const response = await fetch(this.fileURL);
         if (!response.ok) throw new Error('Failed to fetch file');
         const blob = await response.blob();
         const file = new File([blob], this.fileDisplayName, {
@@ -303,8 +310,8 @@ export default {
 
       this.isUploading = true;
       try {
-        const url = await this.uploadFile(this.directUploadUrl, file);
-        this.$emit('update', this.attributeKey, url);
+        const uploadedURL = await this.uploadFile(this.directUploadUrl, file);
+        this.$emit('update', this.attributeKey, uploadedURL);
       } catch {
         useAlert(this.$t('CUSTOM_ATTRIBUTES.FILE.ERROR'));
       } finally {
@@ -335,8 +342,8 @@ export default {
             "
           >
             <a
-              v-if="isAttributeTypeFile && hasValue"
-              :href="value"
+              v-if="isAttributeTypeFile && fileURL"
+              :href="fileURL"
               target="_blank"
               rel="noopener noreferrer"
               class="hover:underline text-n-blue-11"
@@ -450,7 +457,8 @@ export default {
     <div v-if="isAttributeTypeFile" class="flex items-center gap-2 px-4 pb-3">
       <img
         v-if="isImageFile"
-        :src="value"
+        :src="fileURL"
+        :alt="label"
         class="flex-shrink-0 object-cover w-8 h-8 rounded outline outline-1 outline-n-weak -outline-offset-1 cursor-pointer"
         @click="openImagePreview"
       />
@@ -473,7 +481,7 @@ export default {
         @click="triggerFileInput"
       />
       <NextButton
-        v-if="showActions && hasValue"
+        v-if="showActions && fileURL"
         v-tooltip="$t('CUSTOM_ATTRIBUTES.ACTIONS.INSERT')"
         xs
         slate
@@ -491,7 +499,8 @@ export default {
         width="lg"
       >
         <img
-          :src="value"
+          :src="fileURL"
+          :alt="label"
           class="w-full max-h-[70vh] object-contain rounded-lg"
         />
       </ImagePreviewDialog>

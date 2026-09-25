@@ -8,9 +8,14 @@ vi.mock('dashboard/composables/store', () => ({
   useMapGetter: () => ref(1),
 }));
 
+const { isMenuItemVisible } = vi.hoisted(() => ({
+  isMenuItemVisible: vi.fn(() => true),
+}));
+
 vi.mock('dashboard/composables/usePolicy', () => ({
   usePolicy: () => ({
     shouldShow: () => true,
+    isMenuItemVisible,
   }),
 }));
 
@@ -87,6 +92,7 @@ describe('SidebarSubGroup', () => {
     });
 
     window.localStorage.clear();
+    isMenuItemVisible.mockImplementation(() => true);
   });
 
   it('keeps collapsible sections expanded by default', () => {
@@ -94,6 +100,14 @@ describe('SidebarSubGroup', () => {
 
     expect(wrapper.find('button').attributes('aria-expanded')).toBe('true');
     expect(wrapper.find('.sidebar-leaf').isVisible()).toBe(true);
+  });
+
+  it('hides items the custom role does not allow', () => {
+    isMenuItemVisible.mockImplementation(name => name !== 'Sales-1');
+    const wrapper = mountSubGroup();
+
+    expect(isMenuItemVisible).toHaveBeenCalledWith('Sales-1');
+    expect(wrapper.find('.sidebar-leaf').exists()).toBe(false);
   });
 
   it('renders the tree line on the separator, positioned relative to it', () => {

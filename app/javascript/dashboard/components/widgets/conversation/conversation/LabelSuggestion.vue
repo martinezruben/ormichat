@@ -16,6 +16,9 @@ import { LocalStorage } from 'shared/helpers/localStorage';
 import { LOCAL_STORAGE_KEYS } from 'dashboard/constants/localStorage';
 import { CAPTAIN_EVENTS } from '../../../../helper/AnalyticsHelper/events';
 
+// Ormichat accent (indigo) used to highlight a picked suggestion.
+const SELECTED_LABEL_COLOR = '#4F46E5';
+
 export default {
   name: 'LabelSuggestion',
   components: {
@@ -37,7 +40,11 @@ export default {
     const { captainTasksEnabled } = useCaptain();
     const { replaceInstallationName } = useBranding();
 
-    return { captainTasksEnabled, replaceInstallationName };
+    return {
+      captainTasksEnabled,
+      replaceInstallationName,
+      selectedLabelColor: SELECTED_LABEL_COLOR,
+    };
   },
   data() {
     return {
@@ -182,7 +189,9 @@ export default {
             <woot-label
               variant="dashed"
               v-bind="label"
-              :bg-color="selectedLabels.includes(label.title) ? '#4F46E5' : ''"
+              :bg-color="
+                selectedLabels.includes(label.title) ? selectedLabelColor : ''
+              "
             />
           </button>
           <NextButton

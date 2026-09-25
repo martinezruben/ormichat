@@ -169,6 +169,11 @@ export default {
       <span v-else class="text-sm text-n-slate-11">
         {{ $t('CONTACT_PANEL.NOT_AVAILABLE') }}
       </span>
+      <span
+        v-if="trailingHtml"
+        v-dompurify-html="trailingHtml"
+        class="flex-shrink-0"
+      />
       <NextButton
         v-if="editable"
         ghost

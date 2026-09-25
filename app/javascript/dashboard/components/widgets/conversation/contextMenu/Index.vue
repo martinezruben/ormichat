@@ -223,11 +223,16 @@ export default {
       return this.status === wootConstants.STATUS_TYPE.OPEN;
     },
     filteredLabels() {
-      const labels = this.labelSearchQuery
-        ? picoSearch(this.labels, this.labelSearchQuery, ['title'])
-        : this.labels;
-      // Assigned labels first, keeping each group's existing order.
       const isAssigned = label => this.conversationLabels.includes(label.title);
+      // Non-selectable labels are reserved for automations: they only show
+      // here when already applied, so agents can still remove them.
+      const pickableLabels = this.labels.filter(
+        label => label.selectable || isAssigned(label)
+      );
+      const labels = this.labelSearchQuery
+        ? picoSearch(pickableLabels, this.labelSearchQuery, ['title'])
+        : pickableLabels;
+      // Assigned labels first, keeping each group's existing order.
       return [...labels].sort((a, b) => isAssigned(b) - isAssigned(a));
     },
   },

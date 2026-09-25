@@ -18,6 +18,13 @@ import NextButton from 'dashboard/components-next/button/Button.vue';
 import VoiceCallButton from 'dashboard/components-next/Contacts/VoiceCallButton.vue';
 import InlineInput from 'dashboard/components-next/inline-input/InlineInput.vue';
 import ImagePreviewDialog from 'dashboard/components-next/dialog/Dialog.vue';
+import { buildMapsUrl } from 'shared/helpers/locationHelper';
+import {
+  getFileAttributeURL,
+  isImageFileURL,
+  isPdfFileURL,
+  isValidURL,
+} from 'dashboard/helper/URLHelper';
 
 export default {
   components: {
@@ -56,6 +63,7 @@ export default {
       isEditingName: false,
       editName: '',
       previewImageSrc: '',
+      previewImageAlt: '',
     };
   },
   computed: {
@@ -67,12 +75,27 @@ export default {
     loadedCustomAttributes() {
       const values = this.contact.custom_attributes || {};
       return this.getAttributesByModel('contact_attribute')
-        .filter(attribute => !!values[attribute.attribute_key])
         .map(attribute => ({
           key: attribute.attribute_key,
           label: attribute.attribute_display_name,
           type: attribute.attribute_display_type,
           value: values[attribute.attribute_key],
+        }))
+        .filter(({ type, value }) => {
+          if (type === 'file') return !!getFileAttributeURL(value);
+          return value !== undefined && value !== null && value !== '';
+        })
+        .map(attribute => ({
+          ...attribute,
+          fileURL:
+            attribute.type === 'file'
+              ? getFileAttributeURL(attribute.value)
+              : '',
+          linkURL:
+            attribute.type === 'link' && isValidURL(attribute.value)
+              ? attribute.value
+              : '',
+          displayValue: this.formatAttributeValue(attribute),
         }));
     },
     contactProfileLink() {
@@ -87,14 +110,18 @@ export default {
       const code = countryCode.toLowerCase();
       return `<span class="fi fi-${code} size-3.5"></span>`;
     },
+    rawLocation() {
+      return (this.additionalAttributes.location || '').trim();
+    },
     googleMapsUrl() {
-      const rawLocation = (this.additionalAttributes.location || '').trim();
-      if (!rawLocation) return '';
-      if (/^https?:\/\//i.test(rawLocation)) return rawLocation;
-
-      const [lat, lng] = rawLocation.split(',').map(part => part.trim());
-      if (!lat || !lng) return '';
-      return `https://www.google.com/maps?q=${lat},${lng}`;
+      return buildMapsUrl(this.rawLocation);
+    },
+    locationLabel() {
+      const { city, country } = this.additionalAttributes;
+      const cityAndCountry = [city, country].filter(Boolean).join(', ');
+      if (cityAndCountry) return cityAndCountry;
+      if (this.googleMapsUrl) return this.$t('CONTACT_PANEL.VIEW_ON_MAPS');
+      return this.rawLocation;
     },
     socialProfiles() {
       const {
@@ -126,17 +153,24 @@ export default {
     toggleEditModal() {
       this.showEditModal = !this.showEditModal;
     },
+    formatAttributeValue({ type, value }) {
+      if (type === 'date') return new Date(value).toLocaleDateString();
+      if (type === 'checkbox') {
+        return value === true || value === 'true'
+          ? this.$t('CHOICE_TOGGLE.YES')
+          : this.$t('CHOICE_TOGGLE.NO');
+      }
+      return String(value);
+    },
     isImageAttribute(attribute) {
-      return (
-        attribute.type === 'file' &&
-        /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i.test(attribute.value || '')
-      );
+      return !!attribute.fileURL && isImageFileURL(attribute.fileURL);
     },
     isPdfAttribute(attribute) {
-      return attribute.type === 'file' && /\.pdf$/i.test(attribute.value || '');
+      return !!attribute.fileURL && isPdfFileURL(attribute.fileURL);
     },
-    openAttributeImagePreview(src) {
-      this.previewImageSrc = src;
+    openAttributeImagePreview(attribute) {
+      this.previewImageSrc = attribute.fileURL;
+      this.previewImageAlt = attribute.label;
       this.$refs.attributeImageDialog.open();
     },
     startEditingName() {
@@ -314,9 +348,9 @@ export default {
             "
           />
           <ContactInfoRow
-            v-if="googleMapsUrl"
+            v-if="locationLabel"
             :href="googleMapsUrl"
-            :value="$t('CONTACT_PANEL.VIEW_ON_MAPS')"
+            :value="locationLabel"
             icon="map"
             emoji="🌍"
             :title="$t('CONTACT_PANEL.LOCATION')"
@@ -334,9 +368,10 @@ export default {
             >
               <template v-if="isImageAttribute(attribute)">
                 <img
-                  :src="attribute.value"
+                  :src="attribute.fileURL"
+                  :alt="attribute.label"
                   class="flex-shrink-0 object-cover w-6 h-6 rounded outline outline-1 outline-n-weak -outline-offset-1 cursor-pointer"
-                  @click="openAttributeImagePreview(attribute.value)"
+                  @click="openAttributeImagePreview(attribute)"
                 />
                 <span
                   class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-slate-11"
@@ -346,7 +381,7 @@ export default {
               </template>
               <a
                 v-else-if="isPdfAttribute(attribute)"
-                :href="attribute.value"
+                :href="attribute.fileURL"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex items-center min-w-0 gap-2 text-n-slate-11 hover:underline"
@@ -360,7 +395,7 @@ export default {
               </a>
               <template v-else-if="attribute.type === 'file'">
                 <a
-                  :href="attribute.value"
+                  :href="attribute.fileURL"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="flex items-center min-w-0 gap-2 text-n-slate-11 hover:underline"
@@ -377,10 +412,20 @@ export default {
                 <span class="flex-shrink-0 text-sm font-medium text-n-slate-12">
                   {{ attribute.label }}:
                 </span>
+                <a
+                  v-if="attribute.linkURL"
+                  :href="attribute.linkURL"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-blue-11 hover:underline"
+                >
+                  {{ attribute.displayValue }}
+                </a>
                 <span
+                  v-else
                   class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-slate-11"
                 >
-                  {{ attribute.value }}
+                  {{ attribute.displayValue }}
                 </span>
               </template>
             </div>
@@ -392,6 +437,7 @@ export default {
             >
               <img
                 :src="previewImageSrc"
+                :alt="previewImageAlt"
                 class="w-full max-h-[70vh] object-contain rounded-lg"
               />
             </ImagePreviewDialog>
