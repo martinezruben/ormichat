@@ -2,7 +2,7 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
-@import 'shared/assets/fonts/widget_fonts';
+@import 'shared/assets/fonts/geist';
 @import 'views/conversation';
 
 html,
@@ -140,7 +140,7 @@ blockquote {
 }
 
 .button {
-  @apply appearance-none bg-n-brand border border-solid border-n-brand text-white cursor-pointer inline-block text-sm h-10 leading-none outline-none outline-0 py-1 px-4 text-center no-underline select-none align-middle whitespace-nowrap;
+  @apply appearance-none bg-n-brand border border-solid border-n-brand text-n-brand-foreground cursor-pointer inline-block text-sm h-10 leading-none outline-none outline-0 py-1 px-4 text-center no-underline select-none align-middle whitespace-nowrap;
 
   &:focus,
   &:hover {
@@ -187,22 +187,23 @@ blockquote {
 @layer base {
   // NEXT COLORS START
   :root {
-    // brand (Ormichat accent — #4F46E5)
-    --brand-color: 79 70 229;
+    // brand (shadcn/ui neutral primary)
+    --brand-color: 23 23 23;
+    --brand-foreground: 250 250 250;
 
     // slate
-    --slate-1: 252 252 253;
-    --slate-2: 249 249 251;
-    --slate-3: 240 240 243;
-    --slate-4: 232 232 236;
-    --slate-5: 224 225 230;
-    --slate-6: 217 217 224;
-    --slate-7: 205 206 214;
-    --slate-8: 185 187 198;
-    --slate-9: 139 141 152;
-    --slate-10: 128 131 141;
-    --slate-11: 96 100 108;
-    --slate-12: 28 32 36;
+    --slate-1: 250 250 250;
+    --slate-2: 247 247 247;
+    --slate-3: 245 245 245;
+    --slate-4: 240 240 240;
+    --slate-5: 235 235 235;
+    --slate-6: 229 229 229;
+    --slate-7: 212 212 212;
+    --slate-8: 190 190 190;
+    --slate-9: 163 163 163;
+    --slate-10: 138 138 138;
+    --slate-11: 115 115 115;
+    --slate-12: 10 10 10;
 
     // iris
     --iris-1: 253 253 255;
@@ -219,18 +220,18 @@ blockquote {
     --iris-12: 39 41 98;
 
     // ruby
-    --ruby-1: 255 252 253;
-    --ruby-2: 255 247 248;
-    --ruby-3: 254 234 237;
-    --ruby-4: 255 220 225;
-    --ruby-5: 255 206 214;
-    --ruby-6: 248 191 200;
-    --ruby-7: 239 172 184;
-    --ruby-8: 229 146 163;
-    --ruby-9: 229 70 102;
-    --ruby-10: 220 59 93;
-    --ruby-11: 202 36 77;
-    --ruby-12: 100 23 43;
+    --ruby-1: 255 252 252;
+    --ruby-2: 255 247 247;
+    --ruby-3: 254 235 236;
+    --ruby-4: 255 219 220;
+    --ruby-5: 255 205 206;
+    --ruby-6: 253 189 190;
+    --ruby-7: 244 169 170;
+    --ruby-8: 235 142 144;
+    --ruby-9: 220 38 38;
+    --ruby-10: 200 30 30;
+    --ruby-11: 185 28 28;
+    --ruby-12: 100 23 35;
 
     // amber
     --amber-1: 254 253 251;
@@ -274,48 +275,49 @@ blockquote {
     --gray-11: 100 100 100;
     --gray-12: 32 32 32;
 
-    --background-color: 253 253 253;
-    --surface-1: 254 254 254;
-    --surface-2: 255 255 255;
-    --surface-active: 255 255 255;
-    --text-blue: 8 109 224;
-    --border-container: 236 236 236;
-    --border-strong: 235 235 235;
-    --border-weak: 234 234 234;
+    --background-color: 255 255 255;
+    --surface-1: 255 255 255;
+    --surface-2: 245 245 245;
+    --surface-active: 245 245 245;
+    --text-blue: 10 10 10;
+    --border-container: 229 229 229;
+    --border-strong: 212 212 212;
+    --border-weak: 229 229 229;
     --solid-1: 255 255 255;
     --solid-2: 255 255 255;
     --solid-3: 255 255 255;
-    --solid-active: 255 255 255;
+    --solid-active: 245 245 245;
     --solid-amber: 252 232 193;
-    --solid-blue: 218 236 255;
+    --solid-blue: 245 245 245;
     --solid-iris: 230 231 255;
 
-    --alpha-1: 67, 67, 67, 0.06;
-    --alpha-2: 201, 202, 207, 0.15;
+    --alpha-1: 0, 0, 0, 0.04;
+    --alpha-2: 0, 0, 0, 0.05;
     --alpha-3: 255, 255, 255, 0.96;
     --black-alpha-1: 0, 0, 0, 0.12;
     --black-alpha-2: 0, 0, 0, 0.04;
-    --border-blue: 39, 129, 246, 0.5;
+    --border-blue: 163, 163, 163, 0.6;
     --white-alpha: 255, 255, 255, 0.8;
   }
 
   .dark {
-    // brand (Ormichat accent — #8B85F0)
-    --brand-color: 139 133 240;
+    // brand (shadcn/ui neutral primary)
+    --brand-color: 229 229 229;
+    --brand-foreground: 23 23 23;
 
     // slate
-    --slate-1: 17 17 19;
-    --slate-2: 24 25 27;
-    --slate-3: 33 34 37;
-    --slate-4: 39 42 45;
-    --slate-5: 46 49 53;
-    --slate-6: 54 58 63;
-    --slate-7: 67 72 78;
-    --slate-8: 90 97 105;
-    --slate-9: 105 110 119;
-    --slate-10: 119 123 132;
-    --slate-11: 176 180 186;
-    --slate-12: 237 238 240;
+    --slate-1: 10 10 10;
+    --slate-2: 18 18 18;
+    --slate-3: 23 23 23;
+    --slate-4: 30 30 30;
+    --slate-5: 38 38 38;
+    --slate-6: 46 46 46;
+    --slate-7: 64 64 64;
+    --slate-8: 82 82 82;
+    --slate-9: 115 115 115;
+    --slate-10: 140 140 140;
+    --slate-11: 163 163 163;
+    --slate-12: 250 250 250;
 
     // iris
     --iris-1: 19 19 30;
@@ -340,9 +342,9 @@ blockquote {
     --ruby-6: 111 37 57;
     --ruby-7: 136 52 71;
     --ruby-8: 179 68 90;
-    --ruby-9: 229 70 102;
-    --ruby-10: 236 90 114;
-    --ruby-11: 255 148 157;
+    --ruby-9: 220 38 38;
+    --ruby-10: 239 68 68;
+    --ruby-11: 248 113 113;
     --ruby-12: 254 210 225;
 
     // amber
@@ -387,28 +389,28 @@ blockquote {
     --gray-11: 180 180 180;
     --gray-12: 238 238 238;
 
-    --background-color: 18 18 19;
-    --surface-1: 20 21 23;
-    --surface-2: 22 23 26;
-    --surface-active: 53 57 66;
-    --border-strong: 52 52 52;
-    --border-weak: 38 38 42;
-    --solid-1: 23 23 26;
-    --solid-2: 29 30 36;
-    --solid-3: 44 45 54;
-    --solid-active: 53 57 66;
+    --background-color: 10 10 10;
+    --surface-1: 23 23 23;
+    --surface-2: 30 30 30;
+    --surface-active: 38 38 38;
+    --border-strong: 51 51 51;
+    --border-weak: 38 38 38;
+    --solid-1: 23 23 23;
+    --solid-2: 28 28 28;
+    --solid-3: 38 38 38;
+    --solid-active: 46 46 46;
     --solid-amber: 42 37 30;
-    --solid-blue: 16 49 91;
+    --solid-blue: 38 38 38;
     --solid-iris: 38 42 101;
-    --text-blue: 126 182 255;
+    --text-blue: 250 250 250;
 
-    --alpha-1: 36, 36, 36, 0.8;
-    --alpha-2: 139, 147, 182, 0.15;
-    --alpha-3: 36, 38, 45, 0.9;
+    --alpha-1: 38, 38, 38, 0.8;
+    --alpha-2: 255, 255, 255, 0.06;
+    --alpha-3: 23, 23, 23, 0.95;
     --black-alpha-1: 0, 0, 0, 0.3;
     --black-alpha-2: 0, 0, 0, 0.2;
-    --border-blue: 39, 129, 246, 0.5;
-    --border-container: 236, 236, 236, 0;
+    --border-blue: 163, 163, 163, 0.5;
+    --border-container: 255, 255, 255, 0.1;
     --white-alpha: 255, 255, 255, 0.1;
   }
 }

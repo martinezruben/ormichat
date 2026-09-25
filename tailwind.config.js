@@ -8,6 +8,7 @@ const {
 } = require('@egoist/tailwindcss-icons');
 
 const defaultSansFonts = [
+  'Geist',
   '-apple-system',
   'system-ui',
   'BlinkMacSystemFont',
@@ -41,10 +42,12 @@ const tailwindConfig = {
     extend: {
       fontFamily: {
         sans: defaultSansFonts,
-        inter: ['Inter', ...defaultSansFonts],
-        interDisplay: ['InterDisplay', ...defaultSansFonts],
-        manrope: ['Manrope', ...defaultSansFonts],
-        heading: ['"Space Grotesk"', ...defaultSansFonts],
+        // shadcn/ui typography: Geist everywhere; legacy family names alias to it
+        inter: defaultSansFonts,
+        interDisplay: defaultSansFonts,
+        manrope: defaultSansFonts,
+        heading: defaultSansFonts,
+        mono: ['"Geist Mono"', ...defaultTheme.fontFamily.mono],
       },
       fontWeight: {
         420: '420',
@@ -53,25 +56,15 @@ const tailwindConfig = {
         520: '520',
         620: '620',
       },
+      // shadcn/ui radius scale (--radius: 0.625rem); shadows use Tailwind's defaults
       borderRadius: {
-        sm: '0.1875rem', // 3px
+        sm: '0.25rem', // 4px
         DEFAULT: '0.375rem', // 6px
         md: '0.5rem', // 8px
         lg: '0.625rem', // 10px
         xl: '0.875rem', // 14px
-        '2xl': '1.125rem', // 18px
-        '3xl': '1.75rem', // 28px
-      },
-      boxShadow: {
-        // Soft, tinted double-layer shadow (Ormichat Design System — rgb(41 45 61) @ hue 275)
-        sm: '0 1px 2px rgba(41, 45, 61, 0.06)',
-        DEFAULT:
-          '0 1px 3px rgba(41, 45, 61, 0.07), 0 1px 2px rgba(41, 45, 61, 0.06)',
-        md: '0 2px 6px rgba(41, 45, 61, 0.07), 0 6px 16px rgba(41, 45, 61, 0.08)',
-        lg: '0 2px 6px rgba(41, 45, 61, 0.07), 0 12px 32px rgba(41, 45, 61, 0.09)',
-        xl: '0 4px 10px rgba(41, 45, 61, 0.08), 0 20px 48px rgba(41, 45, 61, 0.1)',
-        '2xl':
-          '0 8px 16px rgba(41, 45, 61, 0.09), 0 28px 64px rgba(41, 45, 61, 0.12)',
+        '2xl': '1rem', // 16px
+        '3xl': '1.5rem', // 24px
       },
       typography: {
         bubble: {
