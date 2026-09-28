@@ -1,266 +1,293 @@
-# Ormichat 🚀
+# Ormichat
 
-**Ormichat** is an independent fork of **Chatwoot 4.17.1**, an open-source customer engagement platform with AI capabilities. It's a production-ready, self-hosted alternative to Intercom/Zendesk with local LLM support via Ollama.
+Plataforma de atención al cliente **self-hosted** y omnicanal: bandeja compartida, contactos, automatizaciones, reportes, centro de ayuda y un agente de IA (**Captain**) que corre sobre un modelo **local de Ollama**, sin depender de OpenAI.
 
-> [Architecture Diagram](#architecture) • [Database Schema](#database-schema) • [Quick Start](#quick-start) • [Documentation](#documentation)
+Ormichat es un fork independiente de **Chatwoot 4.17.1** con tema **shadcn/ui** (paleta neutral y tipografía Geist), interfaz en español y funciones propias como atributos de tipo archivo, etiquetas solo para automatizaciones y roles que controlan el menú lateral.
 
----
+<p align="center">
+  <img src="docs/images/screenshots/conversation-light.png#gh-light-mode-only" width="100%" alt="Conversación con panel de contacto (tema claro)"/>
+  <img src="docs/images/screenshots/conversation-dark.png#gh-dark-mode-only" width="100%" alt="Conversación con panel de contacto (tema oscuro)"/>
+</p>
 
-## ✨ What's New
-
-### shadcn/ui Design System
-- **Neutral palette** (dark/light mode): Replaced Ormichat's indigo theme with shadcn/ui's neutral design
-- **Geist typography**: Consistent font across all surfaces
-- **Component styling**: Button, Input, Dialog, etc. with shadcn/ui look & feel
-- **No extra dependencies**: achieved via Tailwind tokens only
-
-### Features (vs. Chatwoot 4.17.1)
-- ✅ **Custom "File" attribute type** — attach binaries, preview images, insert into messages
-- ✅ **AI via local LLM** — Captain runs on Hermes/Ollama (not OpenAI)
-- ✅ **Contact panel** — city/country, location links, custom attributes formatting
-- ✅ **Automation-only labels** — invisible to agents, visible to automations
-- ✅ **Custom roles & sidebar visibility** — control menu item visibility per role
-- ✅ **SMTP config in UI** — Settings > Security > Mailer (editable test email)
-- ✅ **Spanish translations** — Full i18n for dashboard, Captain, campaigns, reports
-- ✅ **Branding overrides** — Rebranded to "Ormichat", stripped Chatwoot/chwt.app links
+**Contenido:** [Capturas](#capturas) · [Qué agrega Ormichat](#qué-agrega-ormichat) · [Arquitectura](#arquitectura) · [Modelo de datos](#modelo-de-datos) · [Stack](#stack) · [Puesta en marcha](#puesta-en-marcha) · [Desarrollo](#desarrollo) · [Documentación](#documentación)
 
 ---
 
-## Tech Stack
+## Capturas
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | Vue 3 + Composition API, Vite, TailwindCSS + shadcn/ui, Vitest, Playwright |
-| **Backend** | Rails 7.2, PostgreSQL (pgvector), Redis, Sidekiq, ActionCable |
-| **Search** | OpenSearch (full-text conversations) |
-| **Storage** | ActiveStorage (proxy-served files) |
-| **AI** | Captain (Hermes/Ollama local LLM) |
-| **Deployment** | Docker Compose (postgres, redis, rails, sidekiq) |
-| **Infrastructure** | Telegram, Email (SMTP), Linear, Dyte webhooks |
+| Conversación y panel de contacto (oscuro) | Contactos |
+|---|---|
+| ![Conversación, tema oscuro](docs/images/screenshots/conversation-dark.png) | ![Lista de contactos](docs/images/screenshots/contacts-light.png) |
+| **Informes en vivo (oscuro)** | **Ajustes › Etiquetas** |
+| ![Informes](docs/images/screenshots/reports-dark.png) | ![Etiquetas](docs/images/screenshots/labels-light.png) |
 
----
+> Capturas tomadas de la app corriendo en local con los datos de demostración de `Seeders::AccountSeeder`.
 
-## Architecture
+## Qué agrega Ormichat
 
-![Architecture Diagram](https://claude.ai/code/artifact/ormichat-architecture)
+Respecto a Chatwoot 4.17.1:
 
-**Key layers:**
-1. **Frontend** — Dashboard (Vue), Widget (embeddable), Portal (help center), all with shadcn/ui theme
-2. **API Gateway** — REST + ActionCable realtime
-3. **Backend Services** — Rails + Captain AI
-4. **Data Layer** — PostgreSQL, Redis, OpenSearch, ActiveStorage
-5. **Integrations** — Telegram, Email, external APIs, Ollama
+- **Tema shadcn/ui**: paleta neutral en claro y oscuro, radios y sombras de shadcn, tipografía Geist en todas las superficies (dashboard, widget, portal, encuestas, Super Admin y emails). Se logra solo con tokens de Tailwind, sin agregar dependencias.
+- **Captain AI local**: el agente de IA usa Ollama (`llama3.1:8b` para chat y `nomic-embed-text` para embeddings) a través de un endpoint compatible con OpenAI. Sin costo por uso y sin datos saliendo del servidor.
+- **Atributo personalizado tipo "Archivo"**: se adjunta al compositor como binario, se previsualizan imágenes y se sirve por la ruta *proxy* de ActiveStorage. Los enlaces se validan contra rutas de blobs para evitar XSS.
+- **Panel de contacto**: ciudad, país con bandera, dirección, enlace seguro a Maps y formato de fechas/casillas en los atributos.
+- **Etiquetas "solo automatización"** (`labels.selectable = false`): ocultas en los selectores de los agentes y rechazadas por la API para usuarios, disponibles para reglas y bots.
+- **Roles personalizados → menú lateral**: cada rol define qué ítems del sidebar ve (`custom_roles.visible_menu_items`).
+- **SMTP configurable desde la UI** (Ajustes › Seguridad), con recarga en caliente y correo de prueba.
+- **Español completo** y rebranding a "Ormichat" (sin enlaces a chatwoot.com / chwt.app).
 
----
+## Arquitectura
 
-## Database Schema
+![Arquitectura de componentes de Ormichat](docs/images/architecture.svg)
 
+| # | Flujo |
+|---|---|
+| 1 | Los agentes usan el dashboard (Vue 3) servido por Rails. |
+| 2 | Los visitantes chatean desde el widget embebido en el sitio del cliente. |
+| 3 | Telegram, WhatsApp, Meta, email y SMS entregan mensajes por webhook y reciben las respuestas por sus APIs. |
+| 4 | Un túnel ngrok (o un proxy con TLS en producción) expone `FRONTEND_URL` por HTTPS y enruta a Puma `:3000`. |
+| 5 | Sidekiq envía los correos por el SMTP configurado. |
+| 6 | Captain corre en jobs de Sidekiq y llama a Ollama en el host (`:11434`). |
+| 7 | Búsqueda avanzada con OpenSearch, solo si se define `OPENSEARCH_URL`. |
+
+Todo corre con `docker-compose.yml` (`postgres` con pgvector, `redis`, `rails`, `sidekiq`) sobre la imagen `chatwoot/chatwoot` con *bind mounts* del código de este repo. El frontend se compila en el host con `pnpm` + Vite y se monta en `public/vite`.
+
+## Modelo de datos
+
+Entidades principales (PostgreSQL, ~100 tablas en total). Todo está aislado por `account_id` (multi-tenant). Los campos marcados como *Ormichat* son propios de este fork.
+
+```mermaid
+erDiagram
+    ACCOUNTS ||--o{ ACCOUNT_USERS : "tiene"
+    USERS ||--o{ ACCOUNT_USERS : "pertenece"
+    CUSTOM_ROLES |o--o{ ACCOUNT_USERS : "asigna rol"
+    ACCOUNTS ||--o{ CUSTOM_ROLES : ""
+    ACCOUNTS ||--o{ INBOXES : ""
+    ACCOUNTS ||--o{ CONTACTS : ""
+    ACCOUNTS ||--o{ LABELS : ""
+    ACCOUNTS ||--o{ TEAMS : ""
+    ACCOUNTS ||--o{ CUSTOM_ATTRIBUTE_DEFINITIONS : ""
+    ACCOUNTS ||--o{ AUTOMATION_RULES : ""
+    ACCOUNTS ||--o{ AGENT_BOTS : ""
+    ACCOUNTS ||--o{ CAPTAIN_ASSISTANTS : ""
+    ACCOUNTS ||--o{ PORTALS : ""
+    INBOXES ||--|| CHANNEL : "channel_type + channel_id"
+    INBOXES ||--o{ CONTACT_INBOXES : ""
+    CONTACTS ||--o{ CONTACT_INBOXES : ""
+    CONTACT_INBOXES ||--o{ CONVERSATIONS : ""
+    INBOXES ||--o{ CONVERSATIONS : ""
+    CONTACTS ||--o{ CONVERSATIONS : ""
+    USERS |o--o{ CONVERSATIONS : "assignee"
+    TEAMS |o--o{ CONVERSATIONS : ""
+    CAMPAIGNS |o--o{ CONVERSATIONS : ""
+    INBOXES ||--o{ CAMPAIGNS : ""
+    CONVERSATIONS ||--o{ MESSAGES : ""
+    MESSAGES ||--o{ ATTACHMENTS : ""
+    LABELS }o--o{ CONVERSATIONS : "taggings"
+    CAPTAIN_ASSISTANTS ||--o{ CAPTAIN_DOCUMENTS : ""
+    CAPTAIN_ASSISTANTS ||--o{ CAPTAIN_ASSISTANT_RESPONSES : ""
+    PORTALS ||--o{ ARTICLES : ""
+
+    ACCOUNTS {
+        bigint id PK
+        string name
+        int locale
+        bigint feature_flags
+        jsonb settings
+    }
+    USERS {
+        bigint id PK
+        string email
+        string name
+        int availability
+    }
+    ACCOUNT_USERS {
+        bigint account_id FK
+        bigint user_id FK
+        int role "agent | administrator"
+        bigint custom_role_id FK
+    }
+    CUSTOM_ROLES {
+        bigint id PK
+        string name
+        text permissions
+        text visible_menu_items "Ormichat"
+    }
+    INBOXES {
+        bigint id PK
+        string name
+        string channel_type "Channel::Telegram, WebWidget..."
+        int channel_id
+        bool enable_auto_assignment
+    }
+    CHANNEL {
+        bigint id PK
+        string provider_config "una tabla channel_* por canal"
+    }
+    CONTACTS {
+        bigint id PK
+        string name
+        string email
+        string phone_number
+        string location
+        string country_code
+        jsonb additional_attributes "city, country, address"
+        jsonb custom_attributes "incluye tipo archivo"
+    }
+    CONTACT_INBOXES {
+        bigint contact_id FK
+        bigint inbox_id FK
+        text source_id
+    }
+    CONVERSATIONS {
+        bigint id PK
+        int display_id
+        int status "open | resolved | pending | snoozed"
+        bigint assignee_id FK
+        bigint team_id FK
+        jsonb custom_attributes
+        text cached_label_list
+    }
+    MESSAGES {
+        bigint id PK
+        bigint conversation_id FK
+        int message_type "incoming | outgoing | activity"
+        text content
+        bool private
+        string sender_type
+        bigint sender_id
+    }
+    ATTACHMENTS {
+        bigint id PK
+        bigint message_id FK
+        int file_type
+        string external_url
+    }
+    LABELS {
+        bigint id PK
+        string title
+        string color
+        bool selectable "Ormichat: false = solo automatizaciones"
+    }
+    CUSTOM_ATTRIBUTE_DEFINITIONS {
+        bigint id PK
+        string attribute_key
+        int attribute_display_type "Ormichat agrega file"
+        int attribute_model "contact | conversation"
+    }
+    TEAMS {
+        bigint id PK
+        string name
+    }
+    AUTOMATION_RULES {
+        bigint id PK
+        string event_name
+        jsonb conditions
+        jsonb actions
+    }
+    AGENT_BOTS {
+        bigint id PK
+        string name
+        string outgoing_url
+    }
+    CAMPAIGNS {
+        bigint id PK
+        string title
+        int campaign_type
+        jsonb audience
+    }
+    CAPTAIN_ASSISTANTS {
+        bigint id PK
+        string name
+        jsonb config
+        jsonb guardrails
+    }
+    CAPTAIN_DOCUMENTS {
+        bigint id PK
+        text external_link
+        text content
+    }
+    CAPTAIN_ASSISTANT_RESPONSES {
+        bigint id PK
+        string question
+        text answer
+        vector embedding "pgvector, 768 dims"
+    }
+    PORTALS {
+        bigint id PK
+        string slug
+        string custom_domain
+    }
+    ARTICLES {
+        bigint id PK
+        string title
+        text content
+        int status
+    }
 ```
-Accounts (multi-tenant root)
-├─ Inboxes (channels: email, telegram, widget, etc.)
-├─ Contacts (widget visitors, email subscribers)
-│  └─ CustomAttributes (file type, location, address)
-├─ Conversations (1:1 threads per contact)
-│  ├─ Messages (agent/visitor messages)
-│  └─ Labels (selectable: true/false for automation-only)
-├─ Agents (team members)
-├─ AgentBots (automation players)
-├─ AutomationRules (label/assign triggers)
-└─ Campaigns (broadcasts, sequences)
 
-Custom Extensions:
-├─ CustomAttributeDefinition.attribute_type = 'file'
-├─ CustomAttribute.value = signed URL (ActiveStorage proxy)
-├─ Label.selectable = false (hides from agent UI)
-└─ CustomRole.visible_menu_items (sidebar control)
-```
+Esquema completo en [`db/schema.rb`](db/schema.rb).
 
----
+## Stack
 
-## Quick Start
+| Capa | Tecnología |
+|---|---|
+| Frontend | Vue 3.5 (Composition API, `<script setup>`), Vite 6, Tailwind CSS (tema shadcn/ui), Vitest, Histoire |
+| Backend | Ruby 3.4.4, Rails 7.2, Puma, Devise, ActionCable |
+| Jobs | Sidekiq 7 sobre Redis |
+| Base de datos | PostgreSQL 16 + pgvector |
+| IA | Captain vía `ruby_llm` → Ollama (API compatible con OpenAI) |
+| Búsqueda | Searchkick + OpenSearch (opcional) |
+| Archivos | ActiveStorage (servido por la ruta `/proxy`) |
+| Despliegue | Docker Compose, ngrok o proxy TLS para HTTPS público |
+| Herramientas | pnpm 10, Node 24, RuboCop, ESLint |
 
-### Prerequisites
-- Docker + Docker Compose
-- Ruby 3.4.4 (for local dev)
-- Node.js 18+
-- PostgreSQL 14+ (if not Docker)
-- Redis 6+ (if not Docker)
-- Ollama (for Captain AI)
+## Puesta en marcha
 
-### Using Docker Compose (Recommended)
+Requisitos: Docker + Docker Compose, Node 24 y pnpm 10 en el host, y Ollama si se quiere usar Captain.
+
 ```bash
 git clone https://github.com/martinezruben/ormichat.git
 cd ormichat
 
-# Configure
-cp .env.example .env  # edit as needed
-export FRONTEND_URL=http://localhost:3000
+# 1. Compilar el frontend en el host (se monta en public/vite)
+pnpm install
+pnpm exec vite build
 
-# Start stack
+# 2. Levantar el stack (ajustar FRONTEND_URL y SECRET_KEY_BASE)
+export SECRET_KEY_BASE=$(openssl rand -hex 64)
 docker compose up -d
 
-# Seed data
-docker exec ormichat-rails-1 bundle exec rails db:chatwoot_prepare
-
-# Visit http://localhost:3000
+# 3. Crear y migrar la base de datos
+docker compose exec rails bundle exec rails db:chatwoot_prepare
 ```
 
-### Local Development
-```bash
-# Setup
-rbenv install $(cat .ruby-version)  # Ruby 3.4.4
-eval "$(rbenv init -)"
-bundle install
-pnpm install
+La app queda en `http://localhost:3000`. Rebranding, habilitación de módulos, HTTPS con ngrok, canales con webhook y la configuración de Captain sobre Ollama están paso a paso en [`INSTALL.md`](INSTALL.md).
 
-# Database
-bundle exec rails db:chatwoot_prepare
-
-# Compile frontend
-pnpm dev  # or `overmind start -f Procfile.dev`
-
-# Tests
-pnpm test                               # JS/Vue
-bundle exec rspec spec/path_spec.rb    # Ruby
-```
-
-### Captain AI (Ollama)
-```bash
-# Start Ollama (macOS/Linux/Docker)
-ollama serve
-
-# Pull Hermes in another terminal
-ollama pull hermes
-
-# Configure in Ormichat Settings → Captain
-# Endpoint: http://localhost:11434
-# Model: hermes
-```
-
----
-
-## Documentation
-
-| Document | Purpose |
-|----------|---------|
-| **AGENTS.md** | Code style, i18n, PR flow, enterprise patterns |
-| **INSTALL.md** | Docker setup, Captain config, webhooks, troubleshooting |
-| **Context.md** | Project overview, repo structure, customizations |
-
-## Key Files
-
-- `app/javascript/dashboard/` — Main agent dashboard (Vue 3)
-- `app/models/` — Rails models (Account, Conversation, Contact, etc.)
-- `app/services/` — Business logic (Captain, Automation, Webhooks)
-- `enterprise/` — Enterprise feature overlay
-- `lib/captain/` — Captain AI integration
-- `config/` — Routes, database, initializers
-- `theme/` — Tailwind tokens, Geist fonts
-
----
-
-## Development Commands
+## Desarrollo
 
 ```bash
-# Linting & formatting
-bundle exec rubocop -a                  # Ruby style
-pnpm eslint:fix                         # JS/Vue style
+bundle install && pnpm install               # dependencias
+bundle exec rails db:chatwoot_prepare        # base de datos local
+overmind start -f Procfile.dev               # Rails + Sidekiq + Vite
 
-# Testing
-pnpm test                               # JS watch mode
-pnpm test:watch                         # JS watch mode
-bundle exec rspec                       # Ruby tests
-bundle exec rspec spec/path:LINE        # Single test
-
-# Servers
-overmind start -f Procfile.dev          # All services (recommended)
-bundle exec rails s                     # Rails only
-pnpm vite                               # Frontend only
+pnpm test                                    # tests JS/Vue (Vitest)
+bundle exec rspec spec/ruta/al_spec.rb       # tests Ruby
+pnpm eslint:fix                              # lint JS/Vue
+bundle exec rubocop -a                       # lint Ruby
 ```
 
----
+Datos de demostración para una cuenta: `bundle exec rails runner "Seeders::AccountSeeder.new(account: Account.first).perform!"`.
 
-## Features by Module
+## Documentación
 
-### Conversations
-- ✅ Multi-channel (Telegram, email, widget, SMS, API, etc.)
-- ✅ Real-time via ActionCable
-- ✅ Full-text search (OpenSearch)
-- ✅ Selective labels (automation-only visibility)
-- ✅ Canned responses, templates
+| Archivo | Contenido |
+|---|---|
+| [`Context.md`](Context.md) | Qué es el proyecto, mapa del repo y customizaciones respecto a Chatwoot |
+| [`INSTALL.md`](INSTALL.md) | Despliegue con Docker, rebranding, ngrok, Captain sobre Ollama, troubleshooting |
+| [`AGENTS.md`](AGENTS.md) | Convenciones de código, i18n, commits y PRs, reglas del overlay Enterprise |
+| [`SECURITY.md`](SECURITY.md) | Reporte de vulnerabilidades |
 
-### Contacts & Custom Attributes
-- ✅ **File type** custom attributes (images, docs, binaries)
-- ✅ City/country with location links
-- ✅ Address fields
-- ✅ Date/checkbox formatting in panel
-- ✅ Contact history, activity timeline
+## Licencia
 
-### AI & Automations
-- ✅ Captain (local Hermes/Ollama)
-- ✅ Auto-assign via rules
-- ✅ Auto-label
-- ✅ Sequences & campaigns
-- ✅ Conversation classification
-
-### Security & Config
-- ✅ Custom roles with sidebar visibility control
-- ✅ SMTP config from UI (no restart)
-- ✅ Audit logs
-- ✅ Two-factor auth (Devise)
-- ✅ API tokens with scopes
-
----
-
-## Deployment Notes
-
-### Environment Variables
-```bash
-FRONTEND_URL=https://yourdomain.com
-RAILS_ENV=production
-SECRET_KEY_BASE=<generate with bundle exec rails secret>
-REDIS_URL=redis://localhost:6379/0
-DATABASE_URL=postgres://user:pass@host/db
-OLLAMA_ENDPOINT=http://localhost:11434
-SMTP_ADDRESS=smtp.provider.com
-SMTP_PORT=587
-SMTP_USERNAME=...
-SMTP_PASSWORD=...
-```
-
-### Production Checklist
-- [ ] TLS certificate (Let's Encrypt)
-- [ ] PostgreSQL backups (daily)
-- [ ] Redis persistence
-- [ ] Sidekiq monitoring
-- [ ] Ollama GPU config
-- [ ] Email provider (SendGrid/AWS SES)
-- [ ] CDN for assets (optional)
-
----
-
-## Contributing
-
-1. Read **AGENTS.md** for style & conventions
-2. Branch: `git checkout -b feat/your-feature`
-3. Test: `pnpm test && bundle exec rspec`
-4. PR with description of what changed & how to test
-5. Comply with RuboCop & ESLint
-
----
-
-## License
-
-Ormichat is a fork of Chatwoot (MIT). Ormichat-specific customizations are also MIT.
-
----
-
-## Support
-
-- 📖 [INSTALL.md](INSTALL.md) — Setup & troubleshooting
-- 💬 [GitHub Discussions](https://github.com/martinezruben/ormichat/discussions)
-- 🐛 [Issues](https://github.com/martinezruben/ormichat/issues)
-
----
-
-**Created:** September 2024 · **Base:** Chatwoot 4.17.1 · **Theme:** shadcn/ui neutral palette
+Basado en [Chatwoot](https://github.com/chatwoot/chatwoot) © Chatwoot Inc., publicado bajo licencia MIT (ver [`LICENSE`](LICENSE)). Las customizaciones de Ormichat se distribuyen bajo la misma licencia.
