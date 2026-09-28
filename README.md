@@ -1,139 +1,266 @@
-<img src="./.github/screenshots/header.png#gh-light-mode-only" width="100%" alt="Header light mode"/>
-<img src="./.github/screenshots/header-dark.png#gh-dark-mode-only" width="100%" alt="Header dark mode"/>
+# Ormichat 🚀
 
-___
+**Ormichat** is an independent fork of **Chatwoot 4.17.1**, an open-source customer engagement platform with AI capabilities. It's a production-ready, self-hosted alternative to Intercom/Zendesk with local LLM support via Ollama.
 
-# Chatwoot
-
-The modern customer support platform, an open-source alternative to Intercom, Zendesk, Salesforce Service Cloud etc.
-
-<p>
-  <img src="https://img.shields.io/circleci/build/github/chatwoot/chatwoot" alt="CircleCI Badge">
-    <a href="https://hub.docker.com/r/chatwoot/chatwoot/"><img src="https://img.shields.io/docker/pulls/chatwoot/chatwoot" alt="Docker Pull Badge"></a>
-  <a href="https://hub.docker.com/r/chatwoot/chatwoot/"><img src="https://img.shields.io/docker/cloud/build/chatwoot/chatwoot" alt="Docker Build Badge"></a>
-  <img src="https://img.shields.io/github/commit-activity/m/chatwoot/chatwoot" alt="Commits-per-month">
-  <a title="Crowdin" target="_self" href="https://chatwoot.crowdin.com/chatwoot"><img src="https://badges.crowdin.net/e/37ced7eba411064bd792feb3b7a28b16/localized.svg"></a>
-  <a href="https://discord.gg/cJXdrwS"><img src="https://img.shields.io/discord/647412545203994635" alt="Discord"></a>
-  <a href="https://status.chatwoot.com"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchatwoot%2Fstatus%2Fmaster%2Fapi%2Fchatwoot%2Fuptime.json" alt="uptime"></a>
-  <a href="https://status.chatwoot.com"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchatwoot%2Fstatus%2Fmaster%2Fapi%2Fchatwoot%2Fresponse-time.json" alt="response time"></a>
-  <a href="https://artifacthub.io/packages/helm/chatwoot/chatwoot"><img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/artifact-hub" alt="Artifact HUB"></a>
-</p>
-
-
-<p>
-  <a href="https://heroku.com/deploy?template=https://github.com/chatwoot/chatwoot/tree/master" alt="Deploy to Heroku">
-     <img width="150" alt="Deploy" src="https://www.herokucdn.com/deploy/button.svg"/>
-  </a>
-  <a href="https://marketplace.digitalocean.com/apps/chatwoot?refcode=f2238426a2a8" alt="Deploy to DigitalOcean">
-     <img width="200" alt="Deploy to DO" src="https://www.deploytodo.com/do-btn-blue.svg"/>
-  </a>
-</p>
-
-<img src="./.github/screenshots/dashboard.png#gh-light-mode-only" width="100%" alt="Chat dashboard dark mode"/>
-<img src="./.github/screenshots/dashboard-dark.png#gh-dark-mode-only" width="100%" alt="Chat dashboard"/>
+> [Architecture Diagram](#architecture) • [Database Schema](#database-schema) • [Quick Start](#quick-start) • [Documentation](#documentation)
 
 ---
 
-Chatwoot is the modern, open-source, and self-hosted customer support platform designed to help businesses deliver exceptional customer support experience. Built for scale and flexibility, Chatwoot gives you full control over your customer data while providing powerful tools to manage conversations across channels.
+## ✨ What's New
 
-### ✨ Captain – AI Agent for Support
+### shadcn/ui Design System
+- **Neutral palette** (dark/light mode): Replaced Ormichat's indigo theme with shadcn/ui's neutral design
+- **Geist typography**: Consistent font across all surfaces
+- **Component styling**: Button, Input, Dialog, etc. with shadcn/ui look & feel
+- **No extra dependencies**: achieved via Tailwind tokens only
 
-Supercharge your support with Captain, Chatwoot’s AI agent. Captain helps automate responses, handle common queries, and reduce agent workload—ensuring customers get instant, accurate answers. With Captain, your team can focus on complex conversations while routine questions are resolved automatically. Read more about Captain [here](https://chwt.app/captain-docs).
+### Features (vs. Chatwoot 4.17.1)
+- ✅ **Custom "File" attribute type** — attach binaries, preview images, insert into messages
+- ✅ **AI via local LLM** — Captain runs on Hermes/Ollama (not OpenAI)
+- ✅ **Contact panel** — city/country, location links, custom attributes formatting
+- ✅ **Automation-only labels** — invisible to agents, visible to automations
+- ✅ **Custom roles & sidebar visibility** — control menu item visibility per role
+- ✅ **SMTP config in UI** — Settings > Security > Mailer (editable test email)
+- ✅ **Spanish translations** — Full i18n for dashboard, Captain, campaigns, reports
+- ✅ **Branding overrides** — Rebranded to "Ormichat", stripped Chatwoot/chwt.app links
 
-### 💬 Omnichannel Support Desk
+---
 
-Chatwoot centralizes all customer conversations into one powerful inbox, no matter where your customers reach out from. It supports live chat on your website, email, Facebook, Instagram, Twitter, WhatsApp, Telegram, Line, SMS etc.
+## Tech Stack
 
-### 📚 Help center portal
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Vue 3 + Composition API, Vite, TailwindCSS + shadcn/ui, Vitest, Playwright |
+| **Backend** | Rails 7.2, PostgreSQL (pgvector), Redis, Sidekiq, ActionCable |
+| **Search** | OpenSearch (full-text conversations) |
+| **Storage** | ActiveStorage (proxy-served files) |
+| **AI** | Captain (Hermes/Ollama local LLM) |
+| **Deployment** | Docker Compose (postgres, redis, rails, sidekiq) |
+| **Infrastructure** | Telegram, Email (SMTP), Linear, Dyte webhooks |
 
-Publish help articles, FAQs, and guides through the built-in Help Center Portal. Enable customers to find answers on their own, reduce repetitive queries, and keep your support team focused on more complex issues.
+---
 
-### 🗂️ Other features
+## Architecture
 
-#### Collaboration & Productivity
+![Architecture Diagram](https://claude.ai/code/artifact/ormichat-architecture)
 
-- Private Notes and @mentions for internal team discussions.
-- Labels to organize and categorize conversations.
-- Keyboard Shortcuts and a Command Bar for quick navigation.
-- Canned Responses to reply faster to frequently asked questions.
-- Auto-Assignment to route conversations based on agent availability.
-- Multi-lingual Support to serve customers in multiple languages.
-- Custom Views and Filters for better inbox organization.
-- Business Hours and Auto-Responders to manage response expectations.
-- Teams and Automation tools for scaling support workflows.
-- Agent Capacity Management to balance workload across the team.
+**Key layers:**
+1. **Frontend** — Dashboard (Vue), Widget (embeddable), Portal (help center), all with shadcn/ui theme
+2. **API Gateway** — REST + ActionCable realtime
+3. **Backend Services** — Rails + Captain AI
+4. **Data Layer** — PostgreSQL, Redis, OpenSearch, ActiveStorage
+5. **Integrations** — Telegram, Email, external APIs, Ollama
 
-#### Customer Data & Segmentation
-- Contact Management with profiles and interaction history.
-- Contact Segments and Notes for targeted communication.
-- Campaigns to proactively engage customers.
-- Custom Attributes for storing additional customer data.
-- Pre-Chat Forms to collect user information before starting conversations.
+---
 
-#### Integrations
-- Slack Integration to manage conversations directly from Slack.
-- Dialogflow Integration for chatbot automation.
-- Dashboard Apps to embed internal tools within Chatwoot.
-- Shopify Integration to view and manage customer orders right within Chatwoot.
-- Use Google Translate to translate messages from your customers in realtime.
-- Create and manage Linear tickets within Chatwoot.
+## Database Schema
 
-#### Reports & Insights
-- Live View of ongoing conversations for real-time monitoring.
-- Conversation, Agent, Inbox, Label, and Team Reports for operational visibility.
-- CSAT Reports to measure customer satisfaction.
-- Downloadable Reports for offline analysis and reporting.
+```
+Accounts (multi-tenant root)
+├─ Inboxes (channels: email, telegram, widget, etc.)
+├─ Contacts (widget visitors, email subscribers)
+│  └─ CustomAttributes (file type, location, address)
+├─ Conversations (1:1 threads per contact)
+│  ├─ Messages (agent/visitor messages)
+│  └─ Labels (selectable: true/false for automation-only)
+├─ Agents (team members)
+├─ AgentBots (automation players)
+├─ AutomationRules (label/assign triggers)
+└─ Campaigns (broadcasts, sequences)
 
+Custom Extensions:
+├─ CustomAttributeDefinition.attribute_type = 'file'
+├─ CustomAttribute.value = signed URL (ActiveStorage proxy)
+├─ Label.selectable = false (hides from agent UI)
+└─ CustomRole.visible_menu_items (sidebar control)
+```
+
+---
+
+## Quick Start
+
+### Prerequisites
+- Docker + Docker Compose
+- Ruby 3.4.4 (for local dev)
+- Node.js 18+
+- PostgreSQL 14+ (if not Docker)
+- Redis 6+ (if not Docker)
+- Ollama (for Captain AI)
+
+### Using Docker Compose (Recommended)
+```bash
+git clone https://github.com/martinezruben/ormichat.git
+cd ormichat
+
+# Configure
+cp .env.example .env  # edit as needed
+export FRONTEND_URL=http://localhost:3000
+
+# Start stack
+docker compose up -d
+
+# Seed data
+docker exec ormichat-rails-1 bundle exec rails db:chatwoot_prepare
+
+# Visit http://localhost:3000
+```
+
+### Local Development
+```bash
+# Setup
+rbenv install $(cat .ruby-version)  # Ruby 3.4.4
+eval "$(rbenv init -)"
+bundle install
+pnpm install
+
+# Database
+bundle exec rails db:chatwoot_prepare
+
+# Compile frontend
+pnpm dev  # or `overmind start -f Procfile.dev`
+
+# Tests
+pnpm test                               # JS/Vue
+bundle exec rspec spec/path_spec.rb    # Ruby
+```
+
+### Captain AI (Ollama)
+```bash
+# Start Ollama (macOS/Linux/Docker)
+ollama serve
+
+# Pull Hermes in another terminal
+ollama pull hermes
+
+# Configure in Ormichat Settings → Captain
+# Endpoint: http://localhost:11434
+# Model: hermes
+```
+
+---
 
 ## Documentation
 
-Detailed documentation is available at [chatwoot.com/help-center](https://www.chatwoot.com/help-center).
+| Document | Purpose |
+|----------|---------|
+| **AGENTS.md** | Code style, i18n, PR flow, enterprise patterns |
+| **INSTALL.md** | Docker setup, Captain config, webhooks, troubleshooting |
+| **Context.md** | Project overview, repo structure, customizations |
 
-## Translation process
+## Key Files
 
-The translation process for Chatwoot web and mobile app is managed at [https://translate.chatwoot.com](https://translate.chatwoot.com) using Crowdin. Please read the [translation guide](https://www.chatwoot.com/docs/contributing/translating-chatwoot-to-your-language) for contributing to Chatwoot.
+- `app/javascript/dashboard/` — Main agent dashboard (Vue 3)
+- `app/models/` — Rails models (Account, Conversation, Contact, etc.)
+- `app/services/` — Business logic (Captain, Automation, Webhooks)
+- `enterprise/` — Enterprise feature overlay
+- `lib/captain/` — Captain AI integration
+- `config/` — Routes, database, initializers
+- `theme/` — Tailwind tokens, Geist fonts
 
-## Branching model
+---
 
-We use the [git-flow](https://nvie.com/posts/a-successful-git-branching-model/) branching model. The base branch is `develop`.
-If you are looking for a stable version, please use the `master` or tags labelled as `v1.x.x`.
+## Development Commands
 
-## Deployment
+```bash
+# Linting & formatting
+bundle exec rubocop -a                  # Ruby style
+pnpm eslint:fix                         # JS/Vue style
 
-### Heroku one-click deploy
+# Testing
+pnpm test                               # JS watch mode
+pnpm test:watch                         # JS watch mode
+bundle exec rspec                       # Ruby tests
+bundle exec rspec spec/path:LINE        # Single test
 
-Deploying Chatwoot to Heroku is a breeze. It's as simple as clicking this button:
+# Servers
+overmind start -f Procfile.dev          # All services (recommended)
+bundle exec rails s                     # Rails only
+pnpm vite                               # Frontend only
+```
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/chatwoot/chatwoot/tree/master)
+---
 
-Follow this [link](https://www.chatwoot.com/docs/environment-variables) to understand setting the correct environment variables for the app to work with all the features. There might be breakages if you do not set the relevant environment variables.
+## Features by Module
 
+### Conversations
+- ✅ Multi-channel (Telegram, email, widget, SMS, API, etc.)
+- ✅ Real-time via ActionCable
+- ✅ Full-text search (OpenSearch)
+- ✅ Selective labels (automation-only visibility)
+- ✅ Canned responses, templates
 
-### DigitalOcean 1-Click Kubernetes deployment
+### Contacts & Custom Attributes
+- ✅ **File type** custom attributes (images, docs, binaries)
+- ✅ City/country with location links
+- ✅ Address fields
+- ✅ Date/checkbox formatting in panel
+- ✅ Contact history, activity timeline
 
-Chatwoot now supports 1-Click deployment to DigitalOcean as a kubernetes app.
+### AI & Automations
+- ✅ Captain (local Hermes/Ollama)
+- ✅ Auto-assign via rules
+- ✅ Auto-label
+- ✅ Sequences & campaigns
+- ✅ Conversation classification
 
-<a href="https://marketplace.digitalocean.com/apps/chatwoot?refcode=f2238426a2a8" alt="Deploy to DigitalOcean">
-  <img width="200" alt="Deploy to DO" src="https://www.deploytodo.com/do-btn-blue.svg"/>
-</a>
+### Security & Config
+- ✅ Custom roles with sidebar visibility control
+- ✅ SMTP config from UI (no restart)
+- ✅ Audit logs
+- ✅ Two-factor auth (Devise)
+- ✅ API tokens with scopes
 
-### Other deployment options
+---
 
-For other supported options, checkout our [deployment page](https://chatwoot.com/deploy).
+## Deployment Notes
 
-## Security
+### Environment Variables
+```bash
+FRONTEND_URL=https://yourdomain.com
+RAILS_ENV=production
+SECRET_KEY_BASE=<generate with bundle exec rails secret>
+REDIS_URL=redis://localhost:6379/0
+DATABASE_URL=postgres://user:pass@host/db
+OLLAMA_ENDPOINT=http://localhost:11434
+SMTP_ADDRESS=smtp.provider.com
+SMTP_PORT=587
+SMTP_USERNAME=...
+SMTP_PASSWORD=...
+```
 
-Looking to report a vulnerability? Please refer our [SECURITY.md](./SECURITY.md) file.
+### Production Checklist
+- [ ] TLS certificate (Let's Encrypt)
+- [ ] PostgreSQL backups (daily)
+- [ ] Redis persistence
+- [ ] Sidekiq monitoring
+- [ ] Ollama GPU config
+- [ ] Email provider (SendGrid/AWS SES)
+- [ ] CDN for assets (optional)
 
-## Community
+---
 
-If you need help or just want to hang out, come, say hi on our [Discord](https://discord.gg/cJXdrwS) server.
+## Contributing
 
-## Contributors
+1. Read **AGENTS.md** for style & conventions
+2. Branch: `git checkout -b feat/your-feature`
+3. Test: `pnpm test && bundle exec rspec`
+4. PR with description of what changed & how to test
+5. Comply with RuboCop & ESLint
 
-Thanks goes to all these [wonderful people](https://www.chatwoot.com/docs/contributors):
+---
 
-<a href="https://github.com/chatwoot/chatwoot/graphs/contributors"><img src="https://opencollective.com/chatwoot/contributors.svg?width=890&button=false" /></a>
+## License
 
+Ormichat is a fork of Chatwoot (MIT). Ormichat-specific customizations are also MIT.
 
-*Chatwoot* &copy; 2017-2026, Chatwoot Inc - Released under the MIT License.
+---
+
+## Support
+
+- 📖 [INSTALL.md](INSTALL.md) — Setup & troubleshooting
+- 💬 [GitHub Discussions](https://github.com/martinezruben/ormichat/discussions)
+- 🐛 [Issues](https://github.com/martinezruben/ormichat/issues)
+
+---
+
+**Created:** September 2024 · **Base:** Chatwoot 4.17.1 · **Theme:** shadcn/ui neutral palette
