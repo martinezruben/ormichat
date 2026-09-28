@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="960" viewBox="0 0 1480 960" font-family="Segoe UI, Geist, Helvetica, Arial, sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8A8886"/></marker><marker id="ah-start" markerWidth="10" markerHeight="10" refX="2" refY="5" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#8A8886"/></marker></defs>
+<rect width="1480" height="960" fill="#FFFFFF"/>
+<text x="24" y="38" font-size="22" font-weight="700" fill="#323130">Ormichat — Arquitectura de componentes</text>
+<text x="24" y="58" font-size="12" fill="#605E5C">Fork de Chatwoot 4.17.1 · Rails 7.2 · Vue 3 · PostgreSQL 16 + pgvector · Redis · Sidekiq 7 · Captain AI sobre Ollama</text>
+<rect x="24" y="80" width="210" height="650" rx="4" fill="#FAF9F8" stroke="#C8C6C4" stroke-width="1.5"/>
+<text x="36" y="102" font-size="13" font-weight="600" fill="#323130">Usuarios y canales</text>
+<rect x="262" y="80" width="150" height="650" rx="4" fill="#FAF9F8" stroke="#C8C6C4" stroke-width="1.5"/>
+<text x="274" y="102" font-size="13" font-weight="600" fill="#323130">Internet</text>
+<rect x="440" y="80" width="750" height="800" rx="4" fill="#FFFFFF" stroke="#605E5C" stroke-width="1.5"/>
+<rect x="450" y="89" width="16" height="16" rx="3" fill="#605E5C"/>
+<text x="472" y="102" font-size="13" font-weight="600" fill="#323130">Servidor (VPS / host Linux)</text>
+<rect x="460" y="120" width="710" height="560" rx="4" fill="#FFFFFF" stroke="#0078D4" stroke-width="1.5" stroke-dasharray="7 4"/>
+<rect x="470" y="129" width="16" height="16" rx="3" fill="#0078D4"/>
+<text x="492" y="142" font-size="13" font-weight="600" fill="#0078D4">Docker Compose — red interna</text>
+<rect x="480" y="160" width="420" height="260" rx="4" fill="#F3F9FD" stroke="#C8C6C4" stroke-width="1.5"/>
+<text x="492" y="182" font-size="13" font-weight="600" fill="#323130">rails · Puma :3000 (Rails 7.2)</text>
+<rect x="920" y="160" width="230" height="260" rx="4" fill="#FDF6F3" stroke="#C8C6C4" stroke-width="1.5"/>
+<text x="932" y="182" font-size="13" font-weight="600" fill="#323130">sidekiq · jobs asíncronos</text>
+<rect x="480" y="450" width="670" height="210" rx="4" fill="#F7F4FB" stroke="#C8C6C4" stroke-width="1.5"/>
+<text x="492" y="472" font-size="13" font-weight="600" fill="#323130">Datos</text>
+<rect x="460" y="710" width="340" height="150" rx="4" fill="#FFFFFF" stroke="#C8C6C4" stroke-width="1.5"/>
+<text x="472" y="732" font-size="13" font-weight="600" fill="#323130">Build del frontend (host)</text>
+<rect x="830" y="710" width="340" height="150" rx="4" fill="#FFFFFF" stroke="#8661C5" stroke-width="1.5"/>
+<text x="842" y="732" font-size="13" font-weight="600" fill="#5C2D91">Ollama · host :11434</text>
+<rect x="1218" y="80" width="238" height="650" rx="4" fill="#FAF9F8" stroke="#C8C6C4" stroke-width="1.5"/>
+<text x="1230" y="102" font-size="13" font-weight="600" fill="#323130">Servicios externos</text>
+<path d="M160,185 L337,185 L337,330" fill="none" stroke="#8A8886" stroke-width="2" marker-end="url(#ah)"/>
+<circle cx="230" cy="185" r="11" fill="#0078D4"/>
+<text x="230" y="189.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+<text x="246" y="177" font-size="11" fill="#605E5C" text-anchor="start">HTTPS</text>
+<path d="M160,405 L305,405" fill="none" stroke="#8A8886" stroke-width="2" marker-end="url(#ah)"/>
+<circle cx="220" cy="405" r="11" fill="#0078D4"/>
+<text x="220" y="409.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+<text x="236" y="397" font-size="11" fill="#605E5C" text-anchor="start">widget JS</text>
+<path d="M160,610 L337,610 L337,470" fill="none" stroke="#8A8886" stroke-width="2" marker-start="url(#ah-start)" marker-end="url(#ah)"/>
+<circle cx="230" cy="610" r="11" fill="#0078D4"/>
+<text x="230" y="614.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+<text x="246" y="602" font-size="11" fill="#605E5C" text-anchor="start">webhooks</text>
+<path d="M368,400 L420,400 L420,290 L478,290" fill="none" stroke="#8A8886" stroke-width="2" marker-end="url(#ah)"/>
+<circle cx="420" cy="345" r="11" fill="#0078D4"/>
+<text x="420" y="349.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">4</text>
+<path d="M690,420 L690,448" fill="none" stroke="#8A8886" stroke-width="2" marker-start="url(#ah-start)" marker-end="url(#ah)"/>
+<text x="712" y="440" font-size="11" fill="#605E5C">ActiveRecord · Redis · ActionCable pub/sub</text>
+<path d="M1035,420 L1035,448" fill="none" stroke="#8A8886" stroke-width="2" marker-start="url(#ah-start)" marker-end="url(#ah)"/>
+<path d="M1150,250 L1305,250" fill="none" stroke="#8A8886" stroke-width="2" marker-end="url(#ah)"/>
+<circle cx="1228" cy="250" r="11" fill="#0078D4"/>
+<text x="1228" y="254.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">5</text>
+<text x="1244" y="242" font-size="11" fill="#605E5C" text-anchor="start">SMTP</text>
+<path d="M1150,370 L1200,370 L1200,765 L1172,765" fill="none" stroke="#8A8886" stroke-width="2" marker-end="url(#ah)"/>
+<circle cx="1200" cy="560" r="11" fill="#0078D4"/>
+<text x="1200" y="564.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">6</text>
+<path d="M1150,330 L1260,330 L1260,440" fill="none" stroke="#8A8886" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<circle cx="1260" cy="385" r="11" fill="#0078D4"/>
+<text x="1260" y="389.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">7</text>
+<path d="M630,708 L630,682" fill="none" stroke="#8A8886" stroke-width="2" marker-end="url(#ah)"/>
+<text x="640" y="700" font-size="11" fill="#605E5C">bind mount public/vite</text>
+<rect x="107" y="132" width="44" height="36" rx="3" fill="#FFFFFF" stroke="#0078D4" stroke-width="2.5"/><rect x="107" y="132" width="44" height="9" rx="2" fill="#0078D4"/><circle cx="113" cy="136.5" r="1.8" fill="#fff"/><circle cx="119" cy="136.5" r="1.8" fill="#fff"/><rect x="113" y="147" width="18" height="4" rx="1" fill="#9CCBF0"/><rect x="113" y="155" width="30" height="4" rx="1" fill="#9CCBF0"/>
+<text x="129" y="196" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Agentes / admins</text>
+<text x="129" y="213" font-size="11" fill="#605E5C" text-anchor="middle">navegador</text>
+<path d="M109 364 h40 a4 4 0 0 1 4 4 v20 a4 4 0 0 1 -4 4 h-24 l-10 9 v-9 h-6 a4 4 0 0 1 -4 -4 v-20 a4 4 0 0 1 4 -4z" fill="#0078D4"/><circle cx="119" cy="378" r="3" fill="#fff"/><circle cx="129" cy="378" r="3" fill="#fff"/><circle cx="139" cy="378" r="3" fill="#fff"/>
+<text x="129" y="426" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Visitantes web</text>
+<text x="129" y="443" font-size="11" fill="#605E5C" text-anchor="middle">widget embebido</text>
+<text x="129" y="458" font-size="11" fill="#605E5C" text-anchor="middle">en el sitio del cliente</text>
+<circle cx="129" cy="580" r="22" fill="#229ED9"/><path d="M117 579 L141 570 L136 591 L130 584 L126 589 L126 582 Z" fill="#fff"/>
+<text x="129" y="626" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Telegram · WhatsApp</text>
+<text x="129" y="643" font-size="11" fill="#605E5C" text-anchor="middle">Meta · Email · SMS</text>
+<text x="129" y="658" font-size="11" fill="#605E5C" text-anchor="middle">(APIs de cada canal)</text>
+<path d="M337 356 L357 364 V382 C357 394 347 401 337 404 C327 401 317 394 317 382 V364 Z" fill="#107C10"/><rect x="329" y="378" width="16" height="12" rx="2" fill="#fff"/><path d="M332 378 v-5 a5 5 0 0 1 10 0 v5" fill="none" stroke="#fff" stroke-width="2.5"/>
+<text x="337" y="426" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">ngrok / TLS</text>
+<text x="337" y="443" font-size="11" fill="#605E5C" text-anchor="middle">FRONTEND_URL</text>
+<text x="337" y="458" font-size="11" fill="#605E5C" text-anchor="middle">HTTPS público</text>
+<path d="M528 207 L550 245 L572 207 H563 L550 229 L537 207 Z" fill="#41B883"/><path d="M537 207 L550 229 L563 207 H556 L550 217 L544 207 Z" fill="#35495E"/>
+<text x="550" y="271" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Dashboard</text>
+<text x="550" y="288" font-size="11" fill="#605E5C" text-anchor="middle">Vue 3 + Vite</text>
+<rect x="668" y="205" width="30" height="40" rx="3" fill="#fff" stroke="#0078D4" stroke-width="2.5"/><circle cx="704" cy="237" r="10" fill="#0078D4"/><path d="M699 235 h10 M699 239 h7" stroke="#fff" stroke-width="2"/><rect x="673" y="212" width="20" height="4" rx="1" fill="#9CCBF0"/><rect x="673" y="220" width="14" height="4" rx="1" fill="#9CCBF0"/>
+<text x="690" y="271" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Widget</text>
+<text x="690" y="288" font-size="11" fill="#605E5C" text-anchor="middle">chat embebible</text>
+<path d="M830 211 C822 205 808 205 808 207 V243 C816 241 824 241 830 247 Z" fill="#0078D4"/><path d="M830 211 C838 205 852 205 852 207 V243 C844 241 836 241 830 247 Z" fill="#50A0E6"/>
+<text x="830" y="271" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Help Center</text>
+<text x="830" y="288" font-size="11" fill="#605E5C" text-anchor="middle">portal público</text>
+<rect x="526" y="320" width="48" height="40" rx="4" fill="#5C2D91"/><text x="550" y="347" font-size="19" font-weight="700" fill="#fff" text-anchor="middle">{ }</text>
+<text x="550" y="386" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">API REST v1</text>
+<text x="550" y="403" font-size="11" fill="#605E5C" text-anchor="middle">Devise · tokens</text>
+<circle cx="690" cy="340" r="22" fill="#FFB900"/><path d="M693 324 L681 343 H690 L687 356 L699 337 H690 Z" fill="#fff"/>
+<text x="690" y="386" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">ActionCable</text>
+<text x="690" y="403" font-size="11" fill="#605E5C" text-anchor="middle">tiempo real (WS)</text>
+<circle cx="830" cy="329" r="7" fill="none" stroke="#C239B3" stroke-width="4"/><circle cx="817" cy="352" r="7" fill="none" stroke="#C239B3" stroke-width="4"/><circle cx="843" cy="352" r="7" fill="none" stroke="#C239B3" stroke-width="4"/><path d="M827 335 L819 346 M833 335 L841 346 M824 352 H836" stroke="#C239B3" stroke-width="3"/>
+<text x="830" y="386" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Webhooks</text>
+<text x="830" y="403" font-size="11" fill="#605E5C" text-anchor="middle">entrada de canales</text>
+<polygon points="1057.0,225.0 1049.8,231.1 1050.6,240.6 1041.1,239.8 1035.0,247.0 1028.9,239.8 1019.4,240.6 1020.2,231.1 1013.0,225.0 1020.2,218.9 1019.4,209.4 1028.9,210.2 1035.0,203.0 1041.1,210.2 1050.6,209.4 1049.8,218.9" fill="#D83B01" stroke="#D83B01" stroke-width="3" stroke-linejoin="round"/><circle cx="1035" cy="225" r="7" fill="#fff"/>
+<text x="1035" y="271" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Sidekiq 7</text>
+<text x="1035" y="288" font-size="11" fill="#605E5C" text-anchor="middle">emails · campañas · reglas</text>
+<rect x="1019" y="329" width="32" height="32" rx="4" fill="#8661C5"/><path d="M1025 323 v6 M1025 361 v6 M1013 335 h6 M1051 335 h6" stroke="#8661C5" stroke-width="2.5"/><path d="M1035 323 v6 M1035 361 v6 M1013 345 h6 M1051 345 h6" stroke="#8661C5" stroke-width="2.5"/><path d="M1045 323 v6 M1045 361 v6 M1013 355 h6 M1051 355 h6" stroke="#8661C5" stroke-width="2.5"/><text x="1035" y="350" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">AI</text>
+<text x="1035" y="391" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Captain</text>
+<text x="1035" y="408" font-size="11" fill="#605E5C" text-anchor="middle">agente IA (jobs)</text>
+<path d="M580 509 V541 A20 7 0 0 0 620 541 V509" fill="#0078D4"/><ellipse cx="600" cy="509" rx="20" ry="7" fill="#50A0E6"/><path d="M580 521 A20 7 0 0 0 620 521 M580 531 A20 7 0 0 0 620 531" fill="none" stroke="#9CCBF0" stroke-width="1.5"/>
+<text x="600" y="571" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">PostgreSQL 16</text>
+<text x="600" y="588" font-size="11" fill="#605E5C" text-anchor="middle">pgvector (embeddings)</text>
+<text x="600" y="603" font-size="11" fill="#605E5C" text-anchor="middle">~100 tablas</text>
+<path d="M815 527 L837 535 L815 543 L793 535 Z" fill="#A41E11"/><path d="M815 516 L837 524 L815 532 L793 524 Z" fill="#C6302B"/><path d="M815 505 L837 513 L815 521 L793 513 Z" fill="#D82C20"/>
+<text x="815" y="571" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Redis</text>
+<text x="815" y="588" font-size="11" fill="#605E5C" text-anchor="middle">colas Sidekiq · cache</text>
+<text x="815" y="603" font-size="11" fill="#605E5C" text-anchor="middle">pub/sub ActionCable</text>
+<rect x="1008" y="509" width="44" height="34" rx="3" fill="#0063B1"/><rect x="1014" y="516" width="8" height="8" rx="1" fill="#9CCBF0"/><rect x="1014" y="528" width="8" height="8" rx="1" fill="#fff"/><rect x="1026" y="516" width="8" height="8" rx="1" fill="#9CCBF0"/><rect x="1026" y="528" width="8" height="8" rx="1" fill="#fff"/><rect x="1038" y="516" width="8" height="8" rx="1" fill="#9CCBF0"/><rect x="1038" y="528" width="8" height="8" rx="1" fill="#fff"/>
+<text x="1030" y="571" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">ActiveStorage</text>
+<text x="1030" y="588" font-size="11" fill="#605E5C" text-anchor="middle">adjuntos y archivos</text>
+<text x="1030" y="603" font-size="11" fill="#605E5C" text-anchor="middle">servidos vía /proxy</text>
+<path d="M630 743 L652 754 V777 L630 788 L608 777 V754 Z" fill="#F7B500"/><path d="M608 754 L630 765 L652 754 M630 765 V788" fill="none" stroke="#fff" stroke-width="2"/>
+<text x="630" y="811" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">pnpm + Vite</text>
+<text x="630" y="828" font-size="11" fill="#605E5C" text-anchor="middle">compila dashboard,</text>
+<text x="630" y="843" font-size="11" fill="#605E5C" text-anchor="middle">widget y portal</text>
+<rect x="984" y="749" width="32" height="32" rx="4" fill="#8661C5"/><path d="M990 743 v6 M990 781 v6 M978 755 h6 M1016 755 h6" stroke="#8661C5" stroke-width="2.5"/><path d="M1000 743 v6 M1000 781 v6 M978 765 h6 M1016 765 h6" stroke="#8661C5" stroke-width="2.5"/><path d="M1010 743 v6 M1010 781 v6 M978 775 h6 M1016 775 h6" stroke="#8661C5" stroke-width="2.5"/><text x="1000" y="770" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">AI</text>
+<text x="1000" y="811" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Ollama</text>
+<text x="1000" y="828" font-size="11" fill="#605E5C" text-anchor="middle">llama3.1:8b (chat)</text>
+<text x="1000" y="843" font-size="11" fill="#605E5C" text-anchor="middle">nomic-embed-text</text>
+<rect x="1314" y="234" width="46" height="32" rx="3" fill="#0078D4"/><path d="M1316 237 L1337 254 L1358 237" fill="none" stroke="#fff" stroke-width="2.5"/>
+<text x="1337" y="296" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">Servidor SMTP</text>
+<text x="1337" y="313" font-size="11" fill="#605E5C" text-anchor="middle">configurable en</text>
+<text x="1337" y="328" font-size="11" fill="#605E5C" text-anchor="middle">Settings › Security</text>
+<circle cx="1332" cy="465" r="14" fill="none" stroke="#005EB8" stroke-width="5"/><path d="M1342 475 L1355 488" stroke="#005EB8" stroke-width="7" stroke-linecap="round"/>
+<text x="1337" y="516" font-size="13" font-weight="600" fill="#323130" text-anchor="middle">OpenSearch</text>
+<text x="1337" y="533" font-size="11" fill="#605E5C" text-anchor="middle">opcional</text>
+<text x="1337" y="548" font-size="11" fill="#605E5C" text-anchor="middle">(OPENSEARCH_URL)</text>
+<text x="24" y="899" font-size="12" font-weight="600" fill="#323130">Flujos</text>
+<circle cx="33" cy="919" r="9" fill="#0078D4"/><text x="33" y="923" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+<text x="48" y="923" font-size="11" fill="#605E5C">Agentes usan el dashboard</text>
+<circle cx="227.5" cy="919" r="9" fill="#0078D4"/><text x="227.5" y="923" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+<text x="242.5" y="923" font-size="11" fill="#605E5C">Visitantes chatean vía widget</text>
+<circle cx="446.4" cy="919" r="9" fill="#0078D4"/><text x="446.4" y="923" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+<text x="461.4" y="923" font-size="11" fill="#605E5C">Canales envían/reciben por webhook</text>
+<circle cx="695.8" cy="919" r="9" fill="#0078D4"/><text x="695.8" y="923" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">4</text>
+<text x="710.8" y="923" font-size="11" fill="#605E5C">ngrok/TLS enruta a Puma</text>
+<circle cx="878.0999999999999" cy="919" r="9" fill="#0078D4"/><text x="878.0999999999999" y="923" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">5</text>
+<text x="893.0999999999999" y="923" font-size="11" fill="#605E5C">Envío de correos</text>
+<circle cx="1017.6999999999999" cy="919" r="9" fill="#0078D4"/><text x="1017.6999999999999" y="923" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">6</text>
+<text x="1032.6999999999998" y="923" font-size="11" fill="#605E5C">Captain → Ollama (OpenAI-compatible)</text>
+<circle cx="1279.3" cy="919" r="9" fill="#0078D4"/><text x="1279.3" y="923" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">7</text>
+<text x="1294.3" y="923" font-size="11" fill="#605E5C">Búsqueda avanzada (opcional)</text>
+</svg>
