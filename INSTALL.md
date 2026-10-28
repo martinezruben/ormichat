@@ -50,6 +50,15 @@ docker exec chatwoot-rails-1 bundle exec rails db:chatwoot_prepare
 
 La app queda expuesta en `http://localhost:3000`.
 
+Una instalación nueva arranca con la base vacía: marca "Chatwoot", plan community y Captain sin configurar, porque eso vive en la base de datos y no en el código. Después de crear la cuenta inicial en el onboarding, aplicar la configuración de Ormichat (secciones 5, 7 y 9) con:
+
+```bash
+docker compose exec -e CAPTAIN_ENDPOINT=http://<gateway-docker>:11434 rails bundle exec rails ormichat:setup
+docker compose restart rails sidekiq
+```
+
+`CAPTAIN_ENDPOINT` es opcional (sin él se omite Captain); el gateway se obtiene con `docker network inspect <proyecto>_default`. También acepta `CAPTAIN_MODEL` y `CAPTAIN_EMBEDDING_MODEL`. Se puede correr de nuevo sin problema, por ejemplo después de crear más cuentas.
+
 ## 4. Flujo de desarrollo (bind mounts)
 
 **Hallazgo importante**: los contenedores corren desde la imagen `chatwoot/chatwoot:latest` (código horneado en el build de Chatwoot), **no** desde este repo. `docker-compose.yml` monta como bind mounts los directorios de código fuente que sí se editan acá, para que los cambios se reflejen sin tener que reconstruir la imagen:
