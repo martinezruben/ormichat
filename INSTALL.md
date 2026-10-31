@@ -1,13 +1,13 @@
 # Ormichat — Instalación y configuración
 
-Este documento describe cómo está armado este deployment de **Ormichat** (fork independiente de Chatwoot 4.17.1), qué se le customizó respecto al Chatwoot original, y cómo levantarlo/mantenerlo. Pensado para que alguien sin contexto previo pueda reproducir o continuar este setup.
+Este documento describe cómo está armado este deployment de **Ormichat**, qué se le customizó respecto al código base, y cómo levantarlo/mantenerlo. Pensado para que alguien sin contexto previo pueda reproducir o continuar este setup.
 
 ## Índice
 
 1. [Arquitectura general](#1-arquitectura-general)
 2. [Requisitos previos](#2-requisitos-previos)
 3. [Levantar el entorno desde cero](#3-levantar-el-entorno-desde-cero)
-4. [Flujo de desarrollo (bind mounts)](#4-flujo-de-desarrollo-bind-mounts)
+4. [Imagen propia y actualizaciones](#4-imagen-propia-y-actualizaciones)
 5. [Módulos Enterprise habilitados](#5-módulos-enterprise-habilitados)
 6. [Feature custom: Custom Attribute tipo "File"](#6-feature-custom-custom-attribute-tipo-file)
 7. [Rebranding a Ormichat](#7-rebranding-a-ormichat)
@@ -21,104 +21,75 @@ Este documento describe cómo está armado este deployment de **Ormichat** (fork
 
 ## 1. Arquitectura general
 
-- **Backend/Frontend**: Rails 7.2 + Vue 3, corriendo en Docker vía `docker-compose.yml`, imagen base `chatwoot/chatwoot:latest` (publicada por Chatwoot, NO se buildea desde este código — ver sección 4).
-- **Servicios**: `postgres` (con `pgvector`, necesario para Captain), `redis`, `rails`, `sidekiq`.
-- **Repo git**: propio, privado, sin ningún vínculo con `chatwoot/chatwoot` (ver sección 11).
+- **Backend/Frontend**: Rails 7.2 + Vue 3, corriendo en Docker vía `docker-compose.yml`. La imagen `ormichat` se construye desde este repo con `docker/Dockerfile` (Ruby y Node fijados, frontend compilado dentro del build): no depende de ninguna imagen publicada por terceros (ver sección 4).
+- **Servicios**: `postgres` (con `pgvector`, necesario para Captain), `redis`, `setup` (migraciones, corre una vez al arrancar), `rails`, `sidekiq`. Datos persistentes en los volúmenes `postgres_data`, `redis_data` y `storage_data` (archivos subidos).
+- **Repo git**: propio, privado, sin ningún vínculo con repos externos (ver sección 11).
 - **IA (Captain)**: corre 100% local sobre Ollama, sin depender de OpenAI (ver sección 9).
 
 ## 2. Requisitos previos
 
 - Docker + Docker Compose.
-- Node.js y `pnpm` en el **host** (no en los contenedores — la imagen de producción no trae `node_modules`). Usado para compilar el frontend cuando se cambia algo en `app/javascript`.
 - [Ollama](https://ollama.com) instalado en el host si se quiere usar Captain AI gratis (sección 9).
-- Un archivo `.env` en la raíz del repo con:
-  ```
-  SECRET_KEY_BASE=<generar con: openssl rand -hex 64>
-  ```
+- Un archivo `.env` en la raíz del repo, copiado de `.env.example` (`FRONTEND_URL` con HTTPS público, `SECRET_KEY_BASE` y `POSTGRES_PASSWORD`, ambos generables con `openssl rand -hex 64`).
 
 ## 3. Levantar el entorno desde cero
 
 ```bash
-docker compose up -d
+cp .env.example .env     # completar FRONTEND_URL, SECRET_KEY_BASE y POSTGRES_PASSWORD
+docker compose up -d --build
 ```
 
-Esto levanta `postgres`, `redis`, `rails` y `sidekiq`. La primera vez, correr las migraciones:
+El primer build compila gemas y frontend (varios minutos). El servicio `setup` crea y migra la base de datos antes de que arranquen `rails` y `sidekiq`. La app queda en `http://localhost:3000` (detrás de tu proxy HTTPS en producción).
 
-```bash
-docker exec chatwoot-rails-1 bundle exec rails db:chatwoot_prepare
-```
-
-La app queda expuesta en `http://localhost:3000`.
-
-Una instalación nueva arranca con la base vacía: marca "Chatwoot", plan community y Captain sin configurar, porque eso vive en la base de datos y no en el código. Después de crear la cuenta inicial en el onboarding, aplicar la configuración de Ormichat (secciones 5, 7 y 9) con:
+Una instalación nueva ya arranca con la marca Ormichat, el plan Enterprise y todas las features premium activadas (los defaults están en `config/installation_config.yml` y `config/features.yml`). Lo único que hay que configurar es la conexión de Captain (sección 9), después de crear la cuenta inicial en el onboarding:
 
 ```bash
 docker compose exec -e CAPTAIN_ENDPOINT=http://<gateway-docker>:11434 rails bundle exec rails ormichat:setup
 docker compose restart rails sidekiq
 ```
 
-`CAPTAIN_ENDPOINT` es opcional (sin él se omite Captain); el gateway se obtiene con `docker network inspect <proyecto>_default`. También acepta `CAPTAIN_MODEL` y `CAPTAIN_EMBEDDING_MODEL`. Se puede correr de nuevo sin problema, por ejemplo después de crear más cuentas.
+`CAPTAIN_ENDPOINT` es opcional; el gateway se obtiene con `docker network inspect <proyecto>_default`. También acepta `CAPTAIN_MODEL` y `CAPTAIN_EMBEDDING_MODEL`. La tarea sirve además para llevar una base ya existente al mismo estado (marca, plan y features en cuentas viejas) y es seguro correrla varias veces.
 
-## 4. Flujo de desarrollo (bind mounts)
+### Pasar de la versión anterior del compose (imagen `chatwoot/chatwoot` con bind mounts)
 
-**Hallazgo importante**: los contenedores corren desde la imagen `chatwoot/chatwoot:latest` (código horneado en el build de Chatwoot), **no** desde este repo. `docker-compose.yml` monta como bind mounts los directorios de código fuente que sí se editan acá, para que los cambios se reflejen sin tener que reconstruir la imagen:
+Si el servidor ya tiene volúmenes creados por esa versión, Postgres conserva sus credenciales originales (usuario `chatwoot`, base `chatwoot_production`, contraseña `chatwoot`). Para reutilizar los datos, el `.env` nuevo debe decirlo:
 
-```yaml
-volumes:
-  - ./app:/app/app
-  - ./config:/app/config
-  - ./lib:/app/lib
-  - ./enterprise:/app/enterprise
-  - ./db/migrate:/app/db/migrate
-  - ./public/vite:/app/public/vite
+```
+POSTGRES_USER=chatwoot
+POSTGRES_DB=chatwoot_production
+POSTGRES_PASSWORD=chatwoot
+SECRET_KEY_BASE=<el mismo que ya usabas>
 ```
 
-**Lo que NO está montado** (y por qué): `vendor/bundle` (gemas Ruby) y `node_modules` — la imagen ya los trae instalados en las versiones correctas; montar esos directorios locales (vacíos o con otras versiones) rompería el arranque.
+Conservar el `SECRET_KEY_BASE` mantiene las sesiones y los datos cifrados. Los archivos subidos que estaban dentro del contenedor anterior no se conservan (no tenían volumen).
 
-### Cambios de backend (Ruby)
+## 4. Imagen propia y actualizaciones
 
-Al ser `RAILS_ENV=production`, el código Ruby se carga una sola vez al bootear (no hay autoload). Después de editar algo en `app/`, `config/`, `lib/` o `enterprise/`:
+`docker/Dockerfile` construye la imagen en tres etapas, todas con versiones fijadas (`RUBY_VERSION`, `NODE_VERSION`):
+
+1. **frontend**: `pnpm install --frozen-lockfile`, SDK y Vite.
+2. **builder**: `bundle install` (sin development/test) y `assets:precompile`.
+3. **final**: Ruby slim con solo las librerías de ejecución (libpq, libvips, imagemagick, cliente de postgres), corriendo como usuario no root.
+
+El código va dentro de la imagen: no hay bind mounts. Para aplicar cualquier cambio (Ruby, Vue, migraciones, traducciones):
 
 ```bash
-docker restart chatwoot-rails-1 chatwoot-sidekiq-1
+git pull
+docker compose up -d --build     # reconstruye y reinicia; `setup` aplica las migraciones nuevas
 ```
 
-### Migraciones nuevas
-
-Como `db/migrate` está bind-mounteado, un archivo de migración nuevo ya es visible en el contenedor. Correr:
+Los datos no se tocan: viven en volúmenes con nombre. Para respaldarlos:
 
 ```bash
-docker exec chatwoot-rails-1 bundle exec rails db:migrate
+docker compose exec -T postgres pg_dump -U ormichat ormichat_production | gzip > backup-$(date +%F).sql.gz
+docker run --rm -v ormichat_storage_data:/data -v "$PWD":/out busybox tar czf /out/storage-$(date +%F).tgz -C /data .
 ```
 
-### Cambios de frontend (Vue/JS)
-
-El contenedor **no tiene toolchain de JS** (no hay `node`/`pnpm`/`vite` con `node_modules`). El build se hace en el **host**:
-
-```bash
-cd /home/ruben/chatwoot
-pnpm install                # solo la primera vez o si cambia package.json
-pnpm exec vite build
-```
-
-Como `public/vite` está bind-mounteado, el build queda visible al toque en el contenedor — solo falta reiniciar para que Puma sirva el `manifest.json` nuevo:
-
-```bash
-docker restart chatwoot-rails-1 chatwoot-sidekiq-1
-```
-
-> Vite no limpia el directorio de salida entre builds — de vez en cuando conviene borrar los `public/vite/assets/dashboard-*.js` viejos que ya no referencia `public/vite/.vite/manifest.json`, para no acumular basura.
-
-`public/manifest.json` (el manifest de la PWA, distinto del manifest de Vite) **no** está bind-mounteado — si se edita, hay que copiarlo a mano:
-
-```bash
-docker cp public/manifest.json chatwoot-rails-1:/app/public/manifest.json
-docker cp public/manifest.json chatwoot-sidekiq-1:/app/public/manifest.json
-```
+(el prefijo `ormichat_` de los volúmenes es el nombre de la carpeta del proyecto; ver `docker volume ls`).
 
 ## 5. Módulos Enterprise habilitados
 
-Chatwoot Enterprise (`enterprise/`) ya viene en el código pero apagado por default en self-hosted. Se activó así:
+El módulo `enterprise/` viene en el código y los defaults de este repo ya lo dejan activado en instalaciones nuevas. Para una base que ya existía (donde los defaults no se reescriben) se activa con `rails ormichat:setup`, que hace lo siguiente:
 
 ```ruby
 # 1. Plan de instalación (interruptor maestro)
@@ -177,9 +148,9 @@ Los canales que usan webhooks (Telegram es el caso ya configurado) necesitan que
 ngrok http 3000 --url https://tiffiny-chondriosomal-chandra.ngrok-free.dev
 ```
 
-`FRONTEND_URL` en `docker-compose.yml` (ambos servicios `rails` y `sidekiq`) apunta a esa URL de ngrok. **Si el túnel cambia de URL** (se cae, se reinicia sin dominio fijo reservado en la cuenta de ngrok), hay que:
+`FRONTEND_URL` en `.env` apunta a esa URL de ngrok. **Si el túnel cambia de URL** (se cae, se reinicia sin dominio fijo reservado en la cuenta de ngrok), hay que:
 
-1. Actualizar `FRONTEND_URL` en `docker-compose.yml`.
+1. Actualizar `FRONTEND_URL` en `.env`.
 2. `docker compose up -d --force-recreate rails sidekiq`
 3. Re-registrar el webhook de cada canal Telegram existente:
    ```ruby
@@ -287,14 +258,14 @@ El botón "Suggest a reply" del compose box (agent-assist) y la **respuesta auto
 3. **La conversación tiene que estar en estado `pending`** (sin asignar) para que Captain la atienda — si ya tiene un agente asignado o está `open`, Captain no interviene (mismo criterio que un Agent Bot). Conversaciones nuevas entrantes, sin reglas de auto-asignación, arrancan en `pending` por default.
 4. El procesamiento es 100% asíncrono (`Captain::Conversation::ResponseBuilderJob` vía Sidekiq) — no pasa por Puma/rack-timeout, así que no importa cuánto tarde Ollama.
 
-Si Captain responde "Transferring to another agent for further assistance." en vez de contestar, mirar los logs de `sidekiq` (`docker logs chatwoot-sidekiq-1`) buscando `[Captain V2] Agent result` — el campo `error` te dice la causa real (`RubyLLM::ModelNotFoundError` = falta el fix de 9.3, `ArgumentError` = el modelo no maneja bien function-calling, ver 9.6).
+Si Captain responde "Transferring to another agent for further assistance." en vez de contestar, mirar los logs de `sidekiq` (`docker compose logs sidekiq`) buscando `[Captain V2] Agent result` — el campo `error` te dice la causa real (`RubyLLM::ModelNotFoundError` = falta el fix de 9.3, `ArgumentError` = el modelo no maneja bien function-calling, ver 9.6).
 
 ### 9.9 Timeout de requests HTTP (solo afecta al botón "Suggest a reply", no al asistente automático)
 
-`rack-timeout` corta cualquier request HTTP a los **15 segundos por default** (`RACK_TIMEOUT_SERVICE_TIMEOUT`). Un modelo local en CPU puede tardar más que eso, lo que mataba silenciosamente el botón "Suggest a reply" (HTTP 500 a los 15s, mientras el service en sí funcionaba bien). Se subió a 120s en `docker-compose.yml` (servicio `rails`):
+`rack-timeout` corta cualquier request HTTP a los **15 segundos por default** (`RACK_TIMEOUT_SERVICE_TIMEOUT`). Un modelo local en CPU puede tardar más que eso, lo que mataba silenciosamente el botón "Suggest a reply" (HTTP 500 a los 15s, mientras el service en sí funcionaba bien). Se subió a 120s en `.env` (viene en `.env.example`):
 
-```yaml
-- RACK_TIMEOUT_SERVICE_TIMEOUT=120
+```
+RACK_TIMEOUT_SERVICE_TIMEOUT=120
 ```
 
 Esto **no afecta** al asistente automático de la sección 9.8, que corre en Sidekiq (sin límite de tiempo por este middleware).
@@ -304,21 +275,22 @@ Esto **no afecta** al asistente automático de la sección 9.8, que corre en Sid
 Por defecto, Chatwoot pinguea diariamente `hub.2.chatwoot.com` con métricas de la instalación, y relaya push notifications móviles a través del mismo hub. Se desactivó:
 
 - `config/schedule.yml`: comentada la entrada `internal_check_new_versions_job` (el cron que dispara el ping diario). `sidekiq-cron` limpia automáticamente el job de Redis al no encontrarlo en el YAML tras un restart de `sidekiq`.
-- `ENABLE_PUSH_RELAY_SERVER=false` en `docker-compose.yml` (ambos servicios).
+- `ENABLE_PUSH_RELAY_SERVER=false` en `docker-compose.yml` (anclado para `rails`, `sidekiq` y `setup`).
+- El onboarding ya no envía nombre, empresa ni email al hub de Chatwoot (se quitó el checkbox y la llamada `ChatwootHub.register_instance`).
 
 **No tocado**: el registro único al hub durante el onboarding inicial (`installation/onboarding_controller.rb`), por ser un evento único no recurrente.
 
 ## 11. Control de versiones
 
-Este directorio **no** es un fork git de `chatwoot/chatwoot` — es un `git init` local, propio, sin remote hacia el repo original, pusheado a `martinezruben/ormichat` (privado en GitHub).
+Repo git propio, sin remote hacia ningún otro repo, pusheado a `martinezruben/ormichat` (privado en GitHub).
 
 `.gitignore` excluye: `.env`, `node_modules`, `public/vite|packs|assets` (artefactos de build), gemas, logs, tmp.
 
-**Por qué privado**: `enterprise/` está bajo la Chatwoot Enterprise License, que prohíbe publicar/distribuir ese código sin una suscripción Enterprise válida. Usarlo en un repo privado para uso propio está OK; un repo público expondría ese código a terceros.
+El repo es privado: contiene el módulo `enterprise/` y configuración de despliegue.
 
 ## 12. Troubleshooting
 
-**"No veo mi cambio de código"** → revisar que el archivo esté bajo un directorio bind-mounteado (sección 4). Si es Ruby, reiniciar contenedores. Si es JS/Vue, correr `pnpm exec vite build` en el host y reiniciar.
+**"No veo mi cambio de código"** → el código va dentro de la imagen: hay que reconstruirla con `docker compose up -d --build` (sección 4).
 
 **"No veo mi cambio de frontend después de rebuildear"** → hard refresh en el navegador (Ctrl+Shift+R) o probar en incógnito — Chatwoot tiene un service worker (PWA) que cachea assets agresivamente.
 
@@ -326,8 +298,8 @@ Este directorio **no** es un fork git de `chatwoot/chatwoot` — es un `git init
 
 **"Captain tira `Neighbor::Error: Expected 1536 dimensions, not 768`"** → falta correr la migración de la sección 9.4, o se cambió el modelo de embeddings sin ajustar la dimensión de las columnas.
 
-**"Error `RubyLLM::ModelNotFoundError`"** → el modelo configurado en `CAPTAIN_OPEN_AI_MODEL`/`CAPTAIN_EMBEDDING_MODEL` no existe en Ollama (`ollama pull <modelo>` primero) o el parche de la sección 9.3 no está aplicado en ese archivo (verificar que el bind mount de `lib/`/`enterprise/` esté activo y que se haya reiniciado el contenedor tras el cambio). Si el error aparece específicamente en el **asistente automático** (`[Captain V2] Agent result: ... error=#<RubyLLM::ModelNotFoundError...`) y no en el botón de sugerencia, revisar que el parche de `enterprise/app/models/concerns/agentable.rb` (sección 9.3) esté aplicado — es una ruta de código separada.
+**"Error `RubyLLM::ModelNotFoundError`"** → el modelo configurado en `CAPTAIN_OPEN_AI_MODEL`/`CAPTAIN_EMBEDDING_MODEL` no existe en Ollama (`ollama pull <modelo>` primero) o el parche de la sección 9.3 no está aplicado en ese archivo (verificar que la imagen se haya reconstruido tras el cambio). Si el error aparece específicamente en el **asistente automático** (`[Captain V2] Agent result: ... error=#<RubyLLM::ModelNotFoundError...`) y no en el botón de sugerencia, revisar que el parche de `enterprise/app/models/concerns/agentable.rb` (sección 9.3) esté aplicado — es una ruta de código separada.
 
-**"El botón 'Suggest a reply' no responde nada (sin error visible)"** → ver sección 9.9. `rack-timeout` corta el request a los 15s por default; confirmar `RACK_TIMEOUT_SERVICE_TIMEOUT=120` en el servicio `rails` de `docker-compose.yml`, y confirmar en `docker logs chatwoot-rails-1` si aparece `source=rack-timeout ... state=timed_out`.
+**"El botón 'Suggest a reply' no responde nada (sin error visible)"** → ver sección 9.9. `rack-timeout` corta el request a los 15s por default; confirmar `RACK_TIMEOUT_SERVICE_TIMEOUT=120` en `.env`, y confirmar en `docker compose logs rails` si aparece `source=rack-timeout ... state=timed_out`.
 
-**"El asistente responde 'Transferring to another agent for further assistance.' en vez de contestar"** → eso es un handoff automático, no un bug de configuración en sí. Ver sección 9.8: revisar `docker logs chatwoot-sidekiq-1` buscando `[Captain V2] Agent result` para ver el `error` real detrás del handoff (`ModelNotFoundError`, `ArgumentError` de function-calling, etc.) — también puede pasar simplemente porque la conversación no estaba en estado `pending`.
+**"El asistente responde 'Transferring to another agent for further assistance.' en vez de contestar"** → eso es un handoff automático, no un bug de configuración en sí. Ver sección 9.8: revisar `docker compose logs sidekiq` buscando `[Captain V2] Agent result` para ver el `error` real detrás del handoff (`ModelNotFoundError`, `ArgumentError` de function-calling, etc.) — también puede pasar simplemente porque la conversación no estaba en estado `pending`.

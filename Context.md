@@ -4,14 +4,14 @@ Documento de contexto general del proyecto para orientarse rápido antes de hace
 
 - Convenciones de código, estilo, i18n y flujo de PR → **`AGENTS.md`** (`CLAUDE.md` es un symlink a este).
 - Deployment, Docker, Captain/Ollama, webhooks y troubleshooting → **`INSTALL.md`**.
-- Este archivo no duplica esos dos: se enfoca en qué es el proyecto, el mapa del repo y qué se customizó respecto a Chatwoot.
+- Este archivo no duplica esos dos: se enfoca en qué es el proyecto, el mapa del repo y qué se customizó.
 
 ## Qué es
 
-**Ormichat** es un fork independiente de **Chatwoot 4.17.1** (ver `VERSION_CW`), plataforma de atención al cliente open-source y self-hosted (alternativa a Intercom/Zendesk).
+**Ormichat** es una plataforma de atención al cliente omnicanal y self-hosted (alternativa a Intercom/Zendesk). La versión del código base está en `VERSION_CW`.
 
-- Repo git propio: `github.com/martinezruben/ormichat`, sin vínculo con `chatwoot/chatwoot` (no se hacen merges de upstream).
-- El primer commit (`Initial commit: independent fork of Chatwoot 4.17.1`) es el código original; todo lo posterior son customizaciones de Ormichat (ver sección más abajo o `git log`).
+- Repo git propio: `github.com/martinezruben/ormichat`, sin vínculo con ningún repo externo (no se hacen merges de upstream).
+- El primer commit es el código base; todo lo posterior son customizaciones de Ormichat (ver sección más abajo o `git log`).
 - En el código interno muchos nombres siguen siendo "Chatwoot" (clases, contenedores, variables de entorno); el rebranding es solo de la capa de presentación.
 
 ## Stack técnico
@@ -19,7 +19,7 @@ Documento de contexto general del proyecto para orientarse rápido antes de hace
 - **Backend**: Ruby on Rails 7.2, PostgreSQL (con `pgvector`, requerido por Captain), Redis, Sidekiq, Searchkick + OpenSearch, Devise, ActionCable.
 - **Frontend**: Vue 3 (Composition API, `<script setup>`), Vite, TailwindCSS (única fuente de estilos), Vitest, Histoire.
 - **Paquetes**: `pnpm` para JS; Ruby vía `bundler` + `rbenv` (`.ruby-version`).
-- **Ejecución**: Docker (`docker-compose.yml`: `postgres`, `redis`, `rails`, `sidekiq`) sobre la imagen `chatwoot/chatwoot:latest` con **bind mounts** del código de este repo (`app/`, `config/`, `public/vite`, `public/brand-assets`, …). El frontend se compila en el host con `pnpm` y se sirve desde `public/vite`. Detalle en `INSTALL.md` §3–4.
+- **Ejecución**: Docker (`docker-compose.yml`: `postgres`, `redis`, `setup`, `rails`, `sidekiq`) con una imagen propia construida desde este repo (`docker/Dockerfile`, frontend incluido; sin bind mounts ni dependencia de imágenes de Chatwoot). Detalle en `INSTALL.md` §3–4.
 - **IA**: Captain corre sobre un modelo local de **Ollama** (no OpenAI). Detalle en `INSTALL.md` §9.
 
 ## Estructura de alto nivel
@@ -62,11 +62,11 @@ spec/ , tests/    RSpec (Ruby) y Vitest (JS/Vue)
 - `Inbox` soporta muchos canales (email, widget, WhatsApp, Telegram, Facebook, Instagram, SMS, API...) — ver `app/models/channel/`. Los canales con webhook (p. ej. Telegram) necesitan `FRONTEND_URL` HTTPS público (túnel ngrok, `INSTALL.md` §8).
 - `Captain` es el agente de IA (`lib/captain/`, `enterprise/app/models/captain/`, embeddings con pgvector).
 
-## Customizaciones de Ormichat (respecto a Chatwoot 4.17.1)
+## Customizaciones de Ormichat
 
 **Infra / deployment**
-- Bind mounts de `public/vite` y `public/brand-assets` para que builds y logos sobrevivan a la recreación de contenedores.
-- Telemetría al hub de Chatwoot y push relay deshabilitados.
+- Imagen Docker propia (`docker/Dockerfile`) y volúmenes con nombre para base de datos, Redis y archivos subidos; marca Ormichat por defecto en `config/installation_config.yml`.
+- Telemetría al hub de Chatwoot, registro del onboarding y push relay deshabilitados.
 - `FRONTEND_URL` apuntando al túnel ngrok (webhooks de Telegram).
 - `rack-timeout` ampliado para inferencia local lenta.
 
@@ -104,7 +104,7 @@ spec/ , tests/    RSpec (Ruby) y Vitest (JS/Vue)
 
 ```bash
 docker compose up -d                                                   # levanta el stack
-docker exec chatwoot-rails-1 bundle exec rails db:chatwoot_prepare     # migraciones
+docker compose exec rails bundle exec rails db:chatwoot_prepare   # migraciones
 bundle install && pnpm install                                         # setup local
 bundle exec rspec spec/path_spec.rb                                    # test Ruby puntual
 pnpm test                                                              # tests JS/Vue
