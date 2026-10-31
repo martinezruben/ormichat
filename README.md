@@ -282,4 +282,4 @@ Datos de demostración para una cuenta: `bundle exec rails runner "Seeders::Acco
 
 ## Licencia
 
-Basado en [Chatwoot](https://github.com/chatwoot/chatwoot) © Chatwoot Inc., publicado bajo licencia MIT (ver [`LICENSE`](LICENSE)). Las customizaciones de Ormichat se distribuyen bajo la misma licencia.
+Basado en [Chatwoot](https://github.com/chatwoot/chatwoot), © Chatwoot Inc.

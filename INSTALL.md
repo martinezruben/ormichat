@@ -41,14 +41,14 @@ docker compose up -d --build
 
 El primer build compila gemas y frontend (varios minutos). El servicio `setup` crea y migra la base de datos antes de que arranquen `rails` y `sidekiq`. La app queda en `http://localhost:3000` (detrás de tu proxy HTTPS en producción).
 
-Una instalación nueva ya arranca con la marca Ormichat. Lo que sí vive en la base de datos y hay que aplicar una vez, después de crear la cuenta inicial en el onboarding, es el plan Enterprise, las features premium y la conexión de Captain (secciones 5 y 9):
+Una instalación nueva ya arranca con la marca Ormichat, el plan Enterprise y todas las features premium activadas (los defaults están en `config/installation_config.yml` y `config/features.yml`). Lo único que hay que configurar es la conexión de Captain (sección 9), después de crear la cuenta inicial en el onboarding:
 
 ```bash
 docker compose exec -e CAPTAIN_ENDPOINT=http://<gateway-docker>:11434 rails bundle exec rails ormichat:setup
 docker compose restart rails sidekiq
 ```
 
-`CAPTAIN_ENDPOINT` es opcional (sin él se omite Captain); el gateway se obtiene con `docker network inspect <proyecto>_default`. También acepta `CAPTAIN_MODEL` y `CAPTAIN_EMBEDDING_MODEL`. Se puede correr de nuevo sin problema, por ejemplo después de crear más cuentas.
+`CAPTAIN_ENDPOINT` es opcional; el gateway se obtiene con `docker network inspect <proyecto>_default`. También acepta `CAPTAIN_MODEL` y `CAPTAIN_EMBEDDING_MODEL`. La tarea sirve además para llevar una base ya existente al mismo estado (marca, plan y features en cuentas viejas) y es seguro correrla varias veces.
 
 ## 4. Imagen propia y actualizaciones
 
@@ -76,7 +76,7 @@ docker run --rm -v ormichat_storage_data:/data -v "$PWD":/out busybox tar czf /o
 
 ## 5. Módulos Enterprise habilitados
 
-Chatwoot Enterprise (`enterprise/`) ya viene en el código pero apagado por default en self-hosted. Se activó así:
+Chatwoot Enterprise (`enterprise/`) viene en el código y los defaults de este repo ya lo dejan activado en instalaciones nuevas. Para una base que ya existía (donde los defaults no se reescriben) se activa con `rails ormichat:setup`, que hace lo siguiente:
 
 ```ruby
 # 1. Plan de instalación (interruptor maestro)
