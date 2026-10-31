@@ -50,7 +50,7 @@ Respecto a Chatwoot 4.17.1:
 | 6 | Captain corre en jobs de Sidekiq y llama a Ollama en el host (`:11434`). |
 | 7 | Búsqueda avanzada con OpenSearch, solo si se define `OPENSEARCH_URL`. |
 
-Todo corre con `docker-compose.yml` (`postgres` con pgvector, `redis`, `rails`, `sidekiq`) sobre la imagen `chatwoot/chatwoot` con *bind mounts* del código de este repo. El frontend se compila en el host con `pnpm` + Vite y se monta en `public/vite`.
+Todo corre con `docker-compose.yml` (`postgres` con pgvector, `redis`, `setup`, `rails`, `sidekiq`) sobre una imagen propia construida desde este repo con `docker/Dockerfile` (el frontend se compila dentro del build). No depende de ninguna imagen de Chatwoot.
 
 ## Modelo de datos
 
@@ -239,27 +239,19 @@ Esquema completo en [`db/schema.rb`](db/schema.rb).
 | IA | Captain vía `ruby_llm` → Ollama (API compatible con OpenAI) |
 | Búsqueda | Searchkick + OpenSearch (opcional) |
 | Archivos | ActiveStorage (servido por la ruta `/proxy`) |
-| Despliegue | Docker Compose, ngrok o proxy TLS para HTTPS público |
+| Despliegue | Docker Compose con imagen propia, proxy TLS para HTTPS público |
 | Herramientas | pnpm 10, Node 24, RuboCop, ESLint |
 
 ## Puesta en marcha
 
-Requisitos: Docker + Docker Compose, Node 24 y pnpm 10 en el host, y Ollama si se quiere usar Captain.
+Requisitos: Docker + Docker Compose, y Ollama si se quiere usar Captain.
 
 ```bash
 git clone https://github.com/martinezruben/ormichat.git
 cd ormichat
 
-# 1. Compilar el frontend en el host (se monta en public/vite)
-pnpm install
-pnpm exec vite build
-
-# 2. Levantar el stack (ajustar FRONTEND_URL y SECRET_KEY_BASE)
-export SECRET_KEY_BASE=$(openssl rand -hex 64)
-docker compose up -d
-
-# 3. Crear y migrar la base de datos
-docker compose exec rails bundle exec rails db:chatwoot_prepare
+cp .env.example .env      # completar FRONTEND_URL, SECRET_KEY_BASE y POSTGRES_PASSWORD
+docker compose up -d --build
 ```
 
 La app queda en `http://localhost:3000`. Rebranding, habilitación de módulos, HTTPS con ngrok, canales con webhook y la configuración de Captain sobre Ollama están paso a paso en [`INSTALL.md`](INSTALL.md).
