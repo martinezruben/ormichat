@@ -4,14 +4,14 @@ Documento de contexto general del proyecto para orientarse rápido antes de hace
 
 - Convenciones de código, estilo, i18n y flujo de PR → **`AGENTS.md`** (`CLAUDE.md` es un symlink a este).
 - Deployment, Docker, Captain/Ollama, webhooks y troubleshooting → **`INSTALL.md`**.
-- Este archivo no duplica esos dos: se enfoca en qué es el proyecto, el mapa del repo y qué se customizó respecto a Chatwoot.
+- Este archivo no duplica esos dos: se enfoca en qué es el proyecto, el mapa del repo y qué se customizó.
 
 ## Qué es
 
-**Ormichat** es un fork independiente de **Chatwoot 4.17.1** (ver `VERSION_CW`), plataforma de atención al cliente open-source y self-hosted (alternativa a Intercom/Zendesk).
+**Ormichat** es una plataforma de atención al cliente omnicanal y self-hosted (alternativa a Intercom/Zendesk). La versión del código base está en `VERSION_CW`.
 
-- Repo git propio: `github.com/martinezruben/ormichat`, sin vínculo con `chatwoot/chatwoot` (no se hacen merges de upstream).
-- El primer commit (`Initial commit: independent fork of Chatwoot 4.17.1`) es el código original; todo lo posterior son customizaciones de Ormichat (ver sección más abajo o `git log`).
+- Repo git propio: `github.com/martinezruben/ormichat`, sin vínculo con ningún repo externo (no se hacen merges de upstream).
+- El primer commit es el código base; todo lo posterior son customizaciones de Ormichat (ver sección más abajo o `git log`).
 - En el código interno muchos nombres siguen siendo "Chatwoot" (clases, contenedores, variables de entorno); el rebranding es solo de la capa de presentación.
 
 ## Stack técnico
@@ -62,7 +62,7 @@ spec/ , tests/    RSpec (Ruby) y Vitest (JS/Vue)
 - `Inbox` soporta muchos canales (email, widget, WhatsApp, Telegram, Facebook, Instagram, SMS, API...) — ver `app/models/channel/`. Los canales con webhook (p. ej. Telegram) necesitan `FRONTEND_URL` HTTPS público (túnel ngrok, `INSTALL.md` §8).
 - `Captain` es el agente de IA (`lib/captain/`, `enterprise/app/models/captain/`, embeddings con pgvector).
 
-## Customizaciones de Ormichat (respecto a Chatwoot 4.17.1)
+## Customizaciones de Ormichat
 
 **Infra / deployment**
 - Imagen Docker propia (`docker/Dockerfile`) y volúmenes con nombre para base de datos, Redis y archivos subidos; marca Ormichat por defecto en `config/installation_config.yml`.

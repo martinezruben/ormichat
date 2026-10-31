@@ -2,7 +2,7 @@
 
 Plataforma de atención al cliente **self-hosted** y omnicanal: bandeja compartida, contactos, automatizaciones, reportes, centro de ayuda y un agente de IA (**Captain**) que corre sobre un modelo **local de Ollama**, sin depender de OpenAI.
 
-Ormichat es un fork independiente de **Chatwoot 4.17.1** con tema **shadcn/ui** (paleta neutral y tipografía Geist), interfaz en español y funciones propias como atributos de tipo archivo, etiquetas solo para automatizaciones y roles que controlan el menú lateral.
+Incluye tema **shadcn/ui** (paleta neutral y tipografía Geist), interfaz en español y funciones propias como atributos de tipo archivo, etiquetas solo para automatizaciones y roles que controlan el menú lateral.
 
 <p align="center">
   <img src="docs/images/screenshots/conversation-light.png#gh-light-mode-only" width="100%" alt="Conversación con panel de contacto (tema claro)"/>
@@ -25,7 +25,7 @@ Ormichat es un fork independiente de **Chatwoot 4.17.1** con tema **shadcn/ui** 
 
 ## Qué agrega Ormichat
 
-Respecto a Chatwoot 4.17.1:
+Funciones propias:
 
 - **Tema shadcn/ui**: paleta neutral en claro y oscuro, radios y sombras de shadcn, tipografía Geist en todas las superficies (dashboard, widget, portal, encuestas, Super Admin y emails). Se logra solo con tokens de Tailwind, sin agregar dependencias.
 - **Captain AI local**: el agente de IA usa Ollama (`llama3.1:8b` para chat y `nomic-embed-text` para embeddings) a través de un endpoint compatible con OpenAI. Sin costo por uso y sin datos saliendo del servidor.
@@ -275,11 +275,7 @@ Datos de demostración para una cuenta: `bundle exec rails runner "Seeders::Acco
 
 | Archivo | Contenido |
 |---|---|
-| [`Context.md`](Context.md) | Qué es el proyecto, mapa del repo y customizaciones respecto a Chatwoot |
+| [`Context.md`](Context.md) | Qué es el proyecto, mapa del repo y customizaciones |
 | [`INSTALL.md`](INSTALL.md) | Despliegue con Docker, rebranding, ngrok, Captain sobre Ollama, troubleshooting |
 | [`AGENTS.md`](AGENTS.md) | Convenciones de código, i18n, commits y PRs, reglas del overlay Enterprise |
 | [`SECURITY.md`](SECURITY.md) | Reporte de vulnerabilidades |
-
-## Licencia
-
-Basado en [Chatwoot](https://github.com/chatwoot/chatwoot), © Chatwoot Inc.

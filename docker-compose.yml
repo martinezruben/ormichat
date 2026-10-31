@@ -7,10 +7,12 @@ x-app: &app
       GIT_SHA: ${GIT_SHA:-unknown}
   env_file: .env
   environment:
+    SECRET_KEY_BASE: ${SECRET_KEY_BASE:?definir SECRET_KEY_BASE en .env}
+    FRONTEND_URL: ${FRONTEND_URL:?definir FRONTEND_URL en .env}
     POSTGRES_HOST: postgres
-    POSTGRES_USERNAME: ormichat
-    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    POSTGRES_DATABASE: ormichat_production
+    POSTGRES_USERNAME: ${POSTGRES_USER:-ormichat}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?definir POSTGRES_PASSWORD en .env}
+    POSTGRES_DATABASE: ${POSTGRES_DB:-ormichat_production}
     REDIS_URL: redis://redis:6379
     ENABLE_PUSH_RELAY_SERVER: "false"
   volumes:
@@ -26,13 +28,13 @@ services:
     image: pgvector/pgvector:pg16
     restart: always
     environment:
-      POSTGRES_USER: ormichat
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ormichat_production
+      POSTGRES_USER: ${POSTGRES_USER:-ormichat}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?definir POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: ${POSTGRES_DB:-ormichat_production}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ormichat"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5

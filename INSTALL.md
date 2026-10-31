@@ -1,6 +1,6 @@
 # Ormichat — Instalación y configuración
 
-Este documento describe cómo está armado este deployment de **Ormichat** (fork independiente de Chatwoot 4.17.1), qué se le customizó respecto al Chatwoot original, y cómo levantarlo/mantenerlo. Pensado para que alguien sin contexto previo pueda reproducir o continuar este setup.
+Este documento describe cómo está armado este deployment de **Ormichat**, qué se le customizó respecto al código base, y cómo levantarlo/mantenerlo. Pensado para que alguien sin contexto previo pueda reproducir o continuar este setup.
 
 ## Índice
 
@@ -21,9 +21,9 @@ Este documento describe cómo está armado este deployment de **Ormichat** (fork
 
 ## 1. Arquitectura general
 
-- **Backend/Frontend**: Rails 7.2 + Vue 3, corriendo en Docker vía `docker-compose.yml`. La imagen `ormichat` se construye desde este repo con `docker/Dockerfile` (Ruby y Node fijados, frontend compilado dentro del build): no depende de ninguna imagen publicada por Chatwoot (ver sección 4).
+- **Backend/Frontend**: Rails 7.2 + Vue 3, corriendo en Docker vía `docker-compose.yml`. La imagen `ormichat` se construye desde este repo con `docker/Dockerfile` (Ruby y Node fijados, frontend compilado dentro del build): no depende de ninguna imagen publicada por terceros (ver sección 4).
 - **Servicios**: `postgres` (con `pgvector`, necesario para Captain), `redis`, `setup` (migraciones, corre una vez al arrancar), `rails`, `sidekiq`. Datos persistentes en los volúmenes `postgres_data`, `redis_data` y `storage_data` (archivos subidos).
-- **Repo git**: propio, privado, sin ningún vínculo con `chatwoot/chatwoot` (ver sección 11).
+- **Repo git**: propio, privado, sin ningún vínculo con repos externos (ver sección 11).
 - **IA (Captain)**: corre 100% local sobre Ollama, sin depender de OpenAI (ver sección 9).
 
 ## 2. Requisitos previos
@@ -49,6 +49,19 @@ docker compose restart rails sidekiq
 ```
 
 `CAPTAIN_ENDPOINT` es opcional; el gateway se obtiene con `docker network inspect <proyecto>_default`. También acepta `CAPTAIN_MODEL` y `CAPTAIN_EMBEDDING_MODEL`. La tarea sirve además para llevar una base ya existente al mismo estado (marca, plan y features en cuentas viejas) y es seguro correrla varias veces.
+
+### Pasar de la versión anterior del compose (imagen `chatwoot/chatwoot` con bind mounts)
+
+Si el servidor ya tiene volúmenes creados por esa versión, Postgres conserva sus credenciales originales (usuario `chatwoot`, base `chatwoot_production`, contraseña `chatwoot`). Para reutilizar los datos, el `.env` nuevo debe decirlo:
+
+```
+POSTGRES_USER=chatwoot
+POSTGRES_DB=chatwoot_production
+POSTGRES_PASSWORD=chatwoot
+SECRET_KEY_BASE=<el mismo que ya usabas>
+```
+
+Conservar el `SECRET_KEY_BASE` mantiene las sesiones y los datos cifrados. Los archivos subidos que estaban dentro del contenedor anterior no se conservan (no tenían volumen).
 
 ## 4. Imagen propia y actualizaciones
 
@@ -76,7 +89,7 @@ docker run --rm -v ormichat_storage_data:/data -v "$PWD":/out busybox tar czf /o
 
 ## 5. Módulos Enterprise habilitados
 
-Chatwoot Enterprise (`enterprise/`) viene en el código y los defaults de este repo ya lo dejan activado en instalaciones nuevas. Para una base que ya existía (donde los defaults no se reescriben) se activa con `rails ormichat:setup`, que hace lo siguiente:
+El módulo `enterprise/` viene en el código y los defaults de este repo ya lo dejan activado en instalaciones nuevas. Para una base que ya existía (donde los defaults no se reescriben) se activa con `rails ormichat:setup`, que hace lo siguiente:
 
 ```ruby
 # 1. Plan de instalación (interruptor maestro)
@@ -269,11 +282,11 @@ Por defecto, Chatwoot pinguea diariamente `hub.2.chatwoot.com` con métricas de 
 
 ## 11. Control de versiones
 
-Este directorio **no** es un fork git de `chatwoot/chatwoot` — es un `git init` local, propio, sin remote hacia el repo original, pusheado a `martinezruben/ormichat` (privado en GitHub).
+Repo git propio, sin remote hacia ningún otro repo, pusheado a `martinezruben/ormichat` (privado en GitHub).
 
 `.gitignore` excluye: `.env`, `node_modules`, `public/vite|packs|assets` (artefactos de build), gemas, logs, tmp.
 
-**Por qué privado**: `enterprise/` está bajo la Chatwoot Enterprise License, que prohíbe publicar/distribuir ese código sin una suscripción Enterprise válida. Usarlo en un repo privado para uso propio está OK; un repo público expondría ese código a terceros.
+El repo es privado: contiene el módulo `enterprise/` y configuración de despliegue.
 
 ## 12. Troubleshooting
 
