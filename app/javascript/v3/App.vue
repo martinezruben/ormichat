@@ -51,6 +51,7 @@ export default {
 </template>
 
 <style lang="scss">
+@config '../../../tailwind.v3.config.js';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

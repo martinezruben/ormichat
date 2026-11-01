@@ -10,6 +10,9 @@ import AnalyticsHelper from '../helper/AnalyticsHelper';
 const ONBOARDING_STEPS = ['account_details', 'enrichment', 'inbox_setup'];
 const routes = [...dashboard.routes];
 
+const CHUNK_LOAD_ERROR =
+  /Failed to fetch dynamically imported module|Importing a module script failed/;
+
 const onboardingPath = step =>
   step === 'inbox_setup' ? 'onboarding/inbox-setup' : 'onboarding';
 
@@ -65,6 +68,13 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
 
 export const initalizeRouter = () => {
   const userAuthentication = store.dispatch('setUser');
+
+  // Tras un despliegue, una pestaña abierta pide chunks con nombres viejos: recargar trae los nuevos.
+  router.onError((error, to) => {
+    if (CHUNK_LOAD_ERROR.test(error?.message)) {
+      window.location.assign(to.fullPath);
+    }
+  });
 
   router.beforeEach(async (to, _from, next) => {
     AnalyticsHelper.page(to.name || '', {

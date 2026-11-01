@@ -92,6 +92,9 @@
   - `LANGUAGES_CONFIG` (`config/initializers/languages.rb`) keeps the DB indexes used by `Account#locale`; never reuse an index of a removed language
 - **Frontend**:
   - Use `components-next/` for message bubbles (the rest is being deprecated)
+  - Dashboard routes load their pages lazily (`component: () => import('./Page.vue')`); do not add static page imports to `*.routes.js`
+  - Heavy libraries (voice SDK, MP3 encoder, highlight.js, color picker, libphonenumber) are loaded on demand; keep new heavy dependencies out of the initial bundle
+  - Widget, survey and login (`v3app`) use their own Tailwind content globs (`tailwind.{widget,survey,v3}.config.js`, referenced with `@config` in the entry's `App.vue` style). If one of those entries starts using a `.vue` file from a directory not listed there, add its path to that config or its classes will be missing
 
 ## Ruby Best Practices
 
