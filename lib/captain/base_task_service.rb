@@ -31,12 +31,6 @@ class Captain::BaseTaskService
     @conversation ||= account.conversations.find_by(display_id: conversation_display_id)
   end
 
-  def api_base
-    endpoint = InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_ENDPOINT')&.value.presence || 'https://api.openai.com/'
-    endpoint = endpoint.chomp('/')
-    endpoint.end_with?('/v1') ? endpoint : "#{endpoint}/v1"
-  end
-
   def make_api_call(messages:, model: nil, feature: nil, schema: nil, tools: [])
     # Community edition prerequisite checks
     # Enterprise module handles these with more specific error messages (cloud vs self-hosted)
@@ -68,7 +62,7 @@ class Captain::BaseTaskService
   def execute_ruby_llm_request(model:, messages:, schema: nil, tools: [])
     credential = llm_credential
 
-    Llm::Config.with_api_key(credential[:api_key], api_base: api_base) do |context|
+    Llm::Config.with_api_key(credential[:api_key], api_base: Llm::Config.chat_credentials[:api_base]) do |context|
       chat = build_chat(context, model: model, messages: messages, schema: schema, tools: tools)
 
       conversation_messages = messages.reject { |m| m[:role] == 'system' }
