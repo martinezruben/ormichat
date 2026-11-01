@@ -11,6 +11,7 @@ config/master.key
 
 # Rails
 /log/*
+!/log/.keep
 /tmp/*
 !/tmp/qa/.keep
 /storage/*

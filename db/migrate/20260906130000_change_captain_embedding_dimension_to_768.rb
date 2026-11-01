@@ -19,7 +19,7 @@ class ChangeCaptainEmbeddingDimensionTo768 < ActiveRecord::Migration[7.2]
     add_index :article_embeddings, :embedding, name: 'index_article_embeddings_on_embedding', using: :ivfflat
     add_index :captain_assistant_responses, :embedding, name: 'vector_idx_knowledge_entries_embedding', using: :ivfflat
     add_index :captain_faq_suggestions, :embedding, name: 'vector_idx_captain_faq_suggestions_embedding', opclass: :vector_cosine_ops,
-                                                     using: :ivfflat
+                                                    using: :ivfflat
   end
 
   def down
@@ -38,6 +38,6 @@ class ChangeCaptainEmbeddingDimensionTo768 < ActiveRecord::Migration[7.2]
     add_index :article_embeddings, :embedding, name: 'index_article_embeddings_on_embedding', using: :ivfflat
     add_index :captain_assistant_responses, :embedding, name: 'vector_idx_knowledge_entries_embedding', using: :ivfflat
     add_index :captain_faq_suggestions, :embedding, name: 'vector_idx_captain_faq_suggestions_embedding', opclass: :vector_cosine_ops,
-                                                     using: :ivfflat
+                                                    using: :ivfflat
   end
 end

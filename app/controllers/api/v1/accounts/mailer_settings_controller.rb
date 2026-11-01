@@ -1,4 +1,6 @@
 class Api::V1::Accounts::MailerSettingsController < Api::V1::Accounts::BaseController
+  BOOLEAN_OVERRIDES = %i[enable_starttls_auto ssl].freeze
+
   before_action :check_admin_authorization?
 
   def show
@@ -36,15 +38,16 @@ class Api::V1::Accounts::MailerSettingsController < Api::V1::Accounts::BaseContr
     overrides = params[:settings].permit(
       :address, :port, :user_name, :password, :authentication, :domain, :enable_starttls_auto, :ssl, :from
     ).to_h.symbolize_keys
+    normalize_overrides(overrides)
+  end
+
+  def normalize_overrides(overrides)
     # Stray whitespace from copy-pasted credentials silently breaks DNS
     # resolution -- trim before it ever reaches the SMTP client.
-    overrides.each { |key, value| overrides[key] = value.strip if value.is_a?(String) }
+    overrides.transform_values! { |value| value.is_a?(String) ? value.strip : value }
     overrides[:port] = overrides[:port].to_i if overrides[:port].present?
     overrides[:authentication] = overrides[:authentication].to_sym if overrides[:authentication].present?
-    if overrides.key?(:enable_starttls_auto)
-      overrides[:enable_starttls_auto] = ActiveModel::Type::Boolean.new.cast(overrides[:enable_starttls_auto])
-    end
-    overrides[:ssl] = ActiveModel::Type::Boolean.new.cast(overrides[:ssl]) if overrides.key?(:ssl)
+    BOOLEAN_OVERRIDES.each { |key| overrides[key] = ActiveModel::Type::Boolean.new.cast(overrides[key]) if overrides.key?(key) }
     overrides
   end
 end
