@@ -34,3 +34,6 @@ config/master.key
 # OS / editor
 .DS_Store
 *.swp
+
+# Respaldos locales (servicio backup)
+/backups/

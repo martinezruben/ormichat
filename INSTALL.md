@@ -78,14 +78,33 @@ git pull
 docker compose up -d --build     # reconstruye y reinicia; `setup` aplica las migraciones nuevas
 ```
 
-Los datos no se tocan: viven en volúmenes con nombre. Para respaldarlos:
+Los datos no se tocan: viven en volúmenes con nombre (`postgres_data`, `redis_data`, `storage_data`; este último guarda los archivos subidos, como adjuntos y fotos de recetas).
+
+### Respaldos automáticos
+
+El servicio `backup` de `docker-compose.yml` guarda cada 24 h, en `./backups/` del servidor:
+
+- `db-AAAA-MM-DD_HHMM.sql.gz`: volcado de Postgres (se verifica con `gzip -t` antes de aceptarlo).
+- `storage-AAAA-MM-DD_HHMM.tgz`: archivos subidos.
+
+Conserva los últimos `BACKUP_KEEP_DAYS` días (14 por defecto). Revisar que funciona: `docker compose logs backup`.
+
+**Copia fuera del servidor (obligatoria):** `./backups/` está en el mismo disco que los datos, así que no protege contra perder el servidor. Sincronizarla a otro lugar con un cron del host, por ejemplo `rclone sync ./backups remoto:ormichat-backups` o `rsync -a ./backups/ usuario@otro-servidor:/respaldos/ormichat/`.
+
+**Restaurar** (probar al menos una vez en un entorno de prueba):
 
 ```bash
-docker compose exec -T postgres pg_dump -U ormichat ormichat_production | gzip > backup-$(date +%F).sql.gz
-docker run --rm -v ormichat_storage_data:/data -v "$PWD":/out busybox tar czf /out/storage-$(date +%F).tgz -C /data .
+docker compose stop rails sidekiq
+gunzip -c backups/db-AAAA-MM-DD_HHMM.sql.gz | docker compose exec -T postgres psql -U ormichat -d ormichat_production
+docker run --rm -v ormichat_storage_data:/data -v "$PWD/backups":/in busybox tar xzf /in/storage-AAAA-MM-DD_HHMM.tgz -C /data
+docker compose start rails sidekiq
 ```
 
-(el prefijo `ormichat_` de los volúmenes es el nombre de la carpeta del proyecto; ver `docker volume ls`).
+(el prefijo `ormichat_` de los volúmenes es el nombre de la carpeta del proyecto; ver `docker volume ls`). Para restaurar sobre una base ya existente, recrearla antes: `DROP DATABASE` / `CREATE DATABASE`.
+
+### HTTPS
+
+`FORCE_SSL` vale `true` por defecto: Rails redirige a HTTPS, marca las cookies como seguras y envía HSTS. El proxy TLS delante debe enviar `X-Forwarded-Proto: https`. Para probar sin proxy en `http://localhost:3000` poner `FORCE_SSL=false` en `.env`.
 
 ## 5. Módulos Enterprise habilitados
 
