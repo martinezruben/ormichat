@@ -1,4 +1,3 @@
-import { Device } from '@twilio/voice-sdk';
 import VoiceAPI from './voiceAPIClient';
 
 const createCallDisconnectedEvent = () => new CustomEvent('call:disconnected');
@@ -19,6 +18,8 @@ class TwilioVoiceClient extends EventTarget {
     const { token, account_id } = response || {};
     if (!token) throw new Error('Invalid token');
 
+    // El SDK de voz pesa ~775 kB: solo se descarga al iniciar una llamada.
+    const { Device } = await import('@twilio/voice-sdk');
     this.device = new Device(token, {
       allowIncomingWhileBusy: true,
       disableAudioContextSounds: true,

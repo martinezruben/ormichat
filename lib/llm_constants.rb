@@ -3,6 +3,8 @@
 module LlmConstants
   DEFAULT_MODEL = 'gpt-4.1'
   DEFAULT_EMBEDDING_MODEL = 'text-embedding-3-small'
+  # Debe coincidir con las columnas vector(768) de la base de datos.
+  EMBEDDING_DIMENSIONS = 768
   PDF_PROCESSING_MODEL = 'gpt-4.1-mini'
 
   OPENAI_API_ENDPOINT = 'https://api.openai.com'

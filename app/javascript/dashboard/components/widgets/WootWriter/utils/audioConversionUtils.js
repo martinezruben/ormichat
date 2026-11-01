@@ -1,5 +1,3 @@
-import lamejs from '@breezystack/lamejs';
-
 import { remuxWebmToOgg } from './webmOpusToOgg';
 
 const writeString = (view, offset, string) => {
@@ -72,9 +70,16 @@ export const convertToWav = async audioBlob => {
  * @param {number} sampleRate - Sample rate in Hz.
  * @param {Int16Array} samples - Audio samples to be encoded.
  * @param {number} bitrate - MP3 bitrate (default: 128)
- * @returns {Blob} - The MP3 encoded audio as a Blob.
+ * @returns {Promise<Blob>} - The MP3 encoded audio as a Blob.
  */
-export const encodeToMP3 = (channels, sampleRate, samples, bitrate = 128) => {
+export const encodeToMP3 = async (
+  channels,
+  sampleRate,
+  samples,
+  bitrate = 128
+) => {
+  // lamejs pesa ~250 kB: solo se descarga al convertir un audio a MP3.
+  const { default: lamejs } = await import('@breezystack/lamejs');
   const outputBuffer = [];
   const encoder = new lamejs.Mp3Encoder(channels, sampleRate, bitrate);
   const maxSamplesPerFrame = 1152;
@@ -124,12 +129,13 @@ export const convertToMp3 = async (audioBlob, bitrate = 128) => {
         offset += 1;
       }
     }
-    return encodeToMP3(
+    const mp3Blob = await encodeToMP3(
       audioBuffer.numberOfChannels,
       audioBuffer.sampleRate,
       samples,
       bitrate
     );
+    return mp3Blob;
   } catch (error) {
     throw new Error('Conversion to MP3 failed.');
   }

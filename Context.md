@@ -88,7 +88,7 @@ spec/ , tests/    RSpec (Ruby) y Vitest (JS/Vue)
 - **SMTP configurable desde Settings > Security**: `MailerSettingsService`, `ReloadMailerSettingsJob`, `Api::V1::Accounts::MailerSettingsController`, UI en `settings/security/components/MailerSettings.vue` (trim de campos y email de prueba editable).
 
 **i18n**
-- Traducción al español (`es`) completada en todo el dashboard, Captain, campañas, reportes, settings, etc. Nota: `AGENTS.md` dice que normalmente solo se editan `en.yml`/`en.json` (Crowdin), pero en este fork los strings nuevos también se traducen a `es` a mano.
+- Idiomas soportados: solo `es` (por defecto) y `en`; el resto de locales y Crowdin se eliminaron. Todo string nuevo se escribe en ambos idiomas (ver `AGENTS.md`).
 
 ## Puntos de entrada útiles
 

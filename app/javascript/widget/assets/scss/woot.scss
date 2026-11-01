@@ -1,4 +1,6 @@
+// La ruta de @config se resuelve relativa a App.vue (que importa este archivo), no a este scss.
 @import 'reset';
+@config '../../../tailwind.widget.config.js';
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';

@@ -6,7 +6,7 @@ import {
   messageSchema,
   Selection,
 } from '@chatwoot/prosemirror-schema';
-import * as Sentry from '@sentry/vue';
+import { captureException } from 'shared/helpers/errorTracking';
 import camelcaseKeys from 'camelcase-keys';
 import { FORMATTING, MARKDOWN_PATTERNS } from 'dashboard/constants/editor';
 import { INBOX_TYPES, TWILIO_CHANNEL_MEDIUM } from 'dashboard/helper/inbox';
@@ -117,7 +117,7 @@ export function cleanSignature(signature) {
   } catch (e) {
     // eslint-disable-next-line no-console
     console.warn(e);
-    Sentry.captureException(e);
+    captureException(e);
     // The parser can break on some cases
     // for example, Token type `hr` not supported by Markdown parser
     return signature;

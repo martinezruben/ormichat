@@ -15,7 +15,7 @@ import NextButton from 'dashboard/components-next/button/Button.vue';
 import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 import { parseAPIErrorResponse } from 'dashboard/store/utils/api';
 
-import * as Sentry from '@sentry/vue';
+import { captureException } from 'shared/helpers/errorTracking';
 
 export default {
   components: {
@@ -111,7 +111,7 @@ export default {
         if (error.name === 'ScriptLoaderError') {
           useAlert(this.$t('INBOX_MGMT.DETAILS.ERROR_FB_LOADING'));
         } else {
-          Sentry.captureException(error);
+          captureException(error);
           useAlert(this.$t('INBOX_MGMT.DETAILS.ERROR_FB_AUTH'));
         }
       }

@@ -78,14 +78,33 @@ git pull
 docker compose up -d --build     # reconstruye y reinicia; `setup` aplica las migraciones nuevas
 ```
 
-Los datos no se tocan: viven en volúmenes con nombre. Para respaldarlos:
+Los datos no se tocan: viven en volúmenes con nombre (`postgres_data`, `redis_data`, `storage_data`; este último guarda los archivos subidos, como adjuntos y fotos de recetas).
+
+### Respaldos automáticos
+
+El servicio `backup` de `docker-compose.yml` guarda cada 24 h, en `./backups/` del servidor:
+
+- `db-AAAA-MM-DD_HHMM.sql.gz`: volcado de Postgres (se verifica con `gzip -t` antes de aceptarlo).
+- `storage-AAAA-MM-DD_HHMM.tgz`: archivos subidos.
+
+Conserva los últimos `BACKUP_KEEP_DAYS` días (14 por defecto). Revisar que funciona: `docker compose logs backup`.
+
+**Copia fuera del servidor (obligatoria):** `./backups/` está en el mismo disco que los datos, así que no protege contra perder el servidor. Sincronizarla a otro lugar con un cron del host, por ejemplo `rclone sync ./backups remoto:ormichat-backups` o `rsync -a ./backups/ usuario@otro-servidor:/respaldos/ormichat/`.
+
+**Restaurar** (probar al menos una vez en un entorno de prueba):
 
 ```bash
-docker compose exec -T postgres pg_dump -U ormichat ormichat_production | gzip > backup-$(date +%F).sql.gz
-docker run --rm -v ormichat_storage_data:/data -v "$PWD":/out busybox tar czf /out/storage-$(date +%F).tgz -C /data .
+docker compose stop rails sidekiq
+gunzip -c backups/db-AAAA-MM-DD_HHMM.sql.gz | docker compose exec -T postgres psql -U ormichat -d ormichat_production
+docker run --rm -v ormichat_storage_data:/data -v "$PWD/backups":/in busybox tar xzf /in/storage-AAAA-MM-DD_HHMM.tgz -C /data
+docker compose start rails sidekiq
 ```
 
-(el prefijo `ormichat_` de los volúmenes es el nombre de la carpeta del proyecto; ver `docker volume ls`).
+(el prefijo `ormichat_` de los volúmenes es el nombre de la carpeta del proyecto; ver `docker volume ls`). Para restaurar sobre una base ya existente, recrearla antes: `DROP DATABASE` / `CREATE DATABASE`.
+
+### HTTPS
+
+`FORCE_SSL` vale `true` por defecto: Rails redirige a HTTPS, marca las cookies como seguras y envía HSTS. El proxy TLS delante debe enviar `X-Forwarded-Proto: https`. Para probar sin proxy en `http://localhost:3000` poner `FORCE_SSL=false` en `.env`.
 
 ## 5. Módulos Enterprise habilitados
 
@@ -269,6 +288,58 @@ RACK_TIMEOUT_SERVICE_TIMEOUT=120
 ```
 
 Esto **no afecta** al asistente automático de la sección 9.8, que corre en Sidekiq (sin límite de tiempo por este middleware).
+
+### 9.10 Cambiar de proveedor de IA (local o remoto)
+
+Captain habla con cualquier servicio que exponga la API compatible con OpenAI (`/v1/chat/completions` y `/v1/embeddings`). El chat y los embeddings se configuran por separado en **Super Admin → Settings → Captain**:
+
+| Campo | Para qué |
+|---|---|
+| Chat API Endpoint / Chat API Key / Chat Model | Proveedor y modelo del chat y del asistente |
+| Embedding API Endpoint / Embedding API Key / Embedding Model | Proveedor y modelo de los embeddings. Si se dejan vacíos usan los del chat |
+
+Ejemplos (el endpoint puede escribirse con o sin `/v1`):
+
+| Proveedor | Endpoint | Notas |
+|---|---|---|
+| Ollama local | `http://<gateway-docker>:11434` | Clave cualquiera (p. ej. `ollama`) |
+| OpenAI | vacío | Modelos `gpt-4.1-mini`, `text-embedding-3-small` |
+| OpenRouter | `https://openrouter.ai/api` | Da acceso a muchos modelos, incluido Claude |
+| Gemini (modo compatible con OpenAI) | `https://generativelanguage.googleapis.com/v1beta/openai` | Chat y embeddings |
+| LiteLLM / vLLM / LM Studio | la URL de tu servidor | |
+
+Los endpoints de terceros están tomados de la documentación de cada proveedor y no se probaron en esta instalación: tras cambiarlos, correr la verificación de abajo. Combinación habitual: chat en un modelo remoto potente y embeddings en el Ollama local (`nomic-embed-text`), para que los textos de la base de conocimiento no salgan del servidor.
+
+**Los embeddings siempre tienen 768 dimensiones** (columnas `vector(768)`). Los modelos con tamaño configurable (`text-embedding-3-*`) se piden a 768 automáticamente; si un modelo devuelve otro tamaño, el error lo indica. **Al cambiar de modelo de embeddings hay que volver a generar los embeddings existentes**, porque vectores de modelos distintos no son comparables: hasta entonces las búsquedas en la base de conocimiento darán resultados incorrectos. Se regeneran con `docker compose exec rails bundle exec rails ormichat:reembed` (los encola en Sidekiq; la cola `low` los procesa poco a poco).
+
+Verificar que todo responde:
+
+```bash
+docker compose exec rails bundle exec rails ormichat:ai_check
+# ✔ Chat (qwen2.5:7b-instruct @ http://172.18.0.1:11434/v1): ok
+# ✔ Embeddings (nomic-embed-text @ http://172.18.0.1:11434/v1): 768 dimensiones
+```
+
+### 9.11 Configuración base para farmacias
+
+```bash
+docker compose exec rails bundle exec rails ormichat:pharmacy_setup ACCOUNT_ID=1 BRANCHES="Centro,Norte,Sur,Este,Oeste"
+```
+
+Es seguro repetirla: no duplica nada y no reemplaza lo que ya hayas cambiado. Crea:
+
+- **Equipos:** `farmacéuticos` y uno por sucursal (el sistema los guarda en minúsculas).
+- **Etiquetas:** `receta`, `reaccion-adversa`, `consulta-clinica`, `domicilio`, `disponibilidad`.
+- **Atributos de contacto:** `sucursal_preferida` (lista con tus sucursales), `consentimiento_contacto`, `seguro`, `fidelidad`.
+- **Reglas de automatización** sobre mensajes entrantes: si el cliente escribe "receta", se etiqueta `receta`, se asigna a `farmacéuticos`, prioridad alta y nota privada. Si escribe "reacción", "alergia" o "efecto(s) secundario(s)", se etiqueta `reaccion-adversa`, prioridad urgente, nota privada y asignación al equipo de farmacéuticos. Ignora mayúsculas.
+- **Asistente "Asistente de farmacia"** (o el que indiques con `ASSISTANT_ID`) con reglas de seguridad (no diagnosticar, no dar dosis ni sustituir medicamentos, no interpretar recetas, derivar ante reacciones adversas) y pautas de estilo. Se agregan a las que ya tenga.
+
+Límites a tener en cuenta:
+
+- Las reglas leen **texto**: una foto de receta sin mensaje no las activa.
+- Las palabras clave son una red de seguridad, no un detector clínico; la IA y el equipo siguen siendo los responsables de reconocer una emergencia.
+- No incluye el aviso por Telegram al responsable, tiempos de respuesta (SLA) ni informes por sucursal: se configuran desde la interfaz.
+- El asistente se crea sin conectarlo a ninguna bandeja: asignarlo desde Captain → Asistente → Bandejas.
 
 ## 10. Telemetría deshabilitada
 

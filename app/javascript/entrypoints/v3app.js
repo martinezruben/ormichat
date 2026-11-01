@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import { createI18n } from 'vue-i18n';
 
 import i18nMessages from 'dashboard/i18n';
-import * as Sentry from '@sentry/vue';
+import { initErrorTracking } from 'shared/helpers/errorTracking';
 import {
   initializeAnalyticsEvents,
   initializeChatwootEvents,
@@ -33,29 +33,7 @@ app.use(router);
 // Vue.prototype.$emitter = emitter;
 app.component('fluent-icon', FluentIcon);
 
-if (window.errorLoggingConfig) {
-  Sentry.init({
-    app,
-    dsn: window.errorLoggingConfig,
-    denyUrls: [
-      // Chrome extensions
-      /^chrome:\/\//i,
-      /chrome-extension:/i,
-      /extensions\//i,
-
-      // Locally saved copies
-      /file:\/\//i,
-
-      // Safari extensions.
-      /safari-web-extension:/i,
-      /safari-extension:/i,
-    ],
-    integrations: [Sentry.browserTracingIntegration({ router })],
-    ignoreErrors: [
-      'ResizeObserver loop completed with undelivered notifications',
-    ],
-  });
-}
+initErrorTracking({ app, router });
 
 initializeChatwootEvents();
 initializeAnalyticsEvents();
