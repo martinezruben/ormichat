@@ -320,6 +320,27 @@ docker compose exec rails bundle exec rails ormichat:ai_check
 # ✔ Embeddings (nomic-embed-text @ http://172.18.0.1:11434/v1): 768 dimensiones
 ```
 
+### 9.11 Configuración base para farmacias
+
+```bash
+docker compose exec rails bundle exec rails ormichat:pharmacy_setup ACCOUNT_ID=1 BRANCHES="Centro,Norte,Sur,Este,Oeste"
+```
+
+Es seguro repetirla: no duplica nada y no reemplaza lo que ya hayas cambiado. Crea:
+
+- **Equipos:** `farmacéuticos` y uno por sucursal (el sistema los guarda en minúsculas).
+- **Etiquetas:** `receta`, `reaccion-adversa`, `consulta-clinica`, `domicilio`, `disponibilidad`.
+- **Atributos de contacto:** `sucursal_preferida` (lista con tus sucursales), `consentimiento_contacto`, `seguro`, `fidelidad`.
+- **Reglas de automatización** sobre mensajes entrantes: si el cliente escribe "receta", se etiqueta `receta`, se asigna a `farmacéuticos`, prioridad alta y nota privada. Si escribe "reacción", "alergia" o "efecto(s) secundario(s)", se etiqueta `reaccion-adversa`, prioridad urgente, nota privada y asignación al equipo de farmacéuticos. Ignora mayúsculas.
+- **Asistente "Asistente de farmacia"** (o el que indiques con `ASSISTANT_ID`) con reglas de seguridad (no diagnosticar, no dar dosis ni sustituir medicamentos, no interpretar recetas, derivar ante reacciones adversas) y pautas de estilo. Se agregan a las que ya tenga.
+
+Límites a tener en cuenta:
+
+- Las reglas leen **texto**: una foto de receta sin mensaje no las activa.
+- Las palabras clave son una red de seguridad, no un detector clínico; la IA y el equipo siguen siendo los responsables de reconocer una emergencia.
+- No incluye el aviso por Telegram al responsable, tiempos de respuesta (SLA) ni informes por sucursal: se configuran desde la interfaz.
+- El asistente se crea sin conectarlo a ninguna bandeja: asignarlo desde Captain → Asistente → Bandejas.
+
 ## 10. Telemetría deshabilitada
 
 Por defecto, Chatwoot pinguea diariamente `hub.2.chatwoot.com` con métricas de la instalación, y relaya push notifications móviles a través del mismo hub. Se desactivó:
