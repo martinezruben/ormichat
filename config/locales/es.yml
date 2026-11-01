@@ -97,7 +97,9 @@ es:
     saml:
       feature_not_enabled: SAML feature not enabled for this account
       sso_not_enabled: SAML SSO is not enabled for this installation
+      multi_account_invitation_not_allowed: No se puede agregar a usuarios asociados a otra cuenta mientras SAML esté habilitado
     conversations:
+      resolved: La conversación está resuelta y no admite nuevos mensajes
       unread_counts:
         feature_not_enabled: Función de contadores no leídos de conversación no habilitada para esta cuenta
     data_import:
@@ -430,6 +432,8 @@ es:
       completed_tool_call: 'Se completó la llamada a la herramienta %{function_name}'
       invalid_tool_call: 'Llamada de herramienta no válida'
       tool_not_available: 'Herramienta no disponible'
+      reply_suggestion_discarded: 'La conversación cambió mientras Copilot redactaba, por lo que se descartó la sugerencia.'
+      reply_suggestion_failed: 'Copilot no pudo generar una respuesta. Inténtalo de nuevo.'
     documents:
       limit_exceeded: 'Document limit exceeded'
       pdf_format_error: 'must be a PDF file'
@@ -617,15 +621,20 @@ es:
     captain_model_overrides:
       form:
         helper_text: 'Deje un modelo en blanco para usar el valor por defecto de YAML para esa función de IA.'
+        customer_features: 'Funciones para clientes'
+        internal_features: 'Funciones internas'
         use_default: 'Usar por defecto: %{model} (%{model_id})'
+        use_installation_model: 'Usar el modelo de la instalación: %{model} (%{model_id})'
       show:
         summary: 'Ver ruta del modelo'
         provider: 'Proveedor'
         model: 'Modelo'
       sources:
         account_override: 'Anulación de cuenta'
+        installation_override: 'Configuración de la instalación'
         default: 'Predeterminado'
       features:
+        conversation_completion: 'Evaluador de cierre de conversaciones inactivas'
         editor: 'Editor'
         assistant: 'Asistente'
         copilot: 'Copilot'
@@ -642,4 +651,11 @@ es:
       user_not_found: 'Usuario no encontrado.'
       no_subscriptions_to_test: 'Seleccione al menos una suscripción para probar.'
       no_subscriptions_to_delete: 'Seleccione al menos una suscripción a eliminar.'
-      subscriptions_deleted: "Suscripción(es) %{count} eliminada(s). El dispositivo(s) del usuario volverá a registrarse en el próximo lanzamiento de la aplicación."
+      subscriptions_deleted:
+        one: "Se eliminó %{count} suscripción. El dispositivo del usuario volverá a registrarse en el próximo inicio de la aplicación."
+        other: "Se eliminaron %{count} suscripciones. Los dispositivos de los usuarios volverán a registrarse en el próximo inicio de la aplicación."
+    users:
+      resend_confirmation:
+        button: 'Reenviar correo de confirmación'
+        sent: 'Correo de confirmación enviado.'
+        already_confirmed: 'El usuario ya está confirmado.'

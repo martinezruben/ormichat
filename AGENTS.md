@@ -86,11 +86,10 @@
 ## Project-Specific
 
 - **Translations**:
-  - For product and source-string changes, only update `en.yml` and `en.json`; other languages are handled through Crowdin and the community
-  - Crowdin-generated translation sync PRs may update non-English locale files; do not flag those changes solely for modifying translated locale files
+  - Only `es` (default) and `en` are supported. Any new or changed string must be added to both languages in the same change; there is no Crowdin sync
   - Preserve product and brand names, OAuth scopes, API values, and other machine-readable identifiers unless an official localized form exists
-  - When reviewing Crowdin syncs, verify protected terms remain unchanged. Add newly introduced product names, brand names, and machine-readable identifiers to the Crowdin glossary as non-translatable, and keep the glossary current
-  - Backend i18n → `en.yml`, Frontend i18n → `en.json`
+  - Backend i18n → `config/locales/{en,es}.yml` (Devise: `devise.{en,es}.yml`), Frontend i18n → `app/javascript/{dashboard,widget,survey}/i18n/locale/{en,es}`
+  - `LANGUAGES_CONFIG` (`config/initializers/languages.rb`) keeps the DB indexes used by `Account#locale`; never reuse an index of a removed language
 - **Frontend**:
   - Use `components-next/` for message bubbles (the rest is being deprecated)
 
