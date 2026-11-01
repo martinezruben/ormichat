@@ -83,12 +83,6 @@ class Integrations::LlmBaseService
     self.class::CACHEABLE_EVENTS.include?(event_name)
   end
 
-  def api_base
-    endpoint = InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_ENDPOINT')&.value.presence || 'https://api.openai.com/'
-    endpoint = endpoint.chomp('/')
-    "#{endpoint}/v1"
-  end
-
   def make_api_call(body)
     parsed_body = JSON.parse(body)
     instrumentation_params = build_instrumentation_params(parsed_body)
@@ -103,8 +97,8 @@ class Integrations::LlmBaseService
     model = parsed_body['model']
     credential = llm_credential
 
-    Llm::Config.with_api_key(credential[:api_key], api_base: api_base) do |context|
-      chat = context.chat(model: model)
+    Llm::Config.with_api_key(credential[:api_key], api_base: Llm::Config.chat_credentials[:api_base]) do |context|
+      chat = Llm::Config.build_chat(context, model)
       setup_chat_with_messages(chat, messages)
     end
   rescue StandardError => e

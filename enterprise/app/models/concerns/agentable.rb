@@ -63,7 +63,7 @@ module Concerns::Agentable
   # model (e.g. a local Ollama model) that isn't in ruby_llm's static model
   # registry (config/llm_models.json). Without this, the ai-agents gem's
   # underlying RubyLLM call raises RubyLLM::ModelNotFoundError for any such
-  # model - see Captain::BaseTaskService#resolve_chat for the same fix on
+  # model - see Llm::Config.build_chat for the same fix on
   # the non-agentic Captain task services.
   def agent_provider
     :openai if ChatwootApp.self_hosted_enterprise?

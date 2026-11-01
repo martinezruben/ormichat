@@ -29,6 +29,15 @@ module Llm::Config
       yield context
     end
 
+    # Modelos propios o autoalojados (Ollama, vLLM...) no están en el registro de ruby_llm, así que la búsqueda
+    # normal falla: se reintenta tratándolos como un modelo compatible con OpenAI. `context` es RubyLLM o un
+    # contexto de with_api_key.
+    def build_chat(context, model)
+      context.chat(model: model)
+    rescue RubyLLM::ModelNotFoundError
+      context.chat(model: model, provider: :openai, assume_model_exists: true)
+    end
+
     def chat_credentials
       { api_key: system_api_key, api_base: normalize_endpoint(openai_endpoint) }
     end
