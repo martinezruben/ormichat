@@ -68,6 +68,27 @@ namespace :ormichat do
     end
     puts "✔ Reglas de automatización: #{keywords.values.flatten.size}"
 
+    # Consulta de stock contra la API de la farmacia. Solo se crea si se indica STOCK_API_URL (HTTPS con dominio,
+    # con {{ producto }} y {{ sucursal }} donde correspondan); STOCK_API_TOKEN es opcional (Bearer).
+    if ENV['STOCK_API_URL'].present?
+      token = ENV.fetch('STOCK_API_TOKEN', nil)
+      stock_tool = account.captain_custom_tools.find_or_initialize_by(slug: 'consulta_stock')
+      stock_tool.update!(
+        title: 'Consulta de stock',
+        description: 'Consulta si un producto está disponible y cuántas unidades hay, por SKU o nombre y por sucursal',
+        http_method: 'GET',
+        endpoint_url: ENV.fetch('STOCK_API_URL'),
+        auth_type: token.present? ? 'bearer' : 'none',
+        auth_config: token.present? ? { 'token' => token } : {},
+        param_schema: [
+          { 'name' => 'producto', 'type' => 'string', 'description' => 'SKU o nombre del producto', 'required' => true },
+          { 'name' => 'sucursal', 'type' => 'string', 'description' => 'Nombre de la sucursal; vacío para consultar todas', 'required' => false }
+        ],
+        enabled: true
+      )
+      puts '✔ Herramienta de consulta de stock'
+    end
+
     # Se agregan a las que ya tenga el asistente (ASSISTANT_ID para elegir uno existente), sin reemplazarlas.
     assistant = if ENV['ASSISTANT_ID'].present?
                   account.captain_assistants.find(ENV.fetch('ASSISTANT_ID'))

@@ -308,6 +308,7 @@ Ejemplos (el endpoint puede escribirse con o sin `/v1`):
 | OpenAI | vacío | Modelos `gpt-4.1-mini`, `text-embedding-3-small` |
 | OpenRouter | `https://openrouter.ai/api` | Da acceso a muchos modelos, incluido Claude |
 | Gemini (modo compatible con OpenAI) | `https://generativelanguage.googleapis.com/v1beta/openai` | Chat y embeddings |
+| Claude (capa compatible con OpenAI de Anthropic) | `https://api.anthropic.com/v1` | Solo chat: los embeddings van a otro proveedor (Ollama, OpenAI...). Anthropic la presenta como capa de compatibilidad; si prefieres no depender de ella, usa OpenRouter o LiteLLM |
 | LiteLLM / vLLM / LM Studio | la URL de tu servidor | |
 
 Los endpoints de terceros están tomados de la documentación de cada proveedor y no se probaron en esta instalación: tras cambiarlos, correr la verificación de abajo. Combinación habitual: chat en un modelo remoto potente y embeddings en el Ollama local (`nomic-embed-text`), para que los textos de la base de conocimiento no salgan del servidor.
@@ -328,13 +329,22 @@ docker compose exec rails bundle exec rails ormichat:ai_check
 docker compose exec rails bundle exec rails ormichat:pharmacy_setup ACCOUNT_ID=1 BRANCHES="Centro,Norte,Sur,Este,Oeste"
 ```
 
-Es seguro repetirla: no duplica nada y no reemplaza lo que ya hayas cambiado. Crea:
+Es seguro repetirla: no duplica nada y no reemplaza lo que ya hayas cambiado. Si le pasas `STOCK_API_URL` (y opcionalmente `STOCK_API_TOKEN`), también crea la herramienta de consulta de stock (ver más abajo). Crea:
 
 - **Equipos:** `farmacéuticos` y uno por sucursal (el sistema los guarda en minúsculas).
 - **Etiquetas:** `receta`, `reaccion-adversa`, `consulta-clinica`, `domicilio`, `disponibilidad`.
 - **Atributos de contacto:** `sucursal_preferida` (lista con tus sucursales), `consentimiento_contacto`, `seguro`, `fidelidad`.
 - **Reglas de automatización** sobre mensajes entrantes: si el cliente escribe "receta", se etiqueta `receta`, se asigna a `farmacéuticos`, prioridad alta y nota privada. Si escribe "reacción", "alergia" o "efecto(s) secundario(s)", se etiqueta `reaccion-adversa`, prioridad urgente, nota privada y asignación al equipo de farmacéuticos. Ignora mayúsculas.
 - **Asistente "Asistente de farmacia"** (o el que indiques con `ASSISTANT_ID`) con reglas de seguridad (no diagnosticar, no dar dosis ni sustituir medicamentos, no interpretar recetas, derivar ante reacciones adversas) y pautas de estilo. Se agregan a las que ya tenga.
+
+**Consulta de stock.** Con la API de tu sistema de farmacia:
+
+```bash
+docker compose exec rails bundle exec rails ormichat:pharmacy_setup ACCOUNT_ID=1 \
+  STOCK_API_URL='https://api.tufarmacia.com/stock?producto={{ producto }}&sucursal={{ sucursal }}' STOCK_API_TOKEN='...'
+```
+
+El asistente la usa sola cuando un cliente pregunta por un producto: envía `producto` (SKU o nombre) y, si lo sabe, `sucursal`. Requisitos de la API: responder a un GET, con HTTPS y un dominio (no se admiten IP ni `localhost`), y devolver texto o JSON corto, por ejemplo `{"producto":"Paracetamol 500 mg","sucursal":"Centro","unidades":12}`. Si el token es de otro tipo (cabecera propia, usuario y contraseña), cambia la herramienta desde Captain → Herramientas. Una cuenta admite hasta 15 herramientas personalizadas. Las reglas de seguridad del asistente ya le impiden dar disponibilidad sin consultarla.
 
 Límites a tener en cuenta:
 
