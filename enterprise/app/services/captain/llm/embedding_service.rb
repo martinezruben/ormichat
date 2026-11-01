@@ -26,12 +26,18 @@ class Captain::Llm::EmbeddingService
 
   private
 
-  # See Captain::BaseTaskService#resolve_chat: custom/self-hosted embedding
-  # models aren't in ruby_llm's static model registry either.
+  # Siempre protocolo OpenAI-compatible (OpenAI, Ollama, Gemini, OpenRouter, LiteLLM...), con el endpoint propio
+  # de embeddings si existe. Se pide EMBEDDING_DIMENSIONS para que modelos con tamaño configurable
+  # (p. ej. text-embedding-3-*) encajen en las columnas vector(768).
   def embed(content, model)
-    RubyLLM.embed(content, model: model).vectors
-  rescue RubyLLM::ModelNotFoundError
-    RubyLLM.embed(content, model: model, provider: :openai, assume_model_exists: true).vectors
+    credentials = Llm::Config.embedding_credentials
+    vectors = Llm::Config.with_api_key(credentials[:api_key], api_base: credentials[:api_base]) do |context|
+      context.embed(content, model: model, provider: :openai, assume_model_exists: true,
+                             dimensions: LlmConstants::EMBEDDING_DIMENSIONS).vectors
+    end
+    return vectors if vectors.length == LlmConstants::EMBEDDING_DIMENSIONS
+
+    raise EmbeddingsError, "El modelo #{model} devolvió #{vectors.length} dimensiones; se esperaban #{LlmConstants::EMBEDDING_DIMENSIONS}"
   end
 
   def instrumentation_params(content, model)

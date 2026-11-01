@@ -29,12 +29,29 @@ module Llm::Config
       yield context
     end
 
+    def chat_credentials
+      { api_key: system_api_key, api_base: normalize_endpoint(openai_endpoint) }
+    end
+
+    # Los embeddings pueden ir a otro proveedor que el chat (p. ej. chat remoto y embeddings locales).
+    # Si no hay endpoint/clave propios, usan los del chat.
+    def embedding_credentials
+      {
+        api_key: installation_value('CAPTAIN_EMBEDDING_API_KEY') || system_api_key,
+        api_base: normalize_endpoint(installation_value('CAPTAIN_EMBEDDING_ENDPOINT') || openai_endpoint)
+      }
+    end
+
     private
+
+    def installation_value(name)
+      InstallationConfig.find_by(name: name)&.value.presence
+    end
 
     def configure_ruby_llm
       RubyLLM.configure do |config|
         config.openai_api_key = system_api_key if system_api_key.present?
-        config.openai_api_base = normalized_openai_endpoint if openai_endpoint.present?
+        config.openai_api_base = normalize_endpoint(openai_endpoint) if openai_endpoint.present?
         config.model_registry_file = Rails.root.join('config/llm_models.json').to_s
         config.logger = Rails.logger
       end
@@ -45,13 +62,15 @@ module Llm::Config
     end
 
     def openai_endpoint
-      InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_ENDPOINT')&.value
+      installation_value('CAPTAIN_OPEN_AI_ENDPOINT')
     end
 
     # ruby_llm's OpenAI provider expects `openai_api_base` to already include
     # the `/v1` suffix (its own default is 'https://api.openai.com/v1').
-    def normalized_openai_endpoint
-      base = openai_endpoint.chomp('/')
+    def normalize_endpoint(endpoint)
+      return if endpoint.blank?
+
+      base = endpoint.chomp('/')
       base.end_with?('/v1') ? base : "#{base}/v1"
     end
   end

@@ -183,22 +183,31 @@
 
 # MARK: Captain Config
 - name: CAPTAIN_OPEN_AI_API_KEY
-  display_title: 'OpenAI API Key'
-  description: 'The API key used to authenticate requests to OpenAI services for Captain AI.'
+  display_title: 'Chat API Key'
+  description: 'API key of the OpenAI-compatible provider used for Captain AI chat (OpenAI, Ollama, Gemini, OpenRouter, LiteLLM...).'
   locked: false
   type: secret
 - name: CAPTAIN_OPEN_AI_MODEL
-  display_title: 'OpenAI Model'
-  description: 'The OpenAI model configured for use in Captain AI. Default: gpt-4.1-mini'
+  display_title: 'Chat Model'
+  description: 'The chat model configured for use in Captain AI. Default: gpt-4.1-mini'
   locked: false
 - name: CAPTAIN_OPEN_AI_ENDPOINT
-  display_title: 'OpenAI API Endpoint (optional)'
-  description: 'The OpenAI endpoint configured for use in Captain AI. Default: https://api.openai.com/'
+  display_title: 'Chat API Endpoint (optional)'
+  description: 'OpenAI-compatible endpoint for Captain AI chat. Default: https://api.openai.com/'
   locked: false
 - name: CAPTAIN_EMBEDDING_MODEL
   display_title: 'Embedding Model (optional)'
   description: 'The embedding model configured for use in Captain AI. Default: text-embedding-3-small'
   locked: false
+- name: CAPTAIN_EMBEDDING_ENDPOINT
+  display_title: 'Embedding API Endpoint (optional)'
+  description: 'Separate OpenAI-compatible endpoint for embeddings (e.g. a local Ollama while chat uses a remote API). Default: same as the chat endpoint'
+  locked: false
+- name: CAPTAIN_EMBEDDING_API_KEY
+  display_title: 'Embedding API Key (optional)'
+  description: 'API key for the embedding endpoint. Default: same as the chat API key'
+  locked: false
+  type: secret
 - name: CAPTAIN_FIRECRAWL_API_KEY
   display_title: 'FireCrawl API Key (optional)'
   description: 'The FireCrawl API key for the Captain AI service'

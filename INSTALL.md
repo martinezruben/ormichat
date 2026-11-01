@@ -289,6 +289,37 @@ RACK_TIMEOUT_SERVICE_TIMEOUT=120
 
 Esto **no afecta** al asistente automático de la sección 9.8, que corre en Sidekiq (sin límite de tiempo por este middleware).
 
+### 9.10 Cambiar de proveedor de IA (local o remoto)
+
+Captain habla con cualquier servicio que exponga la API compatible con OpenAI (`/v1/chat/completions` y `/v1/embeddings`). El chat y los embeddings se configuran por separado en **Super Admin → Settings → Captain**:
+
+| Campo | Para qué |
+|---|---|
+| Chat API Endpoint / Chat API Key / Chat Model | Proveedor y modelo del chat y del asistente |
+| Embedding API Endpoint / Embedding API Key / Embedding Model | Proveedor y modelo de los embeddings. Si se dejan vacíos usan los del chat |
+
+Ejemplos (el endpoint puede escribirse con o sin `/v1`):
+
+| Proveedor | Endpoint | Notas |
+|---|---|---|
+| Ollama local | `http://<gateway-docker>:11434` | Clave cualquiera (p. ej. `ollama`) |
+| OpenAI | vacío | Modelos `gpt-4.1-mini`, `text-embedding-3-small` |
+| OpenRouter | `https://openrouter.ai/api` | Da acceso a muchos modelos, incluido Claude |
+| Gemini (modo compatible con OpenAI) | `https://generativelanguage.googleapis.com/v1beta/openai` | Chat y embeddings |
+| LiteLLM / vLLM / LM Studio | la URL de tu servidor | |
+
+Los endpoints de terceros están tomados de la documentación de cada proveedor y no se probaron en esta instalación: tras cambiarlos, correr la verificación de abajo. Combinación habitual: chat en un modelo remoto potente y embeddings en el Ollama local (`nomic-embed-text`), para que los textos de la base de conocimiento no salgan del servidor.
+
+**Los embeddings siempre tienen 768 dimensiones** (columnas `vector(768)`). Los modelos con tamaño configurable (`text-embedding-3-*`) se piden a 768 automáticamente; si un modelo devuelve otro tamaño, el error lo indica. **Al cambiar de modelo de embeddings hay que volver a generar los embeddings existentes**, porque vectores de modelos distintos no son comparables: hasta entonces las búsquedas en la base de conocimiento darán resultados incorrectos. Se regeneran con `docker compose exec rails bundle exec rails ormichat:reembed` (los encola en Sidekiq; la cola `low` los procesa poco a poco).
+
+Verificar que todo responde:
+
+```bash
+docker compose exec rails bundle exec rails ormichat:ai_check
+# ✔ Chat (qwen2.5:7b-instruct @ http://172.18.0.1:11434/v1): ok
+# ✔ Embeddings (nomic-embed-text @ http://172.18.0.1:11434/v1): 768 dimensiones
+```
+
 ## 10. Telemetría deshabilitada
 
 Por defecto, Chatwoot pinguea diariamente `hub.2.chatwoot.com` con métricas de la instalación, y relaya push notifications móviles a través del mismo hub. Se desactivó:
