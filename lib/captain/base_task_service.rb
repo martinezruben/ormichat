@@ -77,7 +77,7 @@ class Captain::BaseTaskService
   end
 
   def build_chat(context, model:, messages:, schema: nil, tools: [])
-    chat = resolve_chat(context, model)
+    chat = Llm::Config.build_chat(context, model)
     system_msg = messages.find { |m| m[:role] == 'system' }
     chat.with_instructions(system_msg[:content]) if system_msg
     chat.with_schema(schema) if schema
@@ -88,16 +88,6 @@ class Captain::BaseTaskService
     end
 
     chat
-  end
-
-  # Custom/self-hosted models (e.g. a local Ollama model set via
-  # CAPTAIN_OPEN_AI_MODEL) aren't in ruby_llm's static model registry, so the
-  # normal lookup raises. Retry treating it as a plain OpenAI-compatible
-  # model instead of failing every call for known models too.
-  def resolve_chat(context, model)
-    context.chat(model: model)
-  rescue RubyLLM::ModelNotFoundError
-    context.chat(model: model, provider: :openai, assume_model_exists: true)
   end
 
   def add_messages_if_needed(chat, conversation_messages)

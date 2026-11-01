@@ -74,8 +74,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # El repo no tiene specs de Ruby por ahora (carpeta spec/ vacía), así que un solo nodo basta:
-        # el job comprueba que la base se crea y el esquema carga. Al restaurar los specs, subir
+        # Hay pocos specs (corren en segundos), así que un solo nodo basta. Si crecen, subir
         # ci_node_total y ci_node_index (por ejemplo a 16 nodos, 0..15) para repartirlos.
         ci_node_total: [1]
         ci_node_index: [0]
@@ -120,11 +119,6 @@ jobs:
 
       - name: Install pnpm dependencies
         run: pnpm i
-
-      - name: Strip enterprise code
-        run: |
-          rm -rf enterprise
-          rm -rf spec/enterprise
 
       - name: Create database
         run: bundle exec rake db:create
