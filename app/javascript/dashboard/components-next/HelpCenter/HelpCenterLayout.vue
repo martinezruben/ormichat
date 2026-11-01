@@ -72,7 +72,9 @@ const togglePortalSwitcher = () => {
         >
           <nav v-if="activePortalName" class="flex items-center min-w-0 gap-3">
             <div class="flex items-center min-w-0 gap-1.5">
-              <span class="text-lg font-medium font-heading truncate text-n-slate-12">
+              <span
+                class="text-lg font-medium font-heading truncate text-n-slate-12"
+              >
                 {{ activePortalName }}
               </span>
               <div class="relative shrink-0 group">
@@ -99,7 +101,9 @@ const togglePortalSwitcher = () => {
 
             <template v-if="breadcrumbLabel">
               <div class="w-0.5 h-4 rounded-2xl bg-n-weak shrink-0" />
-              <span class="pl-1.5 text-lg font-medium font-heading truncate text-n-slate-12">
+              <span
+                class="pl-1.5 text-lg font-medium font-heading truncate text-n-slate-12"
+              >
                 {{ breadcrumbLabel }}
               </span>
             </template>
