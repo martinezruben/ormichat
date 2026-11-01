@@ -78,7 +78,8 @@ class Captain::Assistant::AgentRunnerService
     text, attachments = Captain::OpenAiMessageBuilderService.extract_text_and_attachments(content)
     return text if attachments.blank?
 
-    RubyLLM::Content.new(text, attachments)
+    # ai-agents separa las partes de texto e imagen de este formato multimodal
+    content
   end
 
   def message_history_without_last_user_message(message_history)

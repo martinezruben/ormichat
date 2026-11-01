@@ -52,6 +52,8 @@ module Llm::Config
       RubyLLM.configure do |config|
         config.openai_api_key = system_api_key if system_api_key.present?
         config.openai_api_base = normalize_endpoint(openai_endpoint) if openai_endpoint.present?
+        config.openai_protocol = LlmConstants::OPENAI_COMPATIBLE_PROTOCOL
+        config.openai_use_system_role = true
         config.model_registry_file = Rails.root.join('config/llm_models.json').to_s
         config.logger = Rails.logger
       end

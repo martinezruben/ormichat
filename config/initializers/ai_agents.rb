@@ -8,8 +8,12 @@ Rails.application.config.after_initialize do
   api_endpoint = InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_ENDPOINT')&.value || LlmConstants::OPENAI_API_ENDPOINT
 
   if api_key.present?
+    # ruby_llm 2.x envía las instrucciones con el rol `developer`; los servidores compatibles esperan `system`.
+    RubyLLM.configure { |config| config.openai_use_system_role = true }
+
     Agents.configure do |config|
       config.openai_api_key = api_key
+      config.openai_protocol = LlmConstants::OPENAI_COMPATIBLE_PROTOCOL
       if api_endpoint.present?
         api_base = "#{api_endpoint.chomp('/')}/v1"
         config.openai_api_base = api_base
