@@ -8,6 +8,9 @@ module LlmConstants
   PDF_PROCESSING_MODEL = 'gpt-4.1-mini'
 
   OPENAI_API_ENDPOINT = 'https://api.openai.com'
+  # ruby_llm 2.x usa por defecto la Responses API de OpenAI; los servidores compatibles (Ollama, vLLM, LiteLLM,
+  # OpenRouter...) hablan Chat Completions.
+  OPENAI_COMPATIBLE_PROTOCOL = :chat_completions
 
   PROVIDER_PREFIXES = {
     'openai' => %w[gpt- o1 o3 o4 text-embedding- whisper- tts-],

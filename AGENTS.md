@@ -96,6 +96,13 @@
   - Heavy libraries (voice SDK, MP3 encoder, highlight.js, color picker, libphonenumber) are loaded on demand; keep new heavy dependencies out of the initial bundle
   - Widget, survey and login (`v3app`) use their own Tailwind content globs (`tailwind.{widget,survey,v3}.config.js`, referenced with `@config` in the entry's `App.vue` style). If one of those entries starts using a `.vue` file from a directory not listed there, add its path to that config or its classes will be missing
 
+## LLM (ruby_llm 2.x / ai-agents)
+
+- Tools declare arguments with `parameter :name, type:, description:, required:` or a `parameters do ... end` block (Schematist DSL); `param`/`desc:`/`params` no longer exist. Structured outputs inherit from `Schematist::Schema`.
+- Chat API names: `with_tools`, `with_provider_options` (was `with_params`), `after_message`, `before_tool_call`, `after_tool_result`; token usage is `message.tokens.input` / `.output`. Multimodal content is text plus `attachments:`, there is no `RubyLLM::Content`.
+- OpenAI-compatible servers (Ollama, vLLM, LiteLLM, OpenRouter) speak Chat Completions with the `system` role, so `openai_protocol` and `openai_use_system_role` are set in `Llm::Config` and `config/initializers/ai_agents.rb`. Do not remove them: ruby_llm 2.x defaults to the Responses API and the `developer` role.
+- Models that are not in ruby_llm's registry (self-hosted) need `provider: :openai, assume_model_exists: true`; keep the `rescue RubyLLM::ModelNotFoundError` fallbacks when building chats.
+
 ## Ruby Best Practices
 
 - Use compact `module/class` definitions; avoid nested styles

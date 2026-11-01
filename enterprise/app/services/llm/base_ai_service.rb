@@ -20,6 +20,9 @@ class Llm::BaseAiService
 
   def chat(model: @model, temperature: @temperature)
     RubyLLM.chat(model: model).with_temperature(temperature)
+  rescue RubyLLM::ModelNotFoundError
+    # Modelos propios o autoalojados (Ollama, vLLM...) no están en el registro de ruby_llm.
+    RubyLLM.chat(model: model, provider: :openai, assume_model_exists: true).with_temperature(temperature)
   end
 
   private

@@ -298,6 +298,8 @@ Captain habla con cualquier servicio que exponga la API compatible con OpenAI (`
 | Chat API Endpoint / Chat API Key / Chat Model | Proveedor y modelo del chat y del asistente |
 | Embedding API Endpoint / Embedding API Key / Embedding Model | Proveedor y modelo de los embeddings. Si se dejan vacíos usan los del chat |
 
+Captain usa el protocolo Chat Completions con el rol `system`, que es el que entienden Ollama, vLLM, LiteLLM y OpenRouter (`ruby_llm` 2.x usaría por defecto la Responses API de OpenAI; está forzado a Chat Completions en `Llm::Config`).
+
 Ejemplos (el endpoint puede escribirse con o sin `/v1`):
 
 | Proveedor | Endpoint | Notas |
