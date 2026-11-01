@@ -44,7 +44,8 @@ ENV RAILS_ENV=production \
     BUNDLE_DEPLOYMENT=1 \
     BUNDLE_PATH=/gems \
     RAILS_LOG_TO_STDOUT=true \
-    RAILS_SERVE_STATIC_FILES=true
+    RAILS_SERVE_STATIC_FILES=true \
+    RUBY_YJIT_ENABLE=1
 RUN apt-get update && apt-get install -y --no-install-recommends \
       libpq5 libyaml-0-2 libvips42 imagemagick postgresql-client curl tzdata ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
