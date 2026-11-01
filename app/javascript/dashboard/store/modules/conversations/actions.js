@@ -12,7 +12,7 @@ import {
 } from './helpers/actionHelpers';
 import messageReadActions from './actions/messageReadActions';
 import messageTranslateActions from './actions/messageTranslateActions';
-import * as Sentry from '@sentry/vue';
+import { captureException, setContext } from 'shared/helpers/errorTracking';
 import {
   handleVoiceCallCreated,
   handleVoiceCallUpdated,
@@ -114,10 +114,10 @@ const actions = {
       attachments = data.payload;
     } catch (error) {
       // in case of error, log the error and continue
-      Sentry.setContext('Conversation', {
+      setContext('Conversation', {
         id: conversationId,
       });
-      Sentry.captureException(error);
+      captureException(error);
     } finally {
       // we run the commit even if the request fails
       // this ensures that the `attachment` variable is always present on chat
