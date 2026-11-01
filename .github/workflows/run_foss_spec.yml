@@ -74,8 +74,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ci_node_total: [16]
-        ci_node_index: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        # El repo no tiene specs de Ruby por ahora (carpeta spec/ vacía), así que un solo nodo basta:
+        # el job comprueba que la base se crea y el esquema carga. Al restaurar los specs, subir
+        # ci_node_total y ci_node_index (por ejemplo a 16 nodos, 0..15) para repartirlos.
+        ci_node_total: [1]
+        ci_node_index: [0]
 
     services:
       postgres:
