@@ -93,6 +93,14 @@ const hasMultipleInboxes = computed(
   () => store.getters['inboxes/getInboxes'].length > 1
 );
 
+const STATUS_STYLES = {
+  open: { dot: 'bg-n-teal-9', text: 'text-n-teal-11' },
+  pending: { dot: 'bg-n-amber-9', text: 'text-n-amber-11' },
+  resolved: { dot: 'bg-n-slate-9', text: 'text-n-slate-11' },
+};
+
+const statusStyle = computed(() => STATUS_STYLES[props.chat.status]);
+
 const hasSlaPolicyId = computed(
   () => props.chat?.applied_sla?.id && !currentContact.value?.blocked
 );
@@ -155,6 +163,15 @@ const copyConversationId = async () => {
           </button>
           <span v-if="hasMultipleInboxes">•</span>
           <InboxName v-if="hasMultipleInboxes" :inbox="inbox" class="!mx-0" />
+          <span v-if="statusStyle">•</span>
+          <span
+            v-if="statusStyle"
+            class="inline-flex items-center gap-1 font-medium"
+            :class="statusStyle.text"
+          >
+            <span class="size-1.5 rounded-full" :class="statusStyle.dot" />
+            {{ $t(`CONVERSATION.STATUS_LABEL.${chat.status.toUpperCase()}`) }}
+          </span>
           <span v-if="isSnoozed">•</span>
           <span v-if="isSnoozed" class="font-medium text-n-amber-10">
             {{ snoozedDisplayText }}

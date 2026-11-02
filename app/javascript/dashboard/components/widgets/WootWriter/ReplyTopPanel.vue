@@ -128,6 +128,19 @@ export default {
     };
   },
   computed: {
+    recipientLabel() {
+      if (this.mode === REPLY_EDITOR_MODES.NOTE) {
+        return this.$t('CONVERSATION.REPLYBOX.PRIVATE_NOTE_VISIBILITY');
+      }
+      const chat = this.$store.getters.getSelectedChat;
+      const name = chat?.meta?.sender?.name;
+      const inbox = this.$store.getters['inboxes/getInbox'](chat?.inbox_id);
+      if (!name) return '';
+      return this.$t('CONVERSATION.REPLYBOX.TO_CONTACT', {
+        name,
+        inbox: inbox?.name ?? '',
+      });
+    },
     replyButtonClass() {
       return {
         'is-active': this.mode === REPLY_EDITOR_MODES.REPLY,
@@ -160,6 +173,13 @@ export default {
       :is-reply-restricted="isReplyRestricted"
       @toggle-mode="handleModeToggle"
     />
+    <span
+      v-if="recipientLabel"
+      class="flex-1 min-w-0 text-xs truncate text-n-slate-11"
+      :class="{ '!text-n-amber-11': mode === REPLY_EDITOR_MODES.NOTE }"
+    >
+      {{ recipientLabel }}
+    </span>
     <div class="flex items-center mx-4 my-0">
       <div v-if="isMessageLengthReachingThreshold" class="text-xs">
         <span :class="charLengthClass">
