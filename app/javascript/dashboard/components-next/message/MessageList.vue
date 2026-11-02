@@ -178,6 +178,9 @@ const getInReplyToMessage = parentMessage => {
         :is-email-inbox="isAnEmailChannel"
         :in-reply-to="getInReplyToMessage(message)"
         :group-with-next="shouldGroupWithNext(index, allMessages)"
+        :first-in-group="
+          index === 0 || !shouldGroupWithNext(index - 1, allMessages)
+        "
         :inbox-supports-reply-to="inboxSupportsReplyTo"
         :current-user-id="currentUserId"
         data-clarity-mask="True"

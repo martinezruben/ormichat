@@ -285,7 +285,9 @@
         "REMOVE_PREVIEW": "Quitar el hilo de correo citado",
         "COLLAPSE": "Contraer vista previa",
         "EXPAND": "Expandir vista previa"
-      }
+      },
+      "TO_CONTACT": "Para {name} · {inbox}",
+      "PRIVATE_NOTE_VISIBILITY": "Solo visible para tu equipo"
     },
     "VISIBLE_TO_AGENTS": "Nota privada: solo visible para ti y tu equipo",
     "CHANGE_STATUS": "Estado de la conversación cambiado",
@@ -402,6 +404,18 @@
         "DISABLED": "Deshabilitado",
         "YOU_ARE_A_MEMBER": "Usted es miembro de este equipo"
       }
+    },
+    "SENDER_ROLE": {
+      "CUSTOMER": "Cliente",
+      "AGENT": "Agente",
+      "BOT": "Bot",
+      "NOTE": "Nota privada",
+      "YOU": "Tú"
+    },
+    "STATUS_LABEL": {
+      "OPEN": "Abierta",
+      "PENDING": "Pendiente",
+      "RESOLVED": "Resuelta"
     }
   },
   "EMAIL_TRANSCRIPT": {
@@ -500,6 +514,11 @@
         "PARTIALLY_FULFILLED": "Completado parcialmente",
         "UNFULFILLED": "Sin completar"
       }
+    },
+    "STATS": {
+      "STARTED": "Iniciada",
+      "FIRST_RESPONSE": "1ª respuesta",
+      "LAST_ACTIVITY": "Última"
     }
   },
   "CONVERSATION_CUSTOM_ATTRIBUTES": {

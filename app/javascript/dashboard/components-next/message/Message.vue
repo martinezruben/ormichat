@@ -125,6 +125,7 @@ const props = defineProps({
     validator: value => Object.values(CONTENT_TYPES).includes(value),
   },
   conversationId: { type: Number, required: true },
+  firstInGroup: { type: Boolean, default: true },
   createdAt: { type: Number, required: true }, // eslint-disable-line vue/no-unused-properties
   currentUserId: { type: Number, required: true }, // eslint-disable-line vue/no-unused-properties
   groupWithNext: { type: Boolean, default: false },
@@ -257,7 +258,7 @@ const flexOrientationClass = computed(() => {
 
 const gridClass = computed(() => {
   const map = {
-    [ORIENTATION.LEFT]: 'grid grid-cols-1fr',
+    [ORIENTATION.LEFT]: 'grid grid-cols-[24px_1fr]',
     [ORIENTATION.RIGHT]: 'grid grid-cols-[1fr_24px]',
   };
 
@@ -267,10 +268,12 @@ const gridClass = computed(() => {
 const gridTemplate = computed(() => {
   const map = {
     [ORIENTATION.LEFT]: `
-      "bubble"
-      "meta"
+      "header header"
+      "avatar bubble"
+      "spacer meta"
     `,
     [ORIENTATION.RIGHT]: `
+      "header header"
       "bubble avatar"
       "meta spacer"
     `,
@@ -287,9 +290,43 @@ const shouldGroupWithNext = computed(() => {
 
 const shouldShowAvatar = computed(() => {
   if (props.messageType === MESSAGE_TYPES.ACTIVITY) return false;
-  if (orientation.value === ORIENTATION.LEFT) return false;
 
   return true;
+});
+
+const SENDER_ROLE_CLASSES = {
+  [MESSAGE_VARIANTS.USER]: {
+    label: 'CONVERSATION.SENDER_ROLE.CUSTOMER',
+    class: 'bg-n-alpha-2 text-n-slate-11',
+  },
+  [MESSAGE_VARIANTS.AGENT]: {
+    label: 'CONVERSATION.SENDER_ROLE.AGENT',
+    class: 'bg-n-iris-3 text-n-iris-11',
+  },
+  [MESSAGE_VARIANTS.BOT]: {
+    label: 'CONVERSATION.SENDER_ROLE.BOT',
+    class: 'bg-n-alpha-2 text-n-slate-11',
+  },
+  [MESSAGE_VARIANTS.TEMPLATE]: {
+    label: 'CONVERSATION.SENDER_ROLE.BOT',
+    class: 'bg-n-alpha-2 text-n-slate-11',
+  },
+  [MESSAGE_VARIANTS.PRIVATE]: {
+    label: 'CONVERSATION.SENDER_ROLE.NOTE',
+    class: 'bg-n-amber-3 text-n-amber-11',
+  },
+};
+
+const senderRole = computed(() => SENDER_ROLE_CLASSES[variant.value]);
+
+const isOwnMessage = computed(() => {
+  const senderId = props.senderId ?? props.sender?.id;
+  return (
+    props.messageType === MESSAGE_TYPES.OUTGOING &&
+    senderId === props.currentUserId &&
+    (props.sender?.type ?? props.senderType)?.toLowerCase() ===
+      SENDER_TYPES.USER.toLowerCase()
+  );
 });
 
 const componentToRender = computed(() => {
@@ -512,6 +549,18 @@ const avatarInfo = computed(() => {
   };
 });
 
+const senderName = computed(() => {
+  const { name } = avatarInfo.value;
+  if (!name) return '';
+  return isOwnMessage.value
+    ? `${t('CONVERSATION.SENDER_ROLE.YOU')} · ${name}`
+    : name;
+});
+
+const shouldShowSenderHeader = computed(
+  () => props.firstInGroup && !!senderRole.value
+);
+
 const avatarTooltip = computed(() => {
   if (props.contentAttributes?.externalEcho) {
     return replaceInstallationName(t('CONVERSATION.NATIVE_APP_ADVISORY'));
@@ -576,6 +625,27 @@ provideMessageContext({
         gridTemplateAreas: gridTemplate,
       }"
     >
+      <div
+        v-if="shouldShowSenderHeader"
+        class="[grid-area:header] flex items-center gap-2 mb-1 min-w-0"
+        :class="{
+          'justify-end ltr:mr-8 rtl:ml-8': orientation === ORIENTATION.RIGHT,
+          'ltr:ml-8 rtl:mr-8': orientation === ORIENTATION.LEFT,
+        }"
+      >
+        <span
+          v-if="senderName"
+          class="text-xs font-medium truncate text-n-slate-12"
+        >
+          {{ senderName }}
+        </span>
+        <span
+          class="px-1.5 text-[10px] font-semibold tracking-wide uppercase rounded-full shrink-0"
+          :class="senderRole.class"
+        >
+          {{ t(senderRole.label) }}
+        </span>
+      </div>
       <div
         v-if="!shouldGroupWithNext && shouldShowAvatar"
         v-tooltip.left-end="avatarTooltip"

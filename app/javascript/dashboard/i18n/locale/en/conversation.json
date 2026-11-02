@@ -323,7 +323,9 @@
         "REMOVE_PREVIEW": "Remove quoted email thread",
         "COLLAPSE": "Collapse preview",
         "EXPAND": "Expand preview"
-      }
+      },
+      "TO_CONTACT": "To {name} · {inbox}",
+      "PRIVATE_NOTE_VISIBILITY": "Only visible to your team"
     },
     "VISIBLE_TO_AGENTS": "Private Note: Only visible to you and your team",
     "CHANGE_STATUS": "Conversation status changed",
@@ -402,6 +404,18 @@
       "UNMUTE": "Unmute mic",
       "VIEW_CHAT_HISTORY": "View chat history",
       "GO_TO_CONVERSATION": "Go to conversation thread"
+    },
+    "SENDER_ROLE": {
+      "CUSTOMER": "Customer",
+      "AGENT": "Agent",
+      "BOT": "Bot",
+      "NOTE": "Private note",
+      "YOU": "You"
+    },
+    "STATUS_LABEL": {
+      "OPEN": "Open",
+      "PENDING": "Pending",
+      "RESOLVED": "Resolved"
     }
   },
   "EMAIL_TRANSCRIPT": {
@@ -500,6 +514,11 @@
         "PARTIALLY_FULFILLED": "Partially Fulfilled",
         "UNFULFILLED": "Unfulfilled"
       }
+    },
+    "STATS": {
+      "STARTED": "Started",
+      "FIRST_RESPONSE": "First reply",
+      "LAST_ACTIVITY": "Last activity"
     }
   },
   "CONVERSATION_CUSTOM_ATTRIBUTES": {

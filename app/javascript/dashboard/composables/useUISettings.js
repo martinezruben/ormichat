@@ -71,8 +71,17 @@ const useContactSidebarItemsOrder = uiSettings => {
  * @param {Object} uiSettings - Reactive UI settings object.
  * @param {Function} updateUISettings - Function to update UI settings.
  */
+// Sections that start expanded until the agent collapses them.
+const DEFAULT_OPEN_SIDEBAR_ITEMS = Object.freeze([
+  'is_conv_actions_open',
+  'is_conv_details_open',
+]);
+
+const isSidebarItemOpen = (key, uiSettings) =>
+  uiSettings.value[key] ?? DEFAULT_OPEN_SIDEBAR_ITEMS.includes(key);
+
 const toggleSidebarUIState = (key, uiSettings, updateUISettings) => {
-  updateUISettings({ [key]: !uiSettings.value[key] });
+  updateUISettings({ [key]: !isSidebarItemOpen(key, uiSettings) });
 };
 
 /**
@@ -155,7 +164,7 @@ export function useUISettings() {
     updateUISettings,
     conversationSidebarItemsOrder: useConversationSidebarItemsOrder(uiSettings),
     contactSidebarItemsOrder: useContactSidebarItemsOrder(uiSettings),
-    isContactSidebarItemOpen: key => !!uiSettings.value[key],
+    isContactSidebarItemOpen: key => isSidebarItemOpen(key, uiSettings),
     toggleSidebarUIState: key =>
       toggleSidebarUIState(key, uiSettings, updateUISettings),
     setSignatureFlagForInbox: (channelType, value) =>
