@@ -910,6 +910,14 @@ watch(conversationFilters, (newVal, oldVal) => {
       @basic-filter-change="onBasicFilterChange"
     />
 
+    <RouterLink
+      :to="{ name: 'search' }"
+      class="flex items-center gap-2 h-9 px-3 mx-3 mb-2 text-sm border rounded-xl border-n-weak bg-n-surface-2 text-n-slate-10 hover:border-n-strong"
+    >
+      <span class="i-lucide-search size-4" />
+      {{ $t('CHAT_LIST.SEARCH_PLACEHOLDER') }}
+    </RouterLink>
+
     <TeleportWithDirection
       v-if="showAddFoldersModal"
       to="#saveFilterTeleportTarget"

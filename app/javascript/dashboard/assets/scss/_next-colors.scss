@@ -2,23 +2,23 @@
 @layer base {
   // NEXT COLORS START
   :root {
-    // brand (shadcn/ui neutral primary)
-    --brand-color: 23 23 23;
-    --brand-foreground: 250 250 250;
+    // brand (indigo accent)
+    --brand-color: 79 70 229;
+    --brand-foreground: 255 255 255;
 
-    // slate (shadcn/ui neutral ramp)
-    --slate-1: 250 250 250;
-    --slate-2: 247 247 247;
-    --slate-3: 245 245 245;
-    --slate-4: 240 240 240;
-    --slate-5: 235 235 235;
-    --slate-6: 229 229 229;
-    --slate-7: 212 212 212;
-    --slate-8: 190 190 190;
-    --slate-9: 163 163 163;
-    --slate-10: 138 138 138;
-    --slate-11: 115 115 115;
-    --slate-12: 10 10 10;
+    // slate (cool neutral ramp)
+    --slate-1: 251 251 253;
+    --slate-2: 247 248 250;
+    --slate-3: 244 245 248;
+    --slate-4: 238 240 244;
+    --slate-5: 233 235 240;
+    --slate-6: 228 231 237;
+    --slate-7: 213 217 226;
+    --slate-8: 190 195 207;
+    --slate-9: 160 166 181;
+    --slate-10: 134 141 158;
+    --slate-11: 85 92 108;
+    --slate-12: 20 22 28;
 
     --iris-1: 253 253 255;
     --iris-2: 248 248 255;
@@ -33,18 +33,18 @@
     --iris-11: 87 83 198;
     --iris-12: 39 41 98;
 
-    --blue-1: 250 250 250;
-    --blue-2: 245 245 245;
-    --blue-3: 240 240 240;
-    --blue-4: 235 235 235;
-    --blue-5: 229 229 229;
-    --blue-6: 212 212 212;
-    --blue-7: 190 190 190;
-    --blue-8: 163 163 163;
-    --blue-9: 23 23 23;
-    --blue-10: 38 38 38;
-    --blue-11: 23 23 23;
-    --blue-12: 10 10 10;
+    --blue-1: 253 253 255;
+    --blue-2: 248 248 255;
+    --blue-3: 240 241 254;
+    --blue-4: 232 233 253;
+    --blue-5: 222 223 252;
+    --blue-6: 208 210 249;
+    --blue-7: 190 192 244;
+    --blue-8: 165 168 239;
+    --blue-9: 79 70 229;
+    --blue-10: 67 56 202;
+    --blue-11: 67 56 202;
+    --blue-12: 30 27 75;
 
     --ruby-1: 255 252 252;
     --ruby-2: 255 247 247;
@@ -113,23 +113,23 @@
 
     --background-color: 255 255 255;
     --surface-1: 255 255 255;
-    --surface-2: 245 245 245;
-    --surface-active: 245 245 245;
+    --surface-2: 246 247 250;
+    --surface-active: 244 245 248;
     --background-input-box: 0, 0, 0, 0;
-    --text-blue: 10 10 10;
+    --text-blue: 67 56 202;
     --text-purple: 2 4 49;
     --text-amber: 37 24 1;
-    --border-container: 229 229 229;
-    --border-strong: 212 212 212;
-    --border-weak: 229 229 229;
-    --border-blue-strong: 23 23 23;
+    --border-container: 228 231 237;
+    --border-strong: 213 217 226;
+    --border-weak: 228 231 237;
+    --border-blue-strong: 79 70 229;
     --solid-1: 255 255 255;
     --solid-2: 255 255 255;
     --solid-3: 255 255 255;
-    --solid-active: 245 245 245;
+    --solid-active: 244 245 248;
     --solid-amber: 255 228 181;
-    --solid-blue: 245 245 245;
-    --solid-blue-2: 250 250 250;
+    --solid-blue: 238 238 253;
+    --solid-blue-2: 247 247 255;
     --solid-iris: 230 231 255;
     --solid-purple: 230 231 255;
     --solid-red: 254 200 201;
@@ -139,7 +139,7 @@
     --overlay-avatar: 255, 255, 255, 0.67;
     --button-color: 255 255 255;
     --button-hover-color: 255, 255, 255, 0.2;
-    --label-background: 245 245 245;
+    --label-background: 244 245 248;
     --label-border: 0, 0, 0, 0.06;
 
     --alpha-1: 0, 0, 0, 0.04;
@@ -147,7 +147,7 @@
     --alpha-3: 255, 255, 255, 0.96;
     --black-alpha-1: 0, 0, 0, 0.12;
     --black-alpha-2: 0, 0, 0, 0.04;
-    --border-blue: 163, 163, 163, 0.6;
+    --border-blue: 129, 140, 248, 0.5;
     --white-alpha: 255, 255, 255, 0.8;
 
     // Voice call widget - light mode
@@ -158,23 +158,23 @@
   }
 
   .dark {
-    // brand (shadcn/ui neutral primary)
-    --brand-color: 229 229 229;
-    --brand-foreground: 23 23 23;
+    // brand (indigo accent)
+    --brand-color: 111 105 245;
+    --brand-foreground: 255 255 255;
 
-    // slate (shadcn/ui neutral ramp)
-    --slate-1: 10 10 10;
-    --slate-2: 18 18 18;
-    --slate-3: 23 23 23;
-    --slate-4: 30 30 30;
-    --slate-5: 38 38 38;
-    --slate-6: 46 46 46;
-    --slate-7: 64 64 64;
-    --slate-8: 82 82 82;
-    --slate-9: 115 115 115;
-    --slate-10: 140 140 140;
-    --slate-11: 163 163 163;
-    --slate-12: 250 250 250;
+    // slate (cool neutral ramp)
+    --slate-1: 10 11 14;
+    --slate-2: 17 18 23;
+    --slate-3: 22 24 30;
+    --slate-4: 29 31 39;
+    --slate-5: 37 40 50;
+    --slate-6: 46 49 61;
+    --slate-7: 64 68 82;
+    --slate-8: 82 87 104;
+    --slate-9: 116 122 140;
+    --slate-10: 141 147 164;
+    --slate-11: 165 171 187;
+    --slate-12: 247 248 251;
 
     --iris-1: 19 19 30;
     --iris-2: 23 22 37;
@@ -189,18 +189,18 @@
     --iris-11: 158 177 255;
     --iris-12: 224 223 254;
 
-    --blue-1: 18 18 18;
-    --blue-2: 23 23 23;
-    --blue-3: 30 30 30;
-    --blue-4: 38 38 38;
-    --blue-5: 46 46 46;
-    --blue-6: 64 64 64;
-    --blue-7: 82 82 82;
-    --blue-8: 115 115 115;
-    --blue-9: 82 82 82;
-    --blue-10: 100 100 100;
-    --blue-11: 229 229 229;
-    --blue-12: 250 250 250;
+    --blue-1: 15 15 26;
+    --blue-2: 19 19 33;
+    --blue-3: 28 28 58;
+    --blue-4: 36 35 78;
+    --blue-5: 45 44 96;
+    --blue-6: 58 57 120;
+    --blue-7: 74 73 150;
+    --blue-8: 96 94 190;
+    --blue-9: 111 105 245;
+    --blue-10: 132 128 255;
+    --blue-11: 165 168 255;
+    --blue-12: 224 224 254;
 
     --ruby-1: 25 17 19;
     --ruby-2: 30 21 23;
@@ -267,34 +267,34 @@
     --violet-11: 169 153 236;
     --violet-12: 226 221 254;
 
-    --background-color: 10 10 10;
-    --surface-1: 23 23 23;
-    --surface-2: 30 30 30;
-    --surface-active: 38 38 38;
+    --background-color: 11 12 16;
+    --surface-1: 21 23 29;
+    --surface-2: 29 31 39;
+    --surface-active: 37 40 50;
     --background-input-box: 255, 255, 255, 0.045;
-    --text-blue: 250 250 250;
+    --text-blue: 165 168 255;
     --text-purple: 232 233 254;
     --text-amber: 255 247 234;
-    --border-strong: 51 51 51;
-    --border-weak: 38 38 38;
-    --border-blue-strong: 229 229 229;
-    --solid-1: 23 23 23;
-    --solid-2: 28 28 28;
-    --solid-3: 38 38 38;
-    --solid-active: 46 46 46;
+    --border-strong: 51 55 69;
+    --border-weak: 38 42 52;
+    --border-blue-strong: 132 128 255;
+    --solid-1: 21 23 29;
+    --solid-2: 26 28 35;
+    --solid-3: 36 39 49;
+    --solid-active: 46 49 61;
     --solid-amber: 56 50 41;
-    --solid-blue: 38 38 38;
-    --solid-blue-2: 23 23 23;
+    --solid-blue: 37 35 63;
+    --solid-blue-2: 24 23 44;
     --solid-iris: 38 42 101;
     --solid-purple: 51 51 107;
     --solid-red: 90 33 34;
     --solid-amber-button: 255 221 141;
-    --card-color: 23 23 23;
+    --card-color: 21 23 29;
     --overlay: 0, 0, 0, 0.6;
     --overlay-avatar: 0, 0, 0, 0.05;
-    --button-color: 30 30 30;
+    --button-color: 29 31 39;
     --button-hover-color: 0, 0, 0, 0.15;
-    --label-background: 38 38 38;
+    --label-background: 38 42 52;
     --label-border: 255, 255, 255, 0.06;
 
     --alpha-1: 38, 38, 38, 0.8;
@@ -302,7 +302,7 @@
     --alpha-3: 23, 23, 23, 0.95;
     --black-alpha-1: 0, 0, 0, 0.3;
     --black-alpha-2: 0, 0, 0, 0.2;
-    --border-blue: 163, 163, 163, 0.5;
+    --border-blue: 132, 128, 255, 0.5;
     --border-container: 255, 255, 255, 0.1;
     --white-alpha: 255, 255, 255, 0.1;
 

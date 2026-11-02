@@ -2,6 +2,8 @@
 import { ref, computed, provide } from 'vue';
 import { Virtualizer } from 'virtua/vue';
 import { useBreakpoints } from '@vueuse/core';
+import { useI18n } from 'vue-i18n';
+import { fromUnixTime, isToday, isYesterday, isThisWeek } from 'date-fns';
 import { useChatListKeyboardEvents } from 'dashboard/composables/chatlist/useChatListKeyboardEvents';
 import ConversationItem from './ConversationItem.vue';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
@@ -22,6 +24,28 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['loadMore']);
+
+const { t } = useI18n();
+
+const getDateGroup = timestamp => {
+  const date = fromUnixTime(timestamp);
+  if (isToday(date)) return t('CHAT_LIST.DATE_GROUP.TODAY');
+  if (isYesterday(date)) return t('CHAT_LIST.DATE_GROUP.YESTERDAY');
+  if (isThisWeek(date)) return t('CHAT_LIST.DATE_GROUP.THIS_WEEK');
+  return t('CHAT_LIST.DATE_GROUP.OLDER');
+};
+
+// Maps a conversation id to its group label, only for the first conversation of each group
+const groupHeaders = computed(() => {
+  const headers = {};
+  let previousGroup = '';
+  props.conversationList.forEach(chat => {
+    const group = getDateGroup(chat.timestamp);
+    if (group !== previousGroup) headers[chat.id] = group;
+    previousGroup = group;
+  });
+  return headers;
+});
 
 const conversationListRef = ref(null);
 const virtualListRef = ref(null);
@@ -69,6 +93,12 @@ defineExpose({ conversationListRef });
       :data="conversationList"
       class="[&>div:has(+_div_.active)>*]:!border-n-surface-1 [&>div:has(+_div_.selected)>*]:!border-n-surface-1"
     >
+      <div
+        v-if="groupHeaders[item.id]"
+        class="px-4 pt-3 pb-1 text-xs font-semibold tracking-wide uppercase text-n-slate-10"
+      >
+        {{ groupHeaders[item.id] }}
+      </div>
       <ConversationItem
         :source="item"
         :label="label"

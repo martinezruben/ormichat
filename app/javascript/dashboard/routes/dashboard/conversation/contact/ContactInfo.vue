@@ -232,19 +232,22 @@ export default {
 <template>
   <div class="relative items-center w-full p-4">
     <div class="flex flex-col w-full gap-2 text-left rtl:text-right">
-      <div class="flex flex-row justify-between">
+      <div class="flex flex-row justify-center">
         <Avatar
           v-if="showAvatar"
           :src="contact.thumbnail"
           :name="contact.name"
           :status="contact.availability_status"
-          :size="48"
+          :size="64"
           hide-offline-status
         />
       </div>
 
       <div class="flex flex-col items-start gap-1.5 min-w-0 w-full">
-        <div v-if="showAvatar" class="flex items-center w-full min-w-0 gap-2">
+        <div
+          v-if="showAvatar"
+          class="flex items-center justify-center w-full min-w-0 gap-2"
+        >
           <div class="group/name flex items-center min-w-0 gap-2">
             <InlineInput
               v-if="isEditingName"
@@ -300,6 +303,66 @@ export default {
           </div>
         </div>
 
+        <div class="flex items-center justify-center w-full gap-2 pb-2">
+          <ComposeConversation :contact-id="String(contact.id)">
+            <template #trigger>
+              <NextButton
+                v-tooltip.top-end="$t('CONTACT_PANEL.NEW_MESSAGE')"
+                icon="i-ph-chat-circle-dots"
+                slate
+                faded
+                sm
+              />
+            </template>
+          </ComposeConversation>
+          <VoiceCallButton
+            :phone="contact.phone_number"
+            :contact-id="contact.id"
+            :conversation-id="currentChat?.id"
+            icon="i-lucide-phone"
+            sm
+            faded
+            slate
+            :tooltip-label="$t('CONTACT_PANEL.CALL')"
+          />
+          <NextButton
+            v-tooltip.top-end="$t('EDIT_CONTACT.BUTTON_LABEL')"
+            icon="i-ph-pencil-simple"
+            slate
+            faded
+            sm
+            @click="toggleEditModal"
+          />
+          <ContactMergeModal :primary-contact="contact">
+            <template #trigger>
+              <NextButton
+                v-tooltip.top-end="$t('CONTACT_PANEL.MERGE_CONTACT')"
+                icon="i-ph-arrows-merge"
+                slate
+                faded
+                sm
+                :disabled="uiFlags.isMerging"
+              />
+            </template>
+          </ContactMergeModal>
+          <ContactDeleteModal
+            v-if="isAdmin"
+            :contact="contact"
+            @deleted="$emit('panelClose')"
+          >
+            <template #trigger>
+              <NextButton
+                v-tooltip.top-end="$t('DELETE_CONTACT.BUTTON_LABEL')"
+                icon="i-ph-trash"
+                slate
+                faded
+                sm
+                ruby
+                :disabled="uiFlags.isDeleting"
+              />
+            </template>
+          </ContactDeleteModal>
+        </div>
         <p v-if="additionalAttributes.description" class="break-words mb-0.5">
           {{ additionalAttributes.description }}
         </p>
@@ -443,66 +506,6 @@ export default {
             </ImagePreviewDialog>
           </div>
         </div>
-      </div>
-      <div class="flex items-center w-full mt-0.5 gap-2">
-        <ComposeConversation :contact-id="String(contact.id)">
-          <template #trigger>
-            <NextButton
-              v-tooltip.top-end="$t('CONTACT_PANEL.NEW_MESSAGE')"
-              icon="i-ph-chat-circle-dots"
-              slate
-              faded
-              sm
-            />
-          </template>
-        </ComposeConversation>
-        <VoiceCallButton
-          :phone="contact.phone_number"
-          :contact-id="contact.id"
-          :conversation-id="currentChat?.id"
-          icon="i-lucide-phone"
-          sm
-          faded
-          slate
-          :tooltip-label="$t('CONTACT_PANEL.CALL')"
-        />
-        <NextButton
-          v-tooltip.top-end="$t('EDIT_CONTACT.BUTTON_LABEL')"
-          icon="i-ph-pencil-simple"
-          slate
-          faded
-          sm
-          @click="toggleEditModal"
-        />
-        <ContactMergeModal :primary-contact="contact">
-          <template #trigger>
-            <NextButton
-              v-tooltip.top-end="$t('CONTACT_PANEL.MERGE_CONTACT')"
-              icon="i-ph-arrows-merge"
-              slate
-              faded
-              sm
-              :disabled="uiFlags.isMerging"
-            />
-          </template>
-        </ContactMergeModal>
-        <ContactDeleteModal
-          v-if="isAdmin"
-          :contact="contact"
-          @deleted="$emit('panelClose')"
-        >
-          <template #trigger>
-            <NextButton
-              v-tooltip.top-end="$t('DELETE_CONTACT.BUTTON_LABEL')"
-              icon="i-ph-trash"
-              slate
-              faded
-              sm
-              ruby
-              :disabled="uiFlags.isDeleting"
-            />
-          </template>
-        </ContactDeleteModal>
       </div>
       <EditContact
         :show="showEditModal"

@@ -7,6 +7,7 @@ import BackButton from '../BackButton.vue';
 import InboxName from '../InboxName.vue';
 import MoreActions from './MoreActions.vue';
 import Avatar from 'next/avatar/Avatar.vue';
+import NextButton from 'dashboard/components-next/button/Button.vue';
 import SLACardLabel from './components/SLACardLabel.vue';
 import ConversationCallButton from './ConversationCallButton.vue';
 import wootConstants from 'dashboard/constants/globals';
@@ -101,6 +102,30 @@ const STATUS_STYLES = {
 
 const statusStyle = computed(() => STATUS_STYLES[props.chat.status]);
 
+const currentUser = computed(() => store.getters.getCurrentUser);
+const isAssignedToMe = computed(
+  () => props.chat.meta?.assignee?.id === currentUser.value.id
+);
+const isOpen = computed(
+  () => props.chat.status === wootConstants.STATUS_TYPE.OPEN
+);
+
+const assignToMe = () => {
+  store.dispatch('setCurrentChatAssignee', {
+    conversationId: props.chat.id,
+    assignee: currentUser.value,
+    assigneeType: 'User',
+  });
+  store.dispatch('assignAgent', {
+    conversationId: props.chat.id,
+    agentId: currentUser.value.id,
+  });
+};
+
+const openSnoozeModal = () => {
+  document.querySelector('ninja-keys').open({ parent: 'snooze_conversation' });
+};
+
 const hasSlaPolicyId = computed(
   () => props.chat?.applied_sla?.id && !currentContact.value?.blocked
 );
@@ -188,6 +213,26 @@ const copyConversationId = async () => {
         show-extended-info
         :parent-width="width"
         class="hidden md:flex"
+      />
+      <NextButton
+        v-if="!isAssignedToMe"
+        :label="$t('CONVERSATION.ASSIGN_TO_ME')"
+        icon="i-lucide-user-round"
+        slate
+        faded
+        sm
+        class="hidden lg:inline-flex"
+        @click="assignToMe"
+      />
+      <NextButton
+        v-if="isOpen"
+        :label="$t('CONVERSATION.RESOLVE_DROPDOWN.SNOOZE_UNTIL')"
+        icon="i-lucide-clock"
+        slate
+        faded
+        sm
+        class="hidden lg:inline-flex"
+        @click="openSnoozeModal"
       />
       <ConversationCallButton :inbox="inbox" :chat="currentChat" />
       <MoreActions :conversation-id="currentChat.id" />

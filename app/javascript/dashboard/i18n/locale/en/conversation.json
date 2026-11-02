@@ -325,7 +325,8 @@
         "EXPAND": "Expand preview"
       },
       "TO_CONTACT": "To {name} · {inbox}",
-      "PRIVATE_NOTE_VISIBILITY": "Only visible to your team"
+      "PRIVATE_NOTE_VISIBILITY": "Only visible to your team",
+      "SUGGESTED_REPLIES": "Suggested"
     },
     "VISIBLE_TO_AGENTS": "Private Note: Only visible to you and your team",
     "CHANGE_STATUS": "Conversation status changed",
@@ -416,7 +417,12 @@
       "OPEN": "Open",
       "PENDING": "Pending",
       "RESOLVED": "Resolved"
-    }
+    },
+    "DAY_SEPARATOR": {
+      "TODAY": "Today",
+      "YESTERDAY": "Yesterday"
+    },
+    "WAITING_FOR_CONTACT": "No reply from {name} for {time}"
   },
   "EMAIL_TRANSCRIPT": {
     "TITLE": "Send conversation transcript",

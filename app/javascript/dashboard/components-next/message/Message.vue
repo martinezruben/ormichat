@@ -20,6 +20,7 @@ import {
   ORIENTATION,
   MESSAGE_STATUS,
   CONTENT_TYPES,
+  META_BELOW_VARIANTS,
 } from './constants';
 
 import Avatar from 'next/avatar/Avatar.vue';
@@ -45,6 +46,7 @@ import WhatsappFlowResponseBubble from './bubbles/WhatsappFlowResponse.vue';
 import WhatsappReferral from './bubbles/Text/WhatsappReferral.vue';
 
 import MessageError from './MessageError.vue';
+import MessageMeta from './MessageMeta.vue';
 import ContextMenu from 'dashboard/modules/conversations/components/MessageContextMenu.vue';
 import { useBranding } from 'shared/composables/useBranding';
 
@@ -301,7 +303,7 @@ const SENDER_ROLE_CLASSES = {
   },
   [MESSAGE_VARIANTS.AGENT]: {
     label: 'CONVERSATION.SENDER_ROLE.AGENT',
-    class: 'bg-n-iris-3 text-n-iris-11',
+    class: 'bg-n-blue-3 text-n-blue-11',
   },
   [MESSAGE_VARIANTS.BOT]: {
     label: 'CONVERSATION.SENDER_ROLE.BOT',
@@ -328,6 +330,20 @@ const isOwnMessage = computed(() => {
       SENDER_TYPES.USER.toLowerCase()
   );
 });
+
+const shouldShowMetaBelow = computed(
+  () =>
+    !shouldGroupWithNext.value &&
+    META_BELOW_VARIANTS.includes(variant.value) &&
+    !isCaptainMessage.value &&
+    props.contentType !== CONTENT_TYPES.VOICE_CALL
+);
+
+const metaBelowClass = computed(() =>
+  variant.value === MESSAGE_VARIANTS.PRIVATE
+    ? 'text-n-amber-11'
+    : 'text-n-slate-11'
+);
 
 const componentToRender = computed(() => {
   if (props.isEmailInbox && !props.private) {
@@ -651,7 +667,7 @@ provideMessageContext({
         v-tooltip.left-end="avatarTooltip"
         class="[grid-area:avatar] flex items-end"
       >
-        <Avatar v-bind="avatarInfo" :size="24" />
+        <Avatar v-bind="avatarInfo" :size="24" rounded-full />
       </div>
       <div
         class="[grid-area:bubble] flex min-w-0"
@@ -668,13 +684,25 @@ provideMessageContext({
         />
         <Component :is="componentToRender" />
       </div>
-      <MessageError
-        v-if="contentAttributes.externalError"
-        class="[grid-area:meta]"
-        :class="flexOrientationClass"
-        :error="contentAttributes.externalError"
-        @retry="emit('retry')"
-      />
+      <div
+        v-if="shouldShowMetaBelow || contentAttributes.externalError"
+        class="[grid-area:meta] flex flex-col gap-1 mt-0.5 px-1"
+        :class="{
+          'items-end': orientation === ORIENTATION.RIGHT,
+          'items-start': orientation === ORIENTATION.LEFT,
+        }"
+      >
+        <MessageMeta
+          v-if="shouldShowMetaBelow"
+          :class="[flexOrientationClass, metaBelowClass]"
+        />
+        <MessageError
+          v-if="contentAttributes.externalError"
+          :class="flexOrientationClass"
+          :error="contentAttributes.externalError"
+          @retry="emit('retry')"
+        />
+      </div>
     </div>
     <div v-if="shouldShowContextMenu" class="context-menu-wrap">
       <ContextMenu

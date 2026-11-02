@@ -15,6 +15,7 @@ import CopilotReplyBottomPanel from 'dashboard/components/widgets/WootWriter/Cop
 import ArticleSearchPopover from 'dashboard/routes/dashboard/helpcenter/components/ArticleSearch/SearchPopover.vue';
 import CopilotEditorSection from './CopilotEditorSection.vue';
 import MessageSignatureMissingAlert from './MessageSignatureMissingAlert.vue';
+import CannedSuggestions from 'dashboard/components/widgets/WootWriter/CannedSuggestions.vue';
 import ReplyBoxBanner from './ReplyBoxBanner.vue';
 import QuotedEmailPreview from './QuotedEmailPreview.vue';
 import { REPLY_EDITOR_MODES } from 'dashboard/components/widgets/WootWriter/constants';
@@ -74,6 +75,7 @@ export default {
     ReplyBoxBanner,
     EmojiIconPicker,
     MessageSignatureMissingAlert,
+    CannedSuggestions,
     ReplyBottomPanel,
     ReplyEmailHead,
     ReplyToMessage,
@@ -1369,6 +1371,10 @@ export default {
       @toggle-copilot="copilot.toggleEditor"
       @execute-copilot-action="executeCopilotAction"
     />
+    <CannedSuggestions
+      v-if="isDefaultEditorMode && !hasMeaningfulEditorContent"
+      @select="addIntoEditor"
+    />
     <ArticleSearchPopover
       v-if="showArticleSearchPopover && connectedPortalSlug"
       :selected-portal-slug="connectedPortalSlug"
@@ -1581,7 +1587,11 @@ export default {
 }
 
 .reply-box {
-  @apply relative mb-2 mx-2 border border-n-weak rounded-xl bg-n-solid-1;
+  @apply relative mb-4 mx-4 border border-n-weak rounded-2xl bg-n-solid-1 shadow-sm transition-colors;
+
+  &.is-focused:not(.is-private) {
+    @apply border-n-brand;
+  }
 
   &.is-private {
     @apply bg-n-solid-amber dark:border-n-amber-3/10 border-n-amber-12/5;
