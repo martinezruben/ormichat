@@ -130,6 +130,14 @@
       "REOPEN_ACTION": "Reopen",
       "OPEN_ACTION": "Open",
       "MORE_ACTIONS": "More actions",
+      "COPY_LINK": "Copy conversation link",
+      "COPY_LINK_SUCCESS": "Conversation link copied to clipboard",
+      "ASSIGNEE": {
+        "LABEL": "Assign conversation",
+        "UNASSIGNED": "Unassigned",
+        "SEARCH": "Search agent...",
+        "EMPTY": "No agents found"
+      },
       "OPEN": "More",
       "CLOSE": "Close",
       "DETAILS": "details",

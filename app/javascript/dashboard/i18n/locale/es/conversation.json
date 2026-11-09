@@ -120,6 +120,14 @@
       "REOPEN_ACTION": "Reabrir",
       "OPEN_ACTION": "Abrir",
       "MORE_ACTIONS": "Otras acciones",
+      "COPY_LINK": "Copiar enlace de la conversación",
+      "COPY_LINK_SUCCESS": "Enlace de la conversación copiado al portapapeles",
+      "ASSIGNEE": {
+        "LABEL": "Asignar conversación",
+        "UNASSIGNED": "Sin asignar",
+        "SEARCH": "Buscar agente...",
+        "EMPTY": "No se encontraron agentes"
+      },
       "OPEN": "Más",
       "CLOSE": "Cerrar",
       "DETAILS": "detalles",
