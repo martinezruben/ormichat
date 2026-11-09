@@ -29,6 +29,8 @@ import { dynamicTime, shortTimestamp } from 'shared/helpers/timeHelper';
 import { MESSAGE_TYPES } from 'next/message/constants';
 
 const WAITING_NOTICE_MIN_SECONDS = 24 * 60 * 60;
+// Distance from the bottom (px) after which the jump-to-latest button shows
+const JUMP_TO_LATEST_THRESHOLD = 300;
 import { LocalStorage } from 'shared/helpers/localStorage';
 import {
   filterDuplicateSourceMessages,
@@ -90,6 +92,7 @@ export default {
       hasUserScrolled: false,
       isProgrammaticScroll: false,
       messageSentSinceOpened: false,
+      showJumpToLatest: false,
       labelSuggestions: [],
     };
   },
@@ -256,9 +259,11 @@ export default {
     unreadMessageCount() {
       return this.currentChat.unread_count || 0;
     },
+    unreadMessageBadge() {
+      return this.unreadMessageCount > 9 ? '9+' : this.unreadMessageCount;
+    },
     unreadMessageLabel() {
-      const count =
-        this.unreadMessageCount > 9 ? '9+' : this.unreadMessageCount;
+      const count = this.unreadMessageBadge;
       const label =
         this.unreadMessageCount > 1
           ? 'CONVERSATION.UNREAD_MESSAGES'
@@ -457,6 +462,14 @@ export default {
       }
       emitter.emit(BUS_EVENTS.ON_MESSAGE_LIST_SCROLL);
       this.fetchPreviousMessages(e.target.scrollTop);
+      const { scrollTop, scrollHeight, clientHeight } = e.target;
+      this.showJumpToLatest =
+        scrollHeight - scrollTop - clientHeight > JUMP_TO_LATEST_THRESHOLD;
+    },
+    jumpToLatest() {
+      // A single instant scroll keeps the programmatic-scroll flag consistent
+      this.isProgrammaticScroll = true;
+      this.conversationPanel.scrollTop = this.conversationPanel.scrollHeight;
     },
 
     makeMessagesRead() {
@@ -560,6 +573,22 @@ export default {
       </template>
     </MessageList>
     <div class="flex relative flex-col bg-n-surface-2">
+      <button
+        v-if="showJumpToLatest"
+        type="button"
+        class="absolute z-[2] flex items-center justify-center border rounded-full shadow-md outline-none end-4 -top-12 size-9 border-n-weak bg-n-surface-1 text-n-slate-12 hover:bg-n-alpha-2 focus-visible:ring-2 focus-visible:ring-ring"
+        :aria-label="$t('CONVERSATION.SCROLL_TO_LATEST')"
+        :title="$t('CONVERSATION.SCROLL_TO_LATEST')"
+        @click="jumpToLatest"
+      >
+        <span class="i-lucide-arrow-down size-4" />
+        <span
+          v-if="unreadMessageCount > 0"
+          class="absolute flex items-center justify-center rounded-full -top-1.5 -end-1.5 min-w-4 h-4 px-1 text-[10px] font-semibold bg-n-brand text-white"
+        >
+          {{ unreadMessageBadge }}
+        </span>
+      </button>
       <div
         v-if="isAnyoneTyping"
         class="absolute flex items-center w-full h-0 -top-7"
