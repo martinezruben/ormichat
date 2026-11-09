@@ -5,6 +5,8 @@ import { useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import Avatar from 'next/avatar/Avatar.vue';
 import SidebarProfileMenuStatus from './SidebarProfileMenuStatus.vue';
+import { emitter } from 'shared/helpers/mitt';
+import { CMD_OPEN_COMMAND_BAR } from 'dashboard/helper/commandbar/events';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 
 import {
@@ -81,8 +83,7 @@ const menuItems = computed(() => {
       label: t('SIDEBAR_ITEMS.APPEARANCE'),
       icon: 'i-lucide-palette',
       click: () => {
-        const ninja = document.querySelector('ninja-keys');
-        ninja.open({ parent: 'appearance_settings' });
+        emitter.emit(CMD_OPEN_COMMAND_BAR, { parent: 'appearance_settings' });
       },
     },
     {

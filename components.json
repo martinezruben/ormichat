@@ -1,0 +1,19 @@
+{
+  "$schema": "https://shadcn-vue.com/schema.json",
+  "style": "new-york",
+  "typescript": false,
+  "tailwind": {
+    "config": "tailwind.config.js",
+    "css": "app/javascript/dashboard/assets/scss/app.scss",
+    "baseColor": "slate",
+    "cssVariables": false
+  },
+  "aliases": {
+    "components": "next",
+    "composables": "dashboard/composables",
+    "utils": "next/ui/lib/utils",
+    "ui": "next/ui",
+    "lib": "next/ui/lib"
+  },
+  "iconLibrary": "lucide"
+}

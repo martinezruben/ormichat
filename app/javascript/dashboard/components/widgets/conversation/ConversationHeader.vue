@@ -13,6 +13,8 @@ import ConversationCallButton from './ConversationCallButton.vue';
 import wootConstants from 'dashboard/constants/globals';
 import { conversationListPageURL } from 'dashboard/helper/URLHelper';
 import { snoozedReopenTime } from 'dashboard/helper/snoozeHelpers';
+import { emitter } from 'shared/helpers/mitt';
+import { CMD_OPEN_COMMAND_BAR } from 'dashboard/helper/commandbar/events';
 import { useInbox } from 'dashboard/composables/useInbox';
 import { useAlert } from 'dashboard/composables';
 import { useI18n } from 'vue-i18n';
@@ -123,7 +125,7 @@ const assignToMe = () => {
 };
 
 const openSnoozeModal = () => {
-  document.querySelector('ninja-keys').open({ parent: 'snooze_conversation' });
+  emitter.emit(CMD_OPEN_COMMAND_BAR, { parent: 'snooze_conversation' });
 };
 
 const hasSlaPolicyId = computed(

@@ -1,8 +1,8 @@
 <script setup>
-import '@chatwoot/ninja-keys';
-import { ref, toRef, computed, watch, watchEffect, onMounted } from 'vue';
+import { ref, toRef, computed, watch } from 'vue';
 import { useStore } from 'dashboard/composables/store';
 import { useTrack } from 'dashboard/composables';
+import { useEmitter } from 'dashboard/composables/emitter';
 import { useI18n } from 'vue-i18n';
 import { useLocale } from 'shared/composables/useLocale';
 import { useAppearanceHotKeys } from 'dashboard/composables/commands/useAppearanceHotKeys';
@@ -11,6 +11,7 @@ import { useGoToCommandHotKeys } from 'dashboard/composables/commands/useGoToCom
 import { useBulkActionsHotKeys } from 'dashboard/composables/commands/useBulkActionsHotKeys';
 import { useConversationHotKeys } from 'dashboard/composables/commands/useConversationHotKeys';
 import { useMacroHotKeys } from 'dashboard/composables/commands/useMacroHotKeys';
+import CommandPalette from './CommandPalette.vue';
 import ConversationResolveAttributesModal from 'dashboard/components-next/ConversationWorkflow/ConversationResolveAttributesModal.vue';
 import wootConstants from 'dashboard/constants/globals';
 import {
@@ -20,6 +21,7 @@ import {
 import { generateSnoozeSuggestions } from 'dashboard/helper/snoozeHelpers';
 import { ICON_SNOOZE_CONVERSATION } from 'dashboard/helper/commandbar/icons';
 import {
+  CMD_OPEN_COMMAND_BAR,
   CMD_SNOOZE_CONVERSATION,
   CMD_SNOOZE_NOTIFICATION,
   CMD_BULK_ACTION_SNOOZE_CONVERSATION,
@@ -37,7 +39,7 @@ const store = useStore();
 const { t, tm } = useI18n();
 const { resolvedLocale } = useLocale();
 
-const ninjakeys = ref(null);
+const palette = ref(null);
 const resolveAttributesModalRef = ref(null);
 
 // Added selectedSnoozeType to track the selected snooze type
@@ -109,10 +111,6 @@ const hotKeys = computed(() => {
   );
 });
 
-const setCommandBarData = () => {
-  ninjakeys.value.data = hotKeys.value;
-};
-
 const SNOOZE_EVENT_MAP = {
   snooze_conversation: CMD_SNOOZE_CONVERSATION,
   snooze_notification: CMD_SNOOZE_NOTIFICATION,
@@ -163,34 +161,20 @@ const resetSnoozeState = () => {
   dynamicSnoozeActions.value = [];
 };
 
-const patchNinjaKeysOpenClose = el => {
-  if (!el || typeof el.open !== 'function' || typeof el.close !== 'function') {
-    return;
-  }
-
-  const originalOpen = el.open.bind(el);
-  const originalClose = el.close.bind(el);
-
-  el.open = (...args) => {
-    const [options = {}] = args;
-    currentCommandRoot.value = options.parent || null;
-    dynamicSnoozeActions.value = [];
-    return originalOpen(...args);
-  };
-
-  el.close = (...args) => {
-    resetSnoozeState();
-    return originalClose(...args);
-  };
+const openCommandBar = ({ parent = null } = {}) => {
+  currentCommandRoot.value = parent;
+  dynamicSnoozeActions.value = [];
+  palette.value.open({ parent });
 };
 
-const onSelected = item => {
-  const {
-    detail: {
-      action: { title = null, section = null, id = null, children = null } = {},
-    } = {},
-  } = item;
+useEmitter(CMD_OPEN_COMMAND_BAR, openCommandBar);
 
+const onSelected = ({
+  title = null,
+  section = null,
+  id = null,
+  children = null,
+}) => {
   selectedSnoozeType.value = id === CUSTOM_SNOOZE ? id : null;
 
   if (Array.isArray(children) && children.length) {
@@ -198,11 +182,9 @@ const onSelected = item => {
   }
 
   useTrack(GENERAL_EVENTS.COMMAND_BAR, { section, action: title });
-  setCommandBarData();
 };
 
-const onCommandBarChange = item => {
-  const { detail: { search = '', actions = [] } = {} } = item;
+const onCommandBarChange = ({ search = '', actions = [] }) => {
   const normalizedSearch = search.trim();
 
   if (actions.length > 0) {
@@ -236,25 +218,12 @@ const onClosed = () => {
   }
   resetSnoozeState();
 };
-
-watchEffect(() => {
-  if (ninjakeys.value) {
-    ninjakeys.value.data = hotKeys.value;
-  }
-});
-
-onMounted(() => {
-  setCommandBarData();
-  patchNinjaKeysOpenClose(ninjakeys.value);
-});
 </script>
 
-<!-- eslint-disable vue/attribute-hyphenation -->
 <template>
-  <ninja-keys
-    ref="ninjakeys"
-    noAutoLoadMdIcons
-    hideBreadcrumbs
+  <CommandPalette
+    ref="palette"
+    :actions="hotKeys"
     :placeholder="placeholder"
     @change="onCommandBarChange"
     @selected="onSelected"
@@ -266,20 +235,3 @@ onMounted(() => {
     @close="dismissPendingAttributes"
   />
 </template>
-
-<style lang="scss">
-// Theme the command bar from the app tokens so it follows light/dark mode
-ninja-keys {
-  --ninja-accent-color: rgb(var(--brand-color));
-  --ninja-font-family: 'Geist';
-  --ninja-overflow-background: rgba(var(--overlay));
-  --ninja-modal-background: rgb(var(--solid-1));
-  --ninja-secondary-background-color: rgb(var(--slate-3));
-  --ninja-selected-background: rgb(var(--slate-3));
-  --ninja-footer-background: rgb(var(--slate-1));
-  --ninja-text-color: rgb(var(--slate-12));
-  --ninja-icon-color: rgb(var(--slate-11));
-  --ninja-secondary-text-color: rgb(var(--slate-11));
-  z-index: 9999;
-}
-</style>

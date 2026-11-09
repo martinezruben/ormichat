@@ -26,3 +26,6 @@ export const CMD_BULK_ACTION_RESOLVE_CONVERSATION =
 
 // Inbox Commands (Notifications)
 export const CMD_SNOOZE_NOTIFICATION = 'CMD_SNOOZE_NOTIFICATION';
+
+// Command bar
+export const CMD_OPEN_COMMAND_BAR = 'CMD_OPEN_COMMAND_BAR';

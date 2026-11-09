@@ -7,6 +7,8 @@ import {
   getSortedAgentsByAvailability,
   getAgentsByUpdatedPresence,
 } from 'dashboard/helper/agentHelper.js';
+import { emitter } from 'shared/helpers/mitt';
+import { CMD_OPEN_COMMAND_BAR } from 'dashboard/helper/commandbar/events';
 import { picoSearch } from '@chatwoot/pico-search';
 import MenuItem from './menuItem.vue';
 import MenuItemWithSubmenu from './menuItemWithSubmenu.vue';
@@ -249,8 +251,7 @@ export default {
     },
     async snoozeConversation() {
       await this.$store.dispatch('setContextMenuChatId', this.chatId);
-      const ninja = document.querySelector('ninja-keys');
-      ninja.open({ parent: 'snooze_conversation' });
+      emitter.emit(CMD_OPEN_COMMAND_BAR, { parent: 'snooze_conversation' });
     },
     assignPriority(priority) {
       this.$emit('assignPriority', priority);

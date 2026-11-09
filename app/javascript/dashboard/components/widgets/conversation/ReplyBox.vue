@@ -23,7 +23,10 @@ import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vu
 import AudioRecorder from 'dashboard/components/widgets/WootWriter/AudioRecorder.vue';
 import { AUDIO_FORMATS } from 'shared/constants/messages';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
-import { CMD_AI_ASSIST } from 'dashboard/helper/commandbar/events';
+import {
+  CMD_AI_ASSIST,
+  CMD_OPEN_COMMAND_BAR,
+} from 'dashboard/helper/commandbar/events';
 import {
   getMessageVariables,
   getUndefinedVariablesInMessage,
@@ -761,8 +764,7 @@ export default {
         '$mod+KeyK': {
           action: e => {
             e.preventDefault();
-            const ninja = document.querySelector('ninja-keys');
-            ninja.open();
+            emitter.emit(CMD_OPEN_COMMAND_BAR);
           },
           allowOnFocusedInput: true,
         },

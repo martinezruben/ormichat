@@ -11,7 +11,9 @@ import { useConversationRequiredAttributes } from 'dashboard/composables/useConv
 import WootDropdownItem from 'shared/components/ui/dropdown/DropdownItem.vue';
 import WootDropdownMenu from 'shared/components/ui/dropdown/DropdownMenu.vue';
 import wootConstants from 'dashboard/constants/globals';
+import { emitter } from 'shared/helpers/mitt';
 import {
+  CMD_OPEN_COMMAND_BAR,
   CMD_REOPEN_CONVERSATION,
   CMD_RESOLVE_CONVERSATION,
 } from 'dashboard/helper/commandbar/events';
@@ -77,8 +79,7 @@ const getConversationParams = () => {
 };
 
 const openSnoozeModal = () => {
-  const ninja = document.querySelector('ninja-keys');
-  ninja.open({ parent: 'snooze_conversation' });
+  emitter.emit(CMD_OPEN_COMMAND_BAR, { parent: 'snooze_conversation' });
 };
 
 const toggleStatus = (status, snoozedUntil, customAttributes = null) => {

@@ -183,6 +183,14 @@
   "COMMAND_BAR": {
     "SEARCH_PLACEHOLDER": "Buscar o saltar a",
     "SNOOZE_PLACEHOLDER": "Escriba un tiempo, ej. mañana, 2 horas, próximo viernes, 15 de enero...",
+    "TITLE": "Paleta de comandos",
+    "NO_RESULTS": "Sin resultados",
+    "FOOTER": {
+      "NAVIGATE": "navegar",
+      "SELECT": "abrir",
+      "BACK": "volver",
+      "CLOSE": "cerrar"
+    },
     "SECTIONS": {
       "GENERAL": "General",
       "REPORTS": "Informes",
