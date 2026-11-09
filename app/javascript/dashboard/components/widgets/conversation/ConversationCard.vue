@@ -12,6 +12,7 @@ import UnreadBadge from 'dashboard/components-next/Conversation/ConversationCard
 import SLACardLabel from './components/SLACardLabel.vue';
 import VoiceCallStatus from './VoiceCallStatus.vue';
 import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
+import CardQuickActions from './CardQuickActions.vue';
 
 const props = defineProps({
   chat: { type: Object, required: true },
@@ -24,6 +25,8 @@ const props = defineProps({
   showInboxName: { type: Boolean, default: false },
   hideThumbnail: { type: Boolean, default: false },
   compact: { type: Boolean, default: false },
+  showQuickActions: { type: Boolean, default: false },
+  isAssignedToMe: { type: Boolean, default: false },
 });
 
 const emit = defineEmits([
@@ -31,6 +34,9 @@ const emit = defineEmits([
   'contextmenu',
   'selectConversation',
   'deSelectConversation',
+  'resolve',
+  'reopen',
+  'assignToMe',
 ]);
 
 const hovered = ref(false);
@@ -146,6 +152,14 @@ watch(
         </template>
       </Avatar>
     </div>
+    <CardQuickActions
+      v-if="showQuickActions"
+      :is-resolved="chat.status === 'resolved'"
+      :is-assigned-to-me="isAssignedToMe"
+      @resolve="$emit('resolve')"
+      @reopen="$emit('reopen')"
+      @assign-to-me="$emit('assignToMe')"
+    />
     <div class="px-0 py-3 flex-1 min-w-0 border-line">
       <div
         v-if="showMetaSection"

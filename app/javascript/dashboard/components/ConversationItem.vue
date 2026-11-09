@@ -3,6 +3,7 @@ import { computed, ref, watch, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { frontendURL, conversationUrl } from 'dashboard/helper/URLHelper';
+import wootConstants from 'dashboard/constants/globals';
 import ConversationCard from './widgets/conversation/ConversationCard.vue';
 import ConversationCardExpanded from 'dashboard/components-next/Conversation/ConversationCard/ConversationCardExpanded.vue';
 import ContextMenu from 'dashboard/components/ui/ContextMenu.vue';
@@ -55,9 +56,15 @@ const currentChat = useMapGetter('getSelectedChat');
 const inboxesList = useMapGetter('inboxes/getInboxes');
 const activeInbox = useMapGetter('getSelectedInbox');
 const accountId = useMapGetter('getCurrentAccountId');
+const currentUser = useMapGetter('getCurrentUser');
 
 const chatMetadata = computed(() => props.source.meta || {});
 const assignee = computed(() => chatMetadata.value.assignee || {});
+const isAssignedToMe = computed(
+  () =>
+    assignee.value.id === currentUser.value.id &&
+    chatMetadata.value.assignee_type !== 'AgentBot'
+);
 const senderId = computed(() => chatMetadata.value.sender?.id);
 
 const currentContact = computed(() =>
@@ -139,6 +146,14 @@ const onUpdateConversation = (status, snoozedUntil) => {
   updateConversationStatus(props.source.id, status, snoozedUntil);
 };
 
+const onQuickStatus = status => {
+  updateConversationStatus(props.source.id, status, null);
+};
+
+const onAssignToMe = () => {
+  assignAgent(currentUser.value, [props.source.id]);
+};
+
 const onAssignAgent = agent => {
   assignAgent(agent, [props.source.id]);
   closeContextMenu();
@@ -208,8 +223,13 @@ const onDeleteConversation = () => {
     :is-active-chat="isActiveChat"
     :show-assignee="showAssignee"
     :show-inbox-name="showInboxName"
+    show-quick-actions
+    :is-assigned-to-me="isAssignedToMe"
     @click="onCardClick"
     @contextmenu="openContextMenu"
+    @resolve="onQuickStatus(wootConstants.STATUS_TYPE.RESOLVED)"
+    @reopen="onQuickStatus(wootConstants.STATUS_TYPE.OPEN)"
+    @assign-to-me="onAssignToMe"
     @select-conversation="selectConversation"
     @de-select-conversation="deSelectConversation"
   />
