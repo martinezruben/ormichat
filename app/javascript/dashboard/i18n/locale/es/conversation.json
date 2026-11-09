@@ -302,6 +302,7 @@
     "CHANGE_STATUS": "Estado de la conversación cambiado",
     "CHANGE_STATUS_FAILED": "Error al cambiar el estado de la conversación",
     "CHANGE_AGENT": "Conversación cambiada de asignatario",
+    "SCROLL_TO_LATEST": "Ir al último mensaje",
     "CHANGE_AGENT_FAILED": "Error al cambiar el asignatario",
     "ASSIGN_LABEL_SUCCESFUL": "Etiqueta asignada correctamente",
     "ASSIGN_LABEL_FAILED": "No se ha podido asignar la etiqueta",

@@ -49,6 +49,10 @@ import MessageError from './MessageError.vue';
 import MessageMeta from './MessageMeta.vue';
 import ContextMenu from 'dashboard/modules/conversations/components/MessageContextMenu.vue';
 import { useBranding } from 'shared/composables/useBranding';
+import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
+import { useAlert } from 'dashboard/composables';
+import { copyTextToClipboard } from 'shared/helpers/clipboard';
+import MessageHoverActions from './MessageHoverActions.vue';
 
 /**
  * @typedef {Object} Attachment
@@ -154,6 +158,7 @@ const inboxGetter = useMapGetter('inboxes/getInbox');
 const inbox = computed(() => inboxGetter.value(props.inboxId) || {});
 const isOnChatwootCloud = useMapGetter('globalConfig/isOnChatwootCloud');
 const { replaceInstallationName } = useBranding();
+const { getPlainText } = useMessageFormatter();
 
 const isCaptainMessage = computed(() => {
   const senderType = props.sender?.type ?? props.senderType;
@@ -516,6 +521,18 @@ function closeContextMenu() {
   contextMenuPosition.value = { x: null, y: null };
 }
 
+async function handleCopy() {
+  await copyTextToClipboard(getPlainText(props.content));
+  useAlert(t('CONTACT_PANEL.COPY_SUCCESSFUL'));
+}
+
+const showHoverActions = computed(
+  () =>
+    shouldShowContextMenu.value &&
+    isBubble.value &&
+    variant.value !== MESSAGE_VARIANTS.EMAIL
+);
+
 function handleReplyTo() {
   const replyStorageKey = LOCAL_STORAGE_KEYS.MESSAGE_REPLY_TO;
   const { conversationId, id: replyTo } = props;
@@ -614,7 +631,7 @@ provideMessageContext({
   <div
     v-if="shouldRenderMessage"
     :id="`message${props.id}`"
-    class="flex w-full mb-2 message-bubble-container"
+    class="flex w-full mb-2 message-bubble-container group/msg"
     :data-message-id="props.id"
     :class="[
       flexOrientationClass,
@@ -670,7 +687,7 @@ provideMessageContext({
         <Avatar v-bind="avatarInfo" :size="24" rounded-full />
       </div>
       <div
-        class="[grid-area:bubble] flex min-w-0"
+        class="[grid-area:bubble] relative flex min-w-0"
         :class="{
           'ltr:ml-8 rtl:mr-8 justify-end': orientation === ORIENTATION.RIGHT,
           'ltr:mr-8 rtl:ml-8': orientation === ORIENTATION.LEFT,
@@ -683,6 +700,15 @@ provideMessageContext({
           :referral="contentAttributes.referral"
         />
         <Component :is="componentToRender" />
+        <MessageHoverActions
+          v-if="showHoverActions"
+          :class="orientation === ORIENTATION.RIGHT ? 'end-1' : 'start-1'"
+          :can-reply="contextMenuEnabledOptions.replyTo"
+          :can-copy="contextMenuEnabledOptions.copy"
+          @reply="handleReplyTo"
+          @copy="handleCopy"
+          @more="openContextMenu"
+        />
       </div>
       <div
         v-if="shouldShowMetaBelow || contentAttributes.externalError"
