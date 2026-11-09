@@ -24,6 +24,11 @@ import inboxMixin, { INBOX_FEATURES } from 'shared/mixins/inboxMixin';
 import { emitter } from 'shared/helpers/mitt';
 import { getTypingUsersText } from '../../../helper/commons';
 import { calculateScrollTop } from './helpers/scrollTopCalculationHelper';
+import { dynamicTime, shortTimestamp } from 'shared/helpers/timeHelper';
+
+import { MESSAGE_TYPES } from 'next/message/constants';
+
+const WAITING_NOTICE_MIN_SECONDS = 24 * 60 * 60;
 import { LocalStorage } from 'shared/helpers/localStorage';
 import {
   filterDuplicateSourceMessages,
@@ -139,6 +144,22 @@ export default {
         return filterDuplicateSourceMessages(messages);
       }
       return messages;
+    },
+    waitingForContactLabel() {
+      const lastMessage = [...this.getMessages]
+        .reverse()
+        .find(
+          message =>
+            message.message_type !== MESSAGE_TYPES.ACTIVITY && !message.private
+        );
+      if (!lastMessage || lastMessage.message_type !== MESSAGE_TYPES.OUTGOING)
+        return '';
+      const waitingSeconds = Date.now() / 1000 - lastMessage.created_at;
+      if (waitingSeconds < WAITING_NOTICE_MIN_SECONDS) return '';
+      return this.$t('CONVERSATION.WAITING_FOR_CONTACT', {
+        name: this.currentChat.meta?.sender?.name ?? '',
+        time: shortTimestamp(dynamicTime(lastMessage.created_at)),
+      });
     },
     referralData() {
       return this.currentChat?.additional_attributes?.referral || null;
@@ -509,14 +530,27 @@ export default {
           v-show="unreadMessageCount != 0"
           class="list-none flex justify-center items-center"
         >
-          <span
-            class="shadow-lg rounded-full bg-n-brand text-n-brand-foreground text-xs font-medium my-2.5 mx-auto px-2.5 py-1.5"
+          <div
+            class="flex items-center w-full gap-3 my-3 text-xs font-semibold text-n-blue-11"
           >
-            {{ unreadMessageLabel }}
-          </span>
+            <span class="flex-1 h-px bg-n-brand/30" />
+            <span>{{ unreadMessageLabel }}</span>
+            <span class="flex-1 h-px bg-n-brand/30" />
+          </div>
         </li>
       </template>
       <template #after>
+        <li
+          v-if="waitingForContactLabel"
+          class="flex justify-center my-3 list-none"
+        >
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full bg-n-solid-amber text-n-amber-12"
+          >
+            <span class="i-lucide-clock size-3.5" />
+            {{ waitingForContactLabel }}
+          </span>
+        </li>
         <ConversationLabelSuggestion
           v-if="shouldShowLabelSuggestions"
           :suggested-labels="labelSuggestions"
@@ -525,7 +559,7 @@ export default {
         />
       </template>
     </MessageList>
-    <div class="flex relative flex-col bg-n-surface-1">
+    <div class="flex relative flex-col bg-n-surface-2">
       <div
         v-if="isAnyoneTyping"
         class="absolute flex items-center w-full h-0 -top-7"

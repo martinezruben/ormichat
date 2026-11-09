@@ -3,7 +3,6 @@
 import { mapGetters } from 'vuex';
 import { useAlert } from 'dashboard/composables';
 import { useAgentsList } from 'dashboard/composables/useAgentsList';
-import ContactDetailsItem from './ContactDetailsItem.vue';
 import MultiselectDropdown from 'shared/components/ui/MultiselectDropdown.vue';
 import ConversationLabels from './labels/LabelBox.vue';
 import { CONVERSATION_PRIORITY } from '../../../../shared/constants/messages';
@@ -13,7 +12,6 @@ import NextButton from 'dashboard/components-next/button/Button.vue';
 
 export default {
   components: {
-    ContactDetailsItem,
     MultiselectDropdown,
     ConversationLabels,
     NextButton,
@@ -228,25 +226,13 @@ export default {
 </script>
 
 <template>
-  <div>
-    <div>
-      <ContactDetailsItem
-        compact
-        :title="$t('CONVERSATION_SIDEBAR.ASSIGNEE_LABEL')"
-      >
-        <template #button>
-          <NextButton
-            v-if="showSelfAssign"
-            link
-            xs
-            icon="i-lucide-arrow-right"
-            class="!gap-1"
-            :label="$t('CONVERSATION_SIDEBAR.SELF_ASSIGN')"
-            @click="onSelfAssign"
-          />
-        </template>
-      </ContactDetailsItem>
+  <div class="flex flex-col gap-3 pb-1">
+    <div class="flex items-center justify-between gap-3">
+      <span class="text-sm shrink-0 text-n-slate-11">
+        {{ $t('CONVERSATION_SIDEBAR.ASSIGNEE_LABEL') }}
+      </span>
       <MultiselectDropdown
+        class="flex-1 min-w-0"
         :options="agentsList"
         :selected-item="assignedAgent"
         :multiselector-title="$t('AGENT_MGMT.MULTI_SELECTOR.TITLE.AGENT')"
@@ -260,12 +246,21 @@ export default {
         @select="onClickAssignAgent"
       />
     </div>
-    <div>
-      <ContactDetailsItem
-        compact
-        :title="$t('CONVERSATION_SIDEBAR.TEAM_LABEL')"
-      />
+    <NextButton
+      v-if="showSelfAssign"
+      link
+      xs
+      icon="i-lucide-arrow-right"
+      class="!gap-1 self-end -mt-1"
+      :label="$t('CONVERSATION_SIDEBAR.SELF_ASSIGN')"
+      @click="onSelfAssign"
+    />
+    <div class="flex items-center justify-between gap-3">
+      <span class="text-sm shrink-0 text-n-slate-11">
+        {{ $t('CONVERSATION_SIDEBAR.TEAM_LABEL') }}
+      </span>
       <MultiselectDropdown
+        class="flex-1 min-w-0"
         :options="teamsList"
         :selected-item="assignedTeam"
         show-emoji-icon
@@ -280,9 +275,12 @@ export default {
         @select="onClickAssignTeam"
       />
     </div>
-    <div>
-      <ContactDetailsItem compact :title="$t('CONVERSATION.PRIORITY.TITLE')" />
+    <div class="flex items-center justify-between gap-3">
+      <span class="text-sm shrink-0 text-n-slate-11">
+        {{ $t('CONVERSATION.PRIORITY.TITLE') }}
+      </span>
       <MultiselectDropdown
+        class="flex-1 min-w-0"
         :options="priorityOptions"
         :selected-item="assignedPriority"
         :multiselector-title="$t('CONVERSATION.PRIORITY.TITLE')"
@@ -298,10 +296,11 @@ export default {
         @select="onClickAssignPriority"
       />
     </div>
-    <ContactDetailsItem
-      compact
-      :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_LABELS')"
-    />
-    <ConversationLabels :conversation-id="conversationId" />
+    <div class="flex flex-col gap-1.5">
+      <span class="text-sm text-n-slate-11">
+        {{ $t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_LABELS') }}
+      </span>
+      <ConversationLabels :conversation-id="conversationId" />
+    </div>
   </div>
 </template>

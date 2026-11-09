@@ -6,12 +6,21 @@ import { useElementSize } from '@vueuse/core';
 import BackButton from '../BackButton.vue';
 import InboxName from '../InboxName.vue';
 import MoreActions from './MoreActions.vue';
+import HeaderAssignee from './HeaderAssignee.vue';
 import Avatar from 'next/avatar/Avatar.vue';
+import NextButton from 'dashboard/components-next/button/Button.vue';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from 'dashboard/components-next/ui/hover-card';
 import SLACardLabel from './components/SLACardLabel.vue';
 import ConversationCallButton from './ConversationCallButton.vue';
 import wootConstants from 'dashboard/constants/globals';
 import { conversationListPageURL } from 'dashboard/helper/URLHelper';
 import { snoozedReopenTime } from 'dashboard/helper/snoozeHelpers';
+import { emitter } from 'shared/helpers/mitt';
+import { CMD_OPEN_COMMAND_BAR } from 'dashboard/helper/commandbar/events';
 import { useInbox } from 'dashboard/composables/useInbox';
 import { useAlert } from 'dashboard/composables';
 import { useI18n } from 'vue-i18n';
@@ -101,6 +110,30 @@ const STATUS_STYLES = {
 
 const statusStyle = computed(() => STATUS_STYLES[props.chat.status]);
 
+const currentUser = computed(() => store.getters.getCurrentUser);
+const isAssignedToMe = computed(
+  () => props.chat.meta?.assignee?.id === currentUser.value.id
+);
+const isOpen = computed(
+  () => props.chat.status === wootConstants.STATUS_TYPE.OPEN
+);
+
+const assignToMe = () => {
+  store.dispatch('setCurrentChatAssignee', {
+    conversationId: props.chat.id,
+    assignee: currentUser.value,
+    assigneeType: 'User',
+  });
+  store.dispatch('assignAgent', {
+    conversationId: props.chat.id,
+    agentId: currentUser.value.id,
+  });
+};
+
+const openSnoozeModal = () => {
+  emitter.emit(CMD_OPEN_COMMAND_BAR, { parent: 'snooze_conversation' });
+};
+
 const hasSlaPolicyId = computed(
   () => props.chat?.applied_sla?.id && !currentContact.value?.blocked
 );
@@ -128,13 +161,47 @@ const copyConversationId = async () => {
         :back-url="backButtonUrl"
         class="me-2"
       />
-      <Avatar
-        :name="currentContact.name"
-        :src="currentContact.thumbnail"
-        :size="32"
-        :status="currentContact.availability_status"
-        hide-offline-status
-      />
+      <HoverCard :open-delay="300">
+        <HoverCardTrigger as-child>
+          <div class="shrink-0">
+            <Avatar
+              :name="currentContact.name"
+              :src="currentContact.thumbnail"
+              :size="32"
+              :status="currentContact.availability_status"
+              hide-offline-status
+            />
+          </div>
+        </HoverCardTrigger>
+        <HoverCardContent align="start" class="w-72">
+          <div class="flex items-center gap-3">
+            <Avatar
+              :name="currentContact.name"
+              :src="currentContact.thumbnail"
+              :size="40"
+              :status="currentContact.availability_status"
+              hide-offline-status
+            />
+            <div class="flex min-w-0 flex-col">
+              <span class="truncate text-sm font-medium text-n-slate-12">
+                {{ currentContact.name }}
+              </span>
+              <span
+                v-if="currentContact.email"
+                class="truncate text-xs text-n-slate-11"
+              >
+                {{ currentContact.email }}
+              </span>
+              <span
+                v-if="currentContact.phone_number"
+                class="truncate text-xs text-n-slate-11"
+              >
+                {{ currentContact.phone_number }}
+              </span>
+            </div>
+          </div>
+        </HoverCardContent>
+      </HoverCard>
       <div class="flex flex-col items-start min-w-0 ms-2 overflow-hidden">
         <div class="flex flex-row items-center max-w-full gap-1 p-0 m-0">
           <span
@@ -188,6 +255,27 @@ const copyConversationId = async () => {
         show-extended-info
         :parent-width="width"
         class="hidden md:flex"
+      />
+      <HeaderAssignee :chat="chat" />
+      <NextButton
+        v-if="!isAssignedToMe"
+        :label="$t('CONVERSATION.ASSIGN_TO_ME')"
+        icon="i-lucide-user-round"
+        slate
+        faded
+        sm
+        class="hidden lg:inline-flex"
+        @click="assignToMe"
+      />
+      <NextButton
+        v-if="isOpen"
+        :label="$t('CONVERSATION.RESOLVE_DROPDOWN.SNOOZE_UNTIL')"
+        icon="i-lucide-clock"
+        slate
+        faded
+        sm
+        class="hidden lg:inline-flex"
+        @click="openSnoozeModal"
       />
       <ConversationCallButton :inbox="inbox" :chat="currentChat" />
       <MoreActions :conversation-id="currentChat.id" />

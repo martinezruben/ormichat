@@ -17,6 +17,17 @@ export const MESSAGE_VARIANTS = {
   UNSUPPORTED: 'unsupported',
 };
 
+// Variants whose time and delivery status render below the bubble
+export const META_BELOW_VARIANTS = [
+  MESSAGE_VARIANTS.USER,
+  MESSAGE_VARIANTS.AGENT,
+  MESSAGE_VARIANTS.PRIVATE,
+  MESSAGE_VARIANTS.BOT,
+  MESSAGE_VARIANTS.TEMPLATE,
+  MESSAGE_VARIANTS.ERROR,
+  MESSAGE_VARIANTS.UNSUPPORTED,
+];
+
 export const SENDER_TYPES = {
   CONTACT: 'Contact',
   USER: 'User',

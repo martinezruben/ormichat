@@ -11,7 +11,7 @@ const openProfileSettings = () => {
 
 <template>
   <div
-    class="my-0 px-1 flex max-h-[8vh] items-baseline justify-between hover:bg-n-slate-1 border border-dashed border-n-weak rounded-sm overflow-auto"
+    class="flex items-baseline justify-between px-2 py-1 my-0 overflow-auto text-xs rounded-lg text-n-slate-11 bg-n-alpha-1 max-h-[8vh]"
   >
     <p class="w-fit !m-0">
       {{ $t('CONVERSATION.FOOTER.MESSAGE_SIGNATURE_NOT_CONFIGURED') }}

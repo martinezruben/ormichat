@@ -152,6 +152,14 @@
   "COMMAND_BAR": {
     "SEARCH_PLACEHOLDER": "Search or jump to",
     "SNOOZE_PLACEHOLDER": "Type a time e.g. tomorrow, 2 hours, next friday, jan 15...",
+    "TITLE": "Command palette",
+    "NO_RESULTS": "No results found",
+    "FOOTER": {
+      "NAVIGATE": "navigate",
+      "SELECT": "open",
+      "BACK": "back",
+      "CLOSE": "close"
+    },
     "SECTIONS": {
       "GENERAL": "General",
       "REPORTS": "Reports",

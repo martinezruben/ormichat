@@ -145,6 +145,13 @@
     "SHOW_QUOTED_TEXT": "Show Quoted Text",
     "MESSAGE_READ": "Read",
     "SENDING": "Sending",
-    "UNREAD_COUNT_OVERFLOW": "9+"
+    "UNREAD_COUNT_OVERFLOW": "9+",
+    "DATE_GROUP": {
+      "TODAY": "Today",
+      "YESTERDAY": "Yesterday",
+      "THIS_WEEK": "This week",
+      "OLDER": "Older"
+    },
+    "SEARCH_PLACEHOLDER": "Search people, messages or #id"
   }
 }

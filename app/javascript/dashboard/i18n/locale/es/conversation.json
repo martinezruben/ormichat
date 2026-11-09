@@ -120,6 +120,14 @@
       "REOPEN_ACTION": "Reabrir",
       "OPEN_ACTION": "Abrir",
       "MORE_ACTIONS": "Otras acciones",
+      "COPY_LINK": "Copiar enlace de la conversación",
+      "COPY_LINK_SUCCESS": "Enlace de la conversación copiado al portapapeles",
+      "ASSIGNEE": {
+        "LABEL": "Asignar conversación",
+        "UNASSIGNED": "Sin asignar",
+        "SEARCH": "Buscar agente...",
+        "EMPTY": "No se encontraron agentes"
+      },
       "OPEN": "Más",
       "CLOSE": "Cerrar",
       "DETAILS": "detalles",
@@ -287,7 +295,8 @@
         "EXPAND": "Expandir vista previa"
       },
       "TO_CONTACT": "Para {name} · {inbox}",
-      "PRIVATE_NOTE_VISIBILITY": "Solo visible para tu equipo"
+      "PRIVATE_NOTE_VISIBILITY": "Solo visible para tu equipo",
+      "SUGGESTED_REPLIES": "Sugeridas"
     },
     "VISIBLE_TO_AGENTS": "Nota privada: solo visible para ti y tu equipo",
     "CHANGE_STATUS": "Estado de la conversación cambiado",
@@ -416,7 +425,12 @@
       "OPEN": "Abierta",
       "PENDING": "Pendiente",
       "RESOLVED": "Resuelta"
-    }
+    },
+    "DAY_SEPARATOR": {
+      "TODAY": "Hoy",
+      "YESTERDAY": "Ayer"
+    },
+    "WAITING_FOR_CONTACT": "Sin respuesta de {name} desde hace {time}"
   },
   "EMAIL_TRANSCRIPT": {
     "TITLE": "Enviar transcripción de la conversación",

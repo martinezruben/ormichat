@@ -1,5 +1,8 @@
 <script setup>
 import { computed, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { fromUnixTime, isSameDay, isToday, isYesterday } from 'date-fns';
+import { dateFormat } from 'shared/helpers/timeHelper';
 import Message from './Message.vue';
 import { MESSAGE_TYPES } from './constants.js';
 import { useCamelCase } from 'dashboard/composables/useTransformKeys';
@@ -51,7 +54,21 @@ const allMessages = computed(() => {
   });
 });
 
+const { t } = useI18n();
 const currentChat = useMapGetter('getSelectedChat');
+
+const isNewDay = index => {
+  if (index === 0) return true;
+  const previous = fromUnixTime(allMessages.value[index - 1].createdAt);
+  return !isSameDay(previous, fromUnixTime(allMessages.value[index].createdAt));
+};
+
+const dayLabel = createdAt => {
+  const date = fromUnixTime(createdAt);
+  if (isToday(date)) return t('CONVERSATION.DAY_SEPARATOR.TODAY');
+  if (isYesterday(date)) return t('CONVERSATION.DAY_SEPARATOR.YESTERDAY');
+  return dateFormat(createdAt, 'MMM d, yyyy');
+};
 
 // Cache for fetched reply messages to avoid duplicate API calls
 const fetchedReplyMessages = reactive(new Map());
@@ -166,9 +183,19 @@ const getInReplyToMessage = parentMessage => {
 </script>
 
 <template>
-  <ul class="px-4 bg-n-surface-1">
+  <ul class="px-5 bg-n-surface-2">
     <slot name="beforeAll" />
     <template v-for="(message, index) in allMessages" :key="message.id">
+      <li
+        v-if="isNewDay(index)"
+        class="flex justify-center list-none pt-3 pb-4"
+      >
+        <span
+          class="px-3 py-0.5 text-xs font-medium border rounded-full border-n-weak bg-n-solid-1 text-n-slate-11"
+        >
+          {{ dayLabel(message.createdAt) }}
+        </span>
+      </li>
       <slot
         v-if="firstUnreadId && message.id === firstUnreadId"
         name="unreadBadge"

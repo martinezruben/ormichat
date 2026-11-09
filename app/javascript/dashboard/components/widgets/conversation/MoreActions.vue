@@ -5,10 +5,23 @@ import { useStore } from 'vuex';
 import { useAlert } from 'dashboard/composables';
 import { useI18n } from 'vue-i18n';
 import { emitter } from 'shared/helpers/mitt';
+import { copyTextToClipboard } from 'shared/helpers/clipboard';
+import { conversationUrl, frontendURL } from 'dashboard/helper/URLHelper';
 import EmailTranscriptModal from './EmailTranscriptModal.vue';
 import ResolveAction from '../../buttons/ResolveAction.vue';
 import ButtonV4 from 'dashboard/components-next/button/Button.vue';
-import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.vue';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from 'dashboard/components-next/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from 'dashboard/components-next/ui/tooltip';
 
 import {
   CMD_MUTE_CONVERSATION,
@@ -21,54 +34,9 @@ const store = useStore();
 const { t } = useI18n();
 
 const [showEmailActionsModal, toggleEmailModal] = useToggle(false);
-const [showActionsDropdown, toggleDropdown] = useToggle(false);
 
 const currentChat = computed(() => store.getters.getSelectedChat);
 
-const actionMenuItems = computed(() => {
-  const items = [];
-
-  if (!currentChat.value.muted) {
-    items.push({
-      icon: 'i-lucide-volume-off',
-      label: t('CONTACT_PANEL.MUTE_CONTACT'),
-      action: 'mute',
-      value: 'mute',
-    });
-  } else {
-    items.push({
-      icon: 'i-lucide-volume-1',
-      label: t('CONTACT_PANEL.UNMUTE_CONTACT'),
-      action: 'unmute',
-      value: 'unmute',
-    });
-  }
-
-  items.push({
-    icon: 'i-lucide-share',
-    label: t('CONTACT_PANEL.SEND_TRANSCRIPT'),
-    action: 'send_transcript',
-    value: 'send_transcript',
-  });
-
-  return items;
-});
-
-const handleActionClick = ({ action }) => {
-  toggleDropdown(false);
-
-  if (action === 'mute') {
-    store.dispatch('muteConversation', currentChat.value.id);
-    useAlert(t('CONTACT_PANEL.MUTED_SUCCESS'));
-  } else if (action === 'unmute') {
-    store.dispatch('unmuteConversation', currentChat.value.id);
-    useAlert(t('CONTACT_PANEL.UNMUTED_SUCCESS'));
-  } else if (action === 'send_transcript') {
-    toggleEmailModal();
-  }
-};
-
-// These functions are needed for the event listeners
 const mute = () => {
   store.dispatch('muteConversation', currentChat.value.id);
   useAlert(t('CONTACT_PANEL.MUTED_SUCCESS'));
@@ -77,6 +45,15 @@ const mute = () => {
 const unmute = () => {
   store.dispatch('unmuteConversation', currentChat.value.id);
   useAlert(t('CONTACT_PANEL.UNMUTED_SUCCESS'));
+};
+
+const copyLink = async () => {
+  const path = conversationUrl({
+    accountId: store.getters.getCurrentAccountId,
+    id: currentChat.value.id,
+  });
+  await copyTextToClipboard(`${window.location.origin}${frontendURL(path)}`);
+  useAlert(t('CONVERSATION.HEADER.COPY_LINK_SUCCESS'));
 };
 
 emitter.on(CMD_MUTE_CONVERSATION, mute);
@@ -96,26 +73,44 @@ onUnmounted(() => {
       :conversation-id="currentChat.id"
       :status="currentChat.status"
     />
-    <div
-      v-on-clickaway="() => toggleDropdown(false)"
-      class="relative flex items-center group"
-    >
-      <ButtonV4
-        v-tooltip="$t('CONVERSATION.HEADER.MORE_ACTIONS')"
-        size="sm"
-        variant="ghost"
-        color="slate"
-        icon="i-lucide-more-vertical"
-        class="rounded-md group-hover:bg-n-alpha-2"
-        @click="toggleDropdown()"
-      />
-      <DropdownMenu
-        v-if="showActionsDropdown"
-        :menu-items="actionMenuItems"
-        class="mt-1 ltr:right-0 rtl:left-0 top-full"
-        @action="handleActionClick"
-      />
-    </div>
+    <DropdownMenu>
+      <Tooltip>
+        <TooltipTrigger as-child>
+          <DropdownMenuTrigger as-child>
+            <ButtonV4
+              size="sm"
+              variant="ghost"
+              color="slate"
+              icon="i-lucide-more-vertical"
+              class="rounded-md data-[state=open]:bg-n-alpha-2"
+              :aria-label="$t('CONVERSATION.HEADER.MORE_ACTIONS')"
+            />
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          {{ $t('CONVERSATION.HEADER.MORE_ACTIONS') }}
+        </TooltipContent>
+      </Tooltip>
+      <DropdownMenuContent align="end" class="w-60">
+        <DropdownMenuItem v-if="!currentChat.muted" @select="mute">
+          <span class="i-lucide-volume-off size-4 shrink-0" />
+          {{ $t('CONTACT_PANEL.MUTE_CONTACT') }}
+        </DropdownMenuItem>
+        <DropdownMenuItem v-else @select="unmute">
+          <span class="i-lucide-volume-1 size-4 shrink-0" />
+          {{ $t('CONTACT_PANEL.UNMUTE_CONTACT') }}
+        </DropdownMenuItem>
+        <DropdownMenuItem @select="toggleEmailModal">
+          <span class="i-lucide-share size-4 shrink-0" />
+          {{ $t('CONTACT_PANEL.SEND_TRANSCRIPT') }}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem @select="copyLink">
+          <span class="i-lucide-link size-4 shrink-0" />
+          {{ $t('CONVERSATION.HEADER.COPY_LINK') }}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
     <EmailTranscriptModal
       v-if="showEmailActionsModal"
       :show="showEmailActionsModal"

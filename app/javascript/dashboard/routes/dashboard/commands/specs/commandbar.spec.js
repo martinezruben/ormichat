@@ -1,11 +1,40 @@
 import { ref } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import { emitter } from 'shared/helpers/mitt';
-import { CMD_SNOOZE_CONVERSATION } from 'dashboard/helper/commandbar/events';
+import {
+  CMD_OPEN_COMMAND_BAR,
+  CMD_SNOOZE_CONVERSATION,
+} from 'dashboard/helper/commandbar/events';
 import { GENERAL_EVENTS } from 'dashboard/helper/AnalyticsHelper/events';
 import CommandBar from '../commandbar.vue';
 
-vi.mock('@chatwoot/ninja-keys', () => ({}));
+vi.mock('../CommandPalette.vue', async () => {
+  const { defineComponent, h } = await import('vue');
+  return {
+    /* eslint-disable vue/no-unused-properties, vue/require-default-prop, vue/no-unused-emit-declarations */
+    default: defineComponent({
+      name: 'CommandPalette',
+      props: { actions: Array, placeholder: String },
+      emits: ['change', 'selected', 'closed'],
+      setup(_, { expose }) {
+        expose({ open: vi.fn(), close: vi.fn() });
+        return () => h('div');
+      },
+    }),
+    /* eslint-enable vue/no-unused-properties, vue/require-default-prop, vue/no-unused-emit-declarations */
+  };
+});
+
+vi.mock('dashboard/composables/emitter', async () => {
+  const { onMounted, onBeforeUnmount } = await import('vue');
+  const { emitter: bus } = await import('shared/helpers/mitt');
+  return {
+    useEmitter: (name, callback) => {
+      onMounted(() => bus.on(name, callback));
+      onBeforeUnmount(() => bus.off(name, callback));
+    },
+  };
+});
 
 const dispatch = vi.fn();
 const track = vi.fn();
@@ -88,28 +117,9 @@ vi.mock('dashboard/helper/snoozeHelpers', () => ({
   generateSnoozeSuggestions: vi.fn(search => (search ? [suggestion] : [])),
 }));
 
-class NinjaKeysStub extends HTMLElement {
-  constructor() {
-    super();
-    this.visible = false;
-    this.openedWith = null;
-  }
-
-  open(options = {}) {
-    this.visible = true;
-    this.openedWith = options;
-  }
-
-  close() {
-    this.visible = false;
-  }
-}
-
-customElements.define('ninja-keys', NinjaKeysStub);
-
 describe('commandbar', () => {
   let wrapper;
-  let element;
+  let palette;
 
   const mountCommandBar = async (props = {}) => {
     wrapper = mount(CommandBar, {
@@ -117,32 +127,32 @@ describe('commandbar', () => {
       global: { stubs: { ConversationResolveAttributesModal: true } },
     });
     await flushPromises();
-    element = wrapper.find('ninja-keys').element;
+    palette = wrapper.findComponent({ name: 'CommandPalette' });
     return wrapper;
   };
 
-  const commandIds = () => element.data.map(action => action.id);
+  const paletteActions = () => palette.props('actions');
+  const commandIds = () => paletteActions().map(action => action.id);
+  const placeholder = () => palette.props('placeholder');
 
   const presetSnoozeParents = () =>
-    element.data
+    paletteActions()
       .filter(action => action.id === 'until_tomorrow')
       .map(action => action.parent)
       .sort();
 
   const emitChange = async (search, actions = []) => {
-    element.dispatchEvent(
-      new CustomEvent('change', { detail: { search, actions } })
-    );
+    palette.vm.$emit('change', { search, actions });
     await flushPromises();
   };
 
   const emitSelected = async action => {
-    element.dispatchEvent(new CustomEvent('selected', { detail: { action } }));
+    palette.vm.$emit('selected', action);
     await flushPromises();
   };
 
   const emitClosed = async () => {
-    element.dispatchEvent(new CustomEvent('closed'));
+    palette.vm.$emit('closed');
     await flushPromises();
   };
 
@@ -156,7 +166,7 @@ describe('commandbar', () => {
   });
 
   describe('command data', () => {
-    it('hands every hotkey source to ninja-keys on mount', async () => {
+    it('hands every hotkey source to the command palette on mount', async () => {
       await mountCommandBar();
 
       expect(commandIds()).toEqual(
@@ -210,20 +220,16 @@ describe('commandbar', () => {
     it('asks what the user is searching for by default', async () => {
       await mountCommandBar();
 
-      expect(element.getAttribute('placeholder')).toBe(
-        'COMMAND_BAR.SEARCH_PLACEHOLDER'
-      );
+      expect(placeholder()).toBe('COMMAND_BAR.SEARCH_PLACEHOLDER');
     });
 
     it('switches to the snooze prompt inside a snooze menu', async () => {
       await mountCommandBar();
 
-      element.open({ parent: 'snooze_conversation' });
+      emitter.emit(CMD_OPEN_COMMAND_BAR, { parent: 'snooze_conversation' });
       await flushPromises();
 
-      expect(element.getAttribute('placeholder')).toBe(
-        'COMMAND_BAR.SNOOZE_PLACEHOLDER'
-      );
+      expect(placeholder()).toBe('COMMAND_BAR.SNOOZE_PLACEHOLDER');
     });
   });
 
@@ -283,7 +289,9 @@ describe('commandbar', () => {
       await mountCommandBar();
       await enterSnoozeMenu();
       await emitChange('tomorrow');
-      element.data.find(action => action.id === 'dynamic_snooze_0').handler();
+      paletteActions()
+        .find(action => action.id === 'dynamic_snooze_0')
+        .handler();
 
       expect(onSnooze).toHaveBeenCalledWith('resolved-date');
       emitter.off(CMD_SNOOZE_CONVERSATION, onSnooze);
@@ -293,13 +301,10 @@ describe('commandbar', () => {
       await mountCommandBar();
       await enterSnoozeMenu();
       await emitChange('tomorrow');
-      element.close();
-      await flushPromises();
+      await emitClosed();
 
       expect(commandIds()).not.toContain('dynamic_snooze_0');
-      expect(element.getAttribute('placeholder')).toBe(
-        'COMMAND_BAR.SEARCH_PLACEHOLDER'
-      );
+      expect(placeholder()).toBe('COMMAND_BAR.SEARCH_PLACEHOLDER');
     });
   });
 
@@ -325,9 +330,7 @@ describe('commandbar', () => {
         children: ['until_tomorrow'],
       });
 
-      expect(element.getAttribute('placeholder')).toBe(
-        'COMMAND_BAR.SNOOZE_PLACEHOLDER'
-      );
+      expect(placeholder()).toBe('COMMAND_BAR.SNOOZE_PLACEHOLDER');
     });
   });
 

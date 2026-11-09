@@ -4,6 +4,8 @@ import { useI18n } from 'vue-i18n';
 import { useToggle } from '@vueuse/core';
 import { vOnClickOutside } from '@vueuse/components';
 
+import { emitter } from 'shared/helpers/mitt';
+import { CMD_OPEN_COMMAND_BAR } from 'dashboard/helper/commandbar/events';
 import Button from 'dashboard/components-next/button/Button.vue';
 import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.vue';
 
@@ -66,8 +68,9 @@ const handleUpdate = item => {
   if (item.value === 'snoozed') {
     // If the user clicks on the snooze option from the bulk action change status dropdown.
     // Open the snooze option for bulk action in the cmd bar.
-    const ninja = document.querySelector('ninja-keys');
-    ninja?.open({ parent: 'bulk_action_snooze_conversation' });
+    emitter.emit(CMD_OPEN_COMMAND_BAR, {
+      parent: 'bulk_action_snooze_conversation',
+    });
   } else {
     emit('update', item.value);
   }

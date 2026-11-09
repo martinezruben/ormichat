@@ -2,7 +2,10 @@
 import { mapGetters } from 'vuex';
 import { useAlert, useTrack } from 'dashboard/composables';
 import { getUnixTime } from 'date-fns';
-import { CMD_SNOOZE_NOTIFICATION } from 'dashboard/helper/commandbar/events';
+import {
+  CMD_OPEN_COMMAND_BAR,
+  CMD_SNOOZE_NOTIFICATION,
+} from 'dashboard/helper/commandbar/events';
 import wootConstants from 'dashboard/constants/globals';
 import { findSnoozeTime } from 'dashboard/helper/snoozeHelpers';
 import { INBOX_EVENTS } from 'dashboard/helper/AnalyticsHelper/events';
@@ -48,8 +51,7 @@ export default {
   },
   methods: {
     openSnoozeNotificationModal() {
-      const ninja = document.querySelector('ninja-keys');
-      ninja.open({ parent: 'snooze_notification' });
+      emitter.emit(CMD_OPEN_COMMAND_BAR, { parent: 'snooze_notification' });
     },
     hideCustomSnoozeModal() {
       this.showCustomSnoozeModal = false;
