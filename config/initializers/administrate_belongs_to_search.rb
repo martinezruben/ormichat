@@ -3,15 +3,11 @@
 # incorporado porque la gema limita rails < 8.0. Los parciales, el JS y la vista JSON viven en app/.
 require 'administrate/field/belongs_to'
 
-module Administrate
-  module Field
-    class BelongsToSearch < Administrate::Field::BelongsTo
-      def associated_resource_options
-        return [] if data.nil?
+class Administrate::Field::BelongsToSearch < Administrate::Field::BelongsTo
+  def associated_resource_options
+    return [] if data.nil?
 
-        [[display_candidate_resource(data), data.id]]
-      end
-    end
+    [[display_candidate_resource(data), data.id]]
   end
 end
 
