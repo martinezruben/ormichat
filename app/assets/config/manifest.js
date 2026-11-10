@@ -3,3 +3,4 @@
 //= link administrate/application.js
 //= link administrate-field-active_storage/application.css
 //= link secretField.js
+//= link belongs_to_search.js

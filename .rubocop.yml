@@ -349,3 +349,9 @@ FactoryBot/RedundantFactoryOption:
 
 FactoryBot/FactoryAssociationWithStrategy:
   Enabled: false
+
+# Cop nuevo de rubocop-rails para Rails 8 (params.expect). Su autocorrección cambia el
+# código de respuesta ante parámetros inválidos (400 en vez de 422), así que no se aplica
+# dentro de la migración; se puede adoptar después controlador por controlador.
+Rails/StrongParametersExpect:
+  Enabled: false
