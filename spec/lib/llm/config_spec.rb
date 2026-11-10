@@ -42,7 +42,11 @@ RSpec.describe Llm::Config do
   end
 
   describe '.build_chat' do
-    before { described_class.initialize! }
+    before do
+      configure_llm('CAPTAIN_OPEN_AI_API_KEY' => 'test-key', 'CAPTAIN_OPEN_AI_ENDPOINT' => '')
+      described_class.reset!
+      described_class.initialize!
+    end
 
     it 'builds a chat for a model that is in the registry' do
       expect(described_class.build_chat(RubyLLM, 'gpt-4.1-mini').model.id).to eq('gpt-4.1-mini')
