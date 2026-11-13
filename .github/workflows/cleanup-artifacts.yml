@@ -1,0 +1,54 @@
+name: Depurar Artifacts Antiguos (ormichat)
+
+on:
+  schedule:
+    # Se ejecuta automáticamente todos los días a las 3:00 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      days_to_keep:
+        description: 'Días de antigüedad a conservar (borra lo anterior)'
+        required: true
+        default: '7'
+        type: string
+
+jobs:
+  delete-old-artifacts:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write # Permiso obligatorio para eliminar artifacts
+
+    steps:
+      - name: Eliminar artifacts mayores a 7 días
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const days = parseInt(context.payload.inputs?.days_to_keep || '7', 10);
+            const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+            console.log(`Buscando artifacts creados antes de: ${cutoffDate.toISOString()} (>${days} días)`);
+
+            const artifacts = await github.paginate(github.rest.actions.listArtifactsForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+
+            let deletedCount = 0;
+            let freedBytes = 0;
+
+            for (const artifact of artifacts) {
+              const createdAt = new Date(artifact.created_at);
+              if (createdAt < cutoffDate) {
+                console.log(`Eliminando: ${artifact.name} | ID: ${artifact.id} | ${(artifact.size_in_bytes / 1048576).toFixed(2)} MB | Creado: ${artifact.created_at}`);
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id
+                });
+                deletedCount++;
+                freedBytes += artifact.size_in_bytes;
+              }
+            }
+
+            const freedMB = (freedBytes / 1048576).toFixed(2);
+            console.log(`Resumen: ${deletedCount} artifacts eliminados. Espacio liberado: ${freedMB} MB.`);
