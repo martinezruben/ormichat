@@ -38,8 +38,7 @@ export default {
     CONDENSED: 'condensed',
     EXPANDED: 'expanded',
   },
-  HELP_CENTER_DOCS_URL:
-    'https://www.chatwoot.com/docs/product/others/help-center',
+  HELP_CENTER_DOCS_URL: '/docs/centro-de-ayuda.html',
   WHATSAPP_EMBEDDED_SIGNUP_DOCS_URL:
     'https://developers.facebook.com/docs/whatsapp/embedded-signup/custom-flows/onboarding-business-app-users#limitations',
   SMALL_SCREEN_BREAKPOINT: 768,

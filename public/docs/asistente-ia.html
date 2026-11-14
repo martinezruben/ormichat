@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asistente de IA · Ormichat</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header><strong>Ormichat · Documentación</strong><a href="index.html">Guía de uso</a><a href="asistente-ia.html" aria-current="page">Asistente de IA</a><a href="centro-de-ayuda.html">Centro de ayuda</a><a href="novedades.html">Novedades</a><a href="terminos.html">Términos</a><a href="privacidad.html">Privacidad</a></header>
+<main>
+<h1>Asistente de IA</h1>
+<p>El asistente responde solo a los clientes como primer nivel de atención y pasa la conversación a una persona cuando hace falta. Se configura en la sección Captain.</p>
+<h2>Cuándo responde</h2>
+<ul>
+<li>El asistente debe estar asignado a la bandeja de entrada.</li>
+<li>Solo atiende conversaciones en estado <em>pendiente</em>, es decir, sin agente asignado. Si la bandeja asigna agentes automáticamente, el asistente no interviene.</li>
+<li>Puedes limitarlo a un horario: siempre, solo en horario de atención o solo fuera de él.</li>
+</ul>
+<h2>De dónde saca las respuestas</h2>
+<ul>
+<li><strong>Preguntas frecuentes:</strong> pares de pregunta y respuesta que revisa tu equipo. Úsalas para horarios, sucursales, envíos y formas de pago.</li>
+<li><strong>Documentos:</strong> páginas web o archivos PDF de los que extrae información.</li>
+<li><strong>Herramientas:</strong> consultas en vivo a tus sistemas, por ejemplo existencias y precio de un producto.</li>
+</ul>
+<p class="aviso">Los precios y las existencias deben venir siempre de una herramienta conectada a tu sistema de inventario, no de documentos, porque cambian a diario.</p>
+<h2>Reglas</h2>
+<ul>
+<li><strong>Reglas de seguridad:</strong> lo que el asistente nunca debe hacer. En una farmacia: no diagnosticar, no indicar dosis, no sustituir medicamentos y no interpretar recetas.</li>
+<li><strong>Pautas de respuesta:</strong> tono, idioma y forma de contestar.</li>
+<li><strong>Escenarios:</strong> instrucciones para un tipo de consulta concreto, con las herramientas que puede usar.</li>
+</ul>
+<h2>Paso a una persona</h2>
+<p>El asistente transfiere la conversación cuando no puede resolverla, cuando el cliente lo pide o cuando una regla lo exige (recetas, reacciones adversas, emergencias). La conversación pasa a <em>abierta</em> y la atiende tu equipo.</p>
+<h2>Puesta en marcha para farmacias</h2>
+<p>El administrador puede crear la configuración base (equipos por sucursal, etiquetas, reglas de receta y reacción adversa, y un asistente con reglas de seguridad) con la tarea <code>ormichat:pharmacy_setup</code>, descrita en la guía de instalación.</p>
+</main>
+</body>
+</html>

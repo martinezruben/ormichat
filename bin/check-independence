@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Falla si el código que se ejecuta o se muestra vuelve a referenciar dominios de Chatwoot.
+# Se excluyen datos de ejemplo de stories, fixtures y specs, que no llegan a producción.
+set -euo pipefail
+matches=$(grep -rInE "chatwoot\.(com|help|io|dev|app)|chwt\.app|hub\.2\.chatwoot" \
+  app lib config enterprise db docker public/docs docker-compose.yml \
+  --exclude-dir=story --exclude-dir=fixtures --exclude-dir=specs --exclude-dir=stories \
+  --exclude="*.story.vue" --exclude="*.spec.js" --exclude="*_spec.rb" --exclude="fixtures.js" || true)
+if [ -n "$matches" ]; then
+  echo "Referencias a dominios de Chatwoot encontradas:"
+  echo "$matches" | cut -c1-200
+  exit 1
+fi
+echo "Sin referencias a dominios de Chatwoot."

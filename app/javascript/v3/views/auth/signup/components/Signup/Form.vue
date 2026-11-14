@@ -50,14 +50,21 @@ const rules = {
 
 const v$ = useVuelidate(rules, { credentials });
 
+// Enlaces que traen las traducciones; se sustituyen por los configurados en TERMS_URL y PRIVACY_URL si existen
+const DEFAULT_TERMS_URL = '/docs/terminos.html';
+const DEFAULT_PRIVACY_URL = '/docs/privacidad.html';
+
 const globalConfig = computed(() => store.getters['globalConfig/get']);
 
 const termsLink = computed(() =>
   t('REGISTER.TERMS_ACCEPT')
-    .replace('https://www.chatwoot.com/terms', globalConfig.value.termsURL)
     .replace(
-      'https://www.chatwoot.com/privacy-policy',
-      globalConfig.value.privacyURL
+      DEFAULT_TERMS_URL,
+      globalConfig.value.termsURL || DEFAULT_TERMS_URL
+    )
+    .replace(
+      DEFAULT_PRIVACY_URL,
+      globalConfig.value.privacyURL || DEFAULT_PRIVACY_URL
     )
 );
 
