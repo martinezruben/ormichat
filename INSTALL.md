@@ -21,7 +21,7 @@ Este documento describe cómo está armado este deployment de **Ormichat**, qué
 
 ## 1. Arquitectura general
 
-- **Backend/Frontend**: Rails 7.2 + Vue 3, corriendo en Docker vía `docker-compose.yml`. La imagen `ormichat` se construye desde este repo con `docker/Dockerfile` (Ruby y Node fijados, frontend compilado dentro del build): no depende de ninguna imagen publicada por terceros (ver sección 4).
+- **Backend/Frontend**: Rails 8.0 + Vue 3, corriendo en Docker vía `docker-compose.yml`. La imagen `ormichat` se construye desde este repo con `docker/Dockerfile` (Ruby y Node fijados, frontend compilado dentro del build): no depende de ninguna imagen publicada por terceros (ver sección 4).
 - **Servicios**: `postgres` (con `pgvector`, necesario para Captain), `redis`, `setup` (migraciones, corre una vez al arrancar), `rails`, `sidekiq`. Datos persistentes en los volúmenes `postgres_data`, `redis_data` y `storage_data` (archivos subidos).
 - **Repo git**: propio, privado, sin ningún vínculo con repos externos (ver sección 11).
 - **IA (Captain)**: corre 100% local sobre Ollama, sin depender de OpenAI (ver sección 9).

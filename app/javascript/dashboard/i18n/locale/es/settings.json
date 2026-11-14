@@ -37,7 +37,7 @@
       },
       "INTERFACE_SECTION": {
         "TITLE": "Interfaz",
-        "NOTE": "Customize the look and feel of your Chatwoot dashboard.",
+        "NOTE": "Customize the look and feel of your Ormichat dashboard.",
         "FONT_SIZE": {
           "TITLE": "Tamaño de fuente",
           "NOTE": "Ajuste el tamaño del texto en todo el panel según su preferencia.",
@@ -673,7 +673,7 @@
       "SP_ENTITY_ID": {
         "LABEL": "ID de entidad del SP",
         "HELP": "Identificador único de esta aplicación como proveedor de servicios (generado automáticamente).",
-        "TOOLTIP": "Unique identifier for Chatwoot as the Service Provider - Configure this in your IdP settings"
+        "TOOLTIP": "Unique identifier for Ormichat as the Service Provider - Configure this in your IdP settings"
       },
       "IDP_ENTITY_ID": {
         "LABEL": "ID de entidad del proveedor de identidad",
@@ -823,7 +823,7 @@
     }
   },
   "CREATE_ACCOUNT": {
-    "NO_ACCOUNT_WARNING": "¡Oh oh! No hemos podido encontrar ninguna cuenta de \"Chatwoot\". Por favor, crea una nueva cuenta para continuar.",
+    "NO_ACCOUNT_WARNING": "¡Oh oh! No hemos podido encontrar ninguna cuenta de \"Ormichat\". Por favor, crea una nueva cuenta para continuar.",
     "NEW_ACCOUNT": "Nueva cuenta",
     "SELECTOR_SUBTITLE": "Crear nueva cuenta",
     "API": {

@@ -425,7 +425,7 @@
         "SLUG": {
           "LABEL": "Slug",
           "PLACEHOLDER": "Slug de categoría para urls",
-          "HELP_TEXT": "app.chatwoot.com/hc/my-portal/es-es-ES/categories/my-slug",
+          "HELP_TEXT": "tu-dominio/hc/my-portal/es-es-ES/categories/my-slug",
           "ERROR": "Slug es requerido"
         },
         "DESCRIPTION": {
@@ -456,7 +456,7 @@
         "SLUG": {
           "LABEL": "Slug",
           "PLACEHOLDER": "Slug de categoría para urls",
-          "HELP_TEXT": "app.chatwoot.com/hc/my-portal/es-ES/categories/my-slug",
+          "HELP_TEXT": "tu-dominio/hc/my-portal/es-ES/categories/my-slug",
           "ERROR": "Slug es requerido"
         },
         "DESCRIPTION": {
@@ -693,7 +693,7 @@
             "LABEL": "Slug",
             "PLACEHOLDER": "Slug de categoría para urls",
             "ERROR": "Slug es requerido",
-            "HELP_TEXT": "app.chatwoot.com/hc/{portalSlug}/{localeCode}/categories/{categorySlug}"
+            "HELP_TEXT": "tu-dominio/hc/{portalSlug}/{localeCode}/categories/{categorySlug}"
           },
           "DESCRIPTION": {
             "LABEL": "Descripción",
@@ -853,7 +853,7 @@
       "CONFIRM_BUTTON_LABEL": "Crear",
       "NAME": {
         "LABEL": "Nombre",
-        "PLACEHOLDER": "User Guide | Chatwoot",
+        "PLACEHOLDER": "User Guide | Ormichat",
         "MESSAGE": "Elija un nombre para su portal.",
         "ERROR": "El nombre es requerido"
       },
@@ -927,7 +927,7 @@
           },
           "DNS_CONFIGURATION_DIALOG": {
             "HEADER": "Configuración DNS",
-            "DESCRIPTION": "Inicie sesión en la cuenta que tiene con su proveedor de DNS y agregue un registro CNAME para el subdominio que apunte a chatwoot.help",
+            "DESCRIPTION": "Inicie sesión en la cuenta que tiene con su proveedor de DNS y agregue un registro CNAME para el subdominio que apunte a el dominio de tu instalación",
             "COPY": "CNAME copiado correctamente",
             "SEND_INSTRUCTIONS": {
               "HEADER": "Enviar instrucciones",
@@ -976,7 +976,7 @@
         "HEADER": "Integraciones",
         "DESCRIPTION": "Conecta herramientas que amplían las funciones de tu centro de ayuda.",
         "LIVE_CHAT": {
-          "TITLE": "Chat en directo con Chatwoot",
+          "TITLE": "Chat en directo con Ormichat",
           "DESCRIPTION": "Muestra un widget de chat en directo en tu centro de ayuda para que los visitantes puedan contactarte mientras leen.",
           "PLACEHOLDER": "Seleccionar widget de chat en directo",
           "NONE_OPTION": "Sin widget"

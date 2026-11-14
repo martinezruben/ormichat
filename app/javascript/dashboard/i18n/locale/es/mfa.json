@@ -107,7 +107,7 @@
       "BACKUP_TITLE": "Usar un código de respaldo",
       "BACKUP_DESC": "Si no tiene acceso a su app de autenticación, puede usar uno de los códigos de respaldo que guardó al configurar 2FA. Cada código se puede usar solo una vez.",
       "CONTACT_TITLE": "¿Necesita más ayuda?",
-      "CONTACT_DESC_CLOUD": "If you've lost access to both your authenticator app and backup codes, please reach out to Chatwoot support for assistance.",
+      "CONTACT_DESC_CLOUD": "If you've lost access to both your authenticator app and backup codes, please reach out to Ormichat support for assistance.",
       "CONTACT_DESC_SELF_HOSTED": "Si perdió el acceso tanto a su app de autenticación como a sus códigos de respaldo, comuníquese con su administrador para obtener ayuda."
     },
     "VERIFICATION_FAILED": "La verificación falló. Inténtelo de nuevo."

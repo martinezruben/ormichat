@@ -233,7 +233,7 @@ Esquema completo en [`db/schema.rb`](db/schema.rb).
 | Capa | Tecnología |
 |---|---|
 | Frontend | Vue 3.5 (Composition API, `<script setup>`), Vite 6, Tailwind CSS (tema shadcn/ui), Vitest, Histoire |
-| Backend | Ruby 3.4.4, Rails 7.2, Puma, Devise, ActionCable |
+| Backend | Ruby 3.4.4, Rails 8.0, Puma, Devise, ActionCable |
 | Jobs | Sidekiq 7 sobre Redis |
 | Base de datos | PostgreSQL 16 + pgvector |
 | IA | Captain vía `ruby_llm` → Ollama (API compatible con OpenAI) |
