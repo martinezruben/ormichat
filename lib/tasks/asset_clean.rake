@@ -1,4 +1,4 @@
-# Asset clean logic taken from the article https://chwt.app/heroku-slug-size
+# Removes unneeded files from the compiled assets to reduce the slug size.
 
 namespace :assets do
   desc "Remove 'node_modules' folder"

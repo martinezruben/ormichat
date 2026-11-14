@@ -7,6 +7,14 @@ module ChatwootApp
     Pathname.new(File.expand_path('..', __dir__))
   end
 
+  # Remitente de los correos del sistema: MAILER_SENDER_EMAIL o, si no está definido, no-reply@<dominio de FRONTEND_URL>.
+  def self.mailer_sender_email
+    ENV.fetch('MAILER_SENDER_EMAIL') do
+      host = URI.parse(ENV.fetch('FRONTEND_URL', 'http://localhost:3000')).host
+      "Ormichat <no-reply@#{host}>"
+    end
+  end
+
   def self.max_limit
     100_000
   end
