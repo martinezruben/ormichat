@@ -1,5 +1,10 @@
 import { shallowMount } from '@vue/test-utils';
+import { ref } from 'vue';
 import ConversationCard from '../ConversationCard.vue';
+
+vi.mock('dashboard/composables/useUISettings', () => ({
+  useUISettings: () => ({ uiSettings: ref({}) }),
+}));
 
 const defaultChat = {
   id: 1,

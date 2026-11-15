@@ -41,7 +41,8 @@
     "SORT_TOOLTIP_LABEL": "Ordenar conversaciones",
     "CHAT_SORT": {
       "STATUS": "Estado",
-      "ORDER_BY": "Ordenar por"
+      "ORDER_BY": "Ordenar por",
+      "COMPACT_VIEW": "Vista compacta"
     },
     "CHAT_TIME_STAMP": {
       "CREATED": {
