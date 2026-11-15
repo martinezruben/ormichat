@@ -1,5 +1,7 @@
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue';
+import { useEmitter } from 'dashboard/composables/emitter';
+import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { useKeyboardEvents } from 'dashboard/composables/useKeyboardEvents';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
@@ -61,6 +63,8 @@ watch(query, () => {
   currentIndex.value = 0;
   if (matches.value.length) focusMatch();
 });
+
+useEmitter(BUS_EVENTS.OPEN_CONVERSATION_SEARCH, open);
 
 useKeyboardEvents({
   '$mod+KeyF': {

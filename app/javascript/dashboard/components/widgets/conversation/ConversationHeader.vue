@@ -20,6 +20,7 @@ import wootConstants from 'dashboard/constants/globals';
 import { conversationListPageURL } from 'dashboard/helper/URLHelper';
 import { snoozedReopenTime } from 'dashboard/helper/snoozeHelpers';
 import { emitter } from 'shared/helpers/mitt';
+import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { CMD_OPEN_COMMAND_BAR } from 'dashboard/helper/commandbar/events';
 import { useInbox } from 'dashboard/composables/useInbox';
 import { useAlert } from 'dashboard/composables';
@@ -109,6 +110,32 @@ const STATUS_STYLES = {
 };
 
 const statusStyle = computed(() => STATUS_STYLES[props.chat.status]);
+
+const PRIORITY_STYLES = {
+  urgent: 'bg-n-ruby-3 text-n-ruby-11',
+  high: 'bg-n-amber-3 text-n-amber-11',
+  medium: 'bg-n-blue-3 text-n-blue-11',
+  low: 'bg-n-alpha-2 text-n-slate-11',
+};
+const priorityStyle = computed(() => PRIORITY_STYLES[props.chat.priority]);
+
+const MAX_HEADER_LABELS = 3;
+const conversationLabels = computed(() => {
+  const allLabels = store.getters['labels/getLabels'];
+  return (props.chat.labels || []).map(title => ({
+    title,
+    color: allLabels.find(label => label.title === title)?.color,
+  }));
+});
+const visibleLabels = computed(() =>
+  conversationLabels.value.slice(0, MAX_HEADER_LABELS)
+);
+const hiddenLabelCount = computed(
+  () => conversationLabels.value.length - visibleLabels.value.length
+);
+
+const openConversationSearch = () =>
+  emitter.emit(BUS_EVENTS.OPEN_CONVERSATION_SEARCH);
 
 const currentUser = computed(() => store.getters.getCurrentUser);
 const isAssignedToMe = computed(
@@ -209,6 +236,15 @@ const copyConversationId = async () => {
           >
             {{ currentContact.name }}
           </span>
+          <span
+            v-if="priorityStyle"
+            class="px-1.5 rounded text-xs font-medium leading-5 shrink-0"
+            :class="priorityStyle"
+          >
+            {{
+              $t(`CONVERSATION.PRIORITY.OPTIONS.${chat.priority.toUpperCase()}`)
+            }}
+          </span>
           <fluent-icon
             v-if="!isHMACVerified"
             v-tooltip="$t('CONVERSATION.UNVERIFIED_SESSION')"
@@ -243,6 +279,20 @@ const copyConversationId = async () => {
           <span v-if="isSnoozed" class="font-medium text-n-amber-10">
             {{ snoozedDisplayText }}
           </span>
+          <span
+            v-for="label in visibleLabels"
+            :key="label.title"
+            class="hidden md:inline-flex items-center gap-1 px-1.5 border rounded border-n-weak leading-4"
+          >
+            <span
+              class="size-1.5 rounded-full"
+              :style="{ backgroundColor: label.color }"
+            />
+            {{ label.title }}
+          </span>
+          <span v-if="hiddenLabelCount > 0" class="hidden md:inline">
+            {{ `+${hiddenLabelCount}` }}
+          </span>
         </div>
       </div>
     </div>
@@ -276,6 +326,15 @@ const copyConversationId = async () => {
         sm
         class="hidden lg:inline-flex"
         @click="openSnoozeModal"
+      />
+      <NextButton
+        v-tooltip.bottom="$t('CONVERSATION.SEARCH_IN_CONVERSATION.BUTTON')"
+        icon="i-lucide-search"
+        slate
+        ghost
+        sm
+        :aria-label="$t('CONVERSATION.SEARCH_IN_CONVERSATION.BUTTON')"
+        @click="openConversationSearch"
       />
       <ConversationCallButton :inbox="inbox" :chat="currentChat" />
       <MoreActions :conversation-id="currentChat.id" />

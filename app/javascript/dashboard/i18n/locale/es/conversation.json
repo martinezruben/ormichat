@@ -437,7 +437,8 @@
     "SYSTEM_EVENTS_FOLDED": "{count} eventos del sistema",
     "SEARCH_IN_CONVERSATION": {
       "PLACEHOLDER": "Buscar en esta conversación…",
-      "COUNT": "{current} de {total}"
+      "COUNT": "{current} de {total}",
+      "BUTTON": "Buscar en la conversación (Ctrl F)"
     }
   },
   "EMAIL_TRANSCRIPT": {
