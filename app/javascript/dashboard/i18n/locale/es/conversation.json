@@ -434,7 +434,11 @@
       "YESTERDAY": "Ayer"
     },
     "WAITING_FOR_CONTACT": "Sin respuesta de {name} desde hace {time}",
-    "SYSTEM_EVENTS_FOLDED": "{count} eventos del sistema"
+    "SYSTEM_EVENTS_FOLDED": "{count} eventos del sistema",
+    "SEARCH_IN_CONVERSATION": {
+      "PLACEHOLDER": "Buscar en esta conversación…",
+      "COUNT": "{current} de {total}"
+    }
   },
   "EMAIL_TRANSCRIPT": {
     "TITLE": "Enviar transcripción de la conversación",
