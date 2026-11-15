@@ -28,7 +28,7 @@ RSpec.describe 'ormichat:pharmacy_setup', type: :task do
     expect(account.teams.pluck(:name)).to contain_exactly('farmacéuticos', 'centro', 'norte')
     expect(account.labels.pluck(:title)).to include('receta', 'reaccion-adversa')
     expect(account.custom_attribute_definitions.contact_attribute.pluck(:attribute_key))
-      .to contain_exactly('sucursal_preferida', 'consentimiento_contacto', 'seguro', 'fidelidad')
+      .to contain_exactly('sucursal_preferida', 'consentimiento_contacto', 'estado_receta', 'seguro', 'fidelidad')
     expect(account.automation_rules.count).to eq(6)
     expect(account.captain_assistants.find_by(name: 'Asistente de farmacia').guardrails.join(' ')).to include('Nunca diagnostiques')
   end

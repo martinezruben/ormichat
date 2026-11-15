@@ -15,6 +15,7 @@ import ConversationAction from './ConversationAction.vue';
 import ConversationParticipant from './ConversationParticipant.vue';
 import ContactInfo from './contact/ContactInfo.vue';
 import ConversationStats from './contact/ConversationStats.vue';
+import ConversationAISummary from './contact/ConversationAISummary.vue';
 import ContactNotes from './contact/ContactNotes.vue';
 import ConversationInfo from './ConversationInfo.vue';
 import CustomAttributes from './customAttributes/CustomAttributes.vue';
@@ -140,6 +141,7 @@ onMounted(() => {
     />
     <ContactInfo :contact="contact" :channel-type="channelType" />
     <ConversationStats />
+    <ConversationAISummary :conversation-id="conversationId" />
     <div class="px-2 pb-8 list-group">
       <Draggable
         :list="conversationSidebarItems"

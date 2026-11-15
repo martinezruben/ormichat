@@ -439,6 +439,12 @@
       "PLACEHOLDER": "Search this conversation…",
       "COUNT": "{current} of {total}",
       "BUTTON": "Search conversation (Ctrl F)"
+    },
+    "AI_SUMMARY": {
+      "TITLE": "AI summary",
+      "GENERATE": "Summarize",
+      "REFRESH": "Refresh",
+      "HINT": "Get what the customer needs and what is pending in seconds."
     }
   },
   "EMAIL_TRANSCRIPT": {
