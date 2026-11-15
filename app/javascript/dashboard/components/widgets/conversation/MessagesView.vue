@@ -7,6 +7,7 @@ import { useSnakeCase } from 'dashboard/composables/useTransformKeys';
 
 // components
 import ReplyBox from './ReplyBox.vue';
+import ConversationSearchBar from './ConversationSearchBar.vue';
 import MessageList from 'next/message/MessageList.vue';
 import ConversationLabelSuggestion from './conversation/LabelSuggestion.vue';
 import Banner from 'dashboard/components/ui/Banner.vue';
@@ -49,6 +50,7 @@ export default {
   components: {
     MessageList,
     ReplyBox,
+    ConversationSearchBar,
     Banner,
     ConversationLabelSuggestion,
     Spinner,
@@ -496,6 +498,7 @@ export default {
     class="flex flex-col justify-between flex-grow h-full min-w-0 m-0"
   >
     <div ref="topBannerRef">
+      <ConversationSearchBar :messages="getMessages" />
       <Banner
         v-if="isInstagramRestrictionBannerVisible"
         color-scheme="warning"
