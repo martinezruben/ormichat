@@ -70,6 +70,38 @@ const dayLabel = createdAt => {
   return dateFormat(createdAt, 'MMM d, yyyy');
 };
 
+const MIN_COLLAPSED_ACTIVITIES = 3;
+const expandedActivityRuns = reactive(new Set());
+
+const isActivity = message => message?.messageType === MESSAGE_TYPES.ACTIVITY;
+
+// Maps the index of each activity to the index where its run starts,
+// and each run start to the run length, so long runs can be folded.
+const activityRuns = computed(() => {
+  const startOf = {};
+  const lengthOf = {};
+  allMessages.value.forEach((message, index) => {
+    if (!isActivity(message)) return;
+    const continuesRun =
+      index > 0 && isActivity(allMessages.value[index - 1]) && !isNewDay(index);
+    const start = continuesRun ? startOf[index - 1] : index;
+    startOf[index] = start;
+    lengthOf[start] = (lengthOf[start] || 0) + 1;
+  });
+  return { startOf, lengthOf };
+});
+
+const foldedRunLength = index => {
+  const { startOf, lengthOf } = activityRuns.value;
+  const start = startOf[index];
+  if (start === undefined || expandedActivityRuns.has(start)) return 0;
+  const length = lengthOf[start];
+  return length >= MIN_COLLAPSED_ACTIVITIES ? length : 0;
+};
+
+const isFoldStart = index =>
+  foldedRunLength(index) > 0 && activityRuns.value.startOf[index] === index;
+
 // Cache for fetched reply messages to avoid duplicate API calls
 const fetchedReplyMessages = reactive(new Map());
 
@@ -188,7 +220,7 @@ const getInReplyToMessage = parentMessage => {
     <template v-for="(message, index) in allMessages" :key="message.id">
       <li
         v-if="isNewDay(index)"
-        class="flex justify-center list-none pt-3 pb-4"
+        class="sticky top-2 z-10 flex justify-center list-none pt-3 pb-4 pointer-events-none"
       >
         <span
           class="px-3 py-0.5 text-xs font-medium border rounded-full border-n-weak bg-n-solid-1 text-n-slate-11"
@@ -200,7 +232,22 @@ const getInReplyToMessage = parentMessage => {
         v-if="firstUnreadId && message.id === firstUnreadId"
         name="unreadBadge"
       />
+      <li v-if="isFoldStart(index)" class="flex justify-center list-none my-2">
+        <button
+          type="button"
+          class="flex items-center gap-1.5 px-3 py-0.5 text-xs border rounded-full border-n-weak text-n-slate-11 hover:bg-n-alpha-2"
+          @click="expandedActivityRuns.add(index)"
+        >
+          <span class="i-lucide-chevrons-up-down size-3.5" />
+          {{
+            t('CONVERSATION.SYSTEM_EVENTS_FOLDED', {
+              count: foldedRunLength(index),
+            })
+          }}
+        </button>
+      </li>
       <Message
+        v-if="!foldedRunLength(index)"
         v-bind="message"
         :is-email-inbox="isAnEmailChannel"
         :in-reply-to="getInReplyToMessage(message)"
