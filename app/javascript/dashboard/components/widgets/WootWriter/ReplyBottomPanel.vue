@@ -127,6 +127,7 @@ export default {
     },
   },
   emits: [
+    'sendAndResolve',
     'toggleInsertArticle',
     'selectWhatsappTemplate',
     'selectContentTemplate',
@@ -404,7 +405,19 @@ export default {
         :color="isNote ? 'amber' : 'blue'"
         :disabled="isSendDisabled"
         class="flex-shrink-0"
+        :class="{ 'rounded-e-none': !isNote }"
         @click="onSend"
+      />
+      <NextButton
+        v-if="!isNote"
+        v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.SEND_AND_RESOLVE')"
+        icon="i-lucide-check-check"
+        sm
+        color="blue"
+        :disabled="isSendDisabled"
+        class="flex-shrink-0 rounded-s-none border-s border-white/30"
+        :aria-label="$t('CONVERSATION.REPLYBOX.SEND_AND_RESOLVE')"
+        @click="$emit('sendAndResolve')"
       />
     </div>
   </div>

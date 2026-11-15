@@ -296,7 +296,9 @@
       },
       "TO_CONTACT": "Para {name} · {inbox}",
       "PRIVATE_NOTE_VISIBILITY": "Solo visible para tu equipo",
-      "SUGGESTED_REPLIES": "Sugeridas"
+      "SUGGESTED_REPLIES": "Sugeridas",
+      "SEND_AND_RESOLVE": "Enviar y resolver",
+      "WHATSAPP_WINDOW": "Ventana abierta: {hours} h {minutes} min"
     },
     "VISIBLE_TO_AGENTS": "Nota privada: solo visible para ti y tu equipo",
     "CHANGE_STATUS": "Estado de la conversación cambiado",

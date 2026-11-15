@@ -972,6 +972,14 @@ export default {
             hasReplyTo: !!this.inReplyTo?.id,
           });
     },
+    async onSendAndResolve() {
+      await this.onSendReply();
+      if (this.message) return;
+      this.$store.dispatch('toggleStatus', {
+        conversationId: this.conversationId,
+        status: wootConstants.STATUS_TYPE.RESOLVED,
+      });
+    },
     async onSendReply() {
       const undefinedVariables = getUndefinedVariablesInMessage({
         message: this.message,
@@ -1549,6 +1557,7 @@ export default {
         @select-content-template="openContentTemplateModal"
         @toggle-insert-article="toggleInsertArticle"
         @toggle-quoted-reply="toggleQuotedReply"
+        @send-and-resolve="onSendAndResolve"
       />
     </Transition>
 

@@ -5,6 +5,9 @@ import { useCaptain } from 'dashboard/composables/useCaptain';
 import { useTrack } from 'dashboard/composables';
 import { vOnClickOutside } from '@vueuse/components';
 import { REPLY_EDITOR_MODES, CHAR_LENGTH_WARNING } from './constants';
+import { MESSAGE_TYPE } from 'shared/constants/messages';
+
+const WHATSAPP_WINDOW_SECONDS = 24 * 60 * 60;
 import { CAPTAIN_EVENTS } from 'dashboard/helper/AnalyticsHelper/events';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import EditorModeToggle from './EditorModeToggle.vue';
@@ -141,6 +144,25 @@ export default {
         inbox: inbox?.name ?? '',
       });
     },
+    whatsappWindowLabel() {
+      if (this.mode !== REPLY_EDITOR_MODES.REPLY) return '';
+      const chat = this.$store.getters.getSelectedChat;
+      const inbox = this.$store.getters['inboxes/getInbox'](chat?.inbox_id);
+      if (inbox?.channel_type !== 'Channel::Whatsapp') return '';
+      const lastIncoming = (chat.messages || []).findLast(
+        message => message.message_type === MESSAGE_TYPE.INCOMING
+      );
+      if (!lastIncoming) return '';
+      const minutesLeft = Math.floor(
+        (lastIncoming.created_at + WHATSAPP_WINDOW_SECONDS) / 60 -
+          Date.now() / 60000
+      );
+      if (minutesLeft <= 0) return '';
+      return this.$t('CONVERSATION.REPLYBOX.WHATSAPP_WINDOW', {
+        hours: Math.floor(minutesLeft / 60),
+        minutes: minutesLeft % 60,
+      });
+    },
     replyButtonClass() {
       return {
         'is-active': this.mode === REPLY_EDITOR_MODES.REPLY,
@@ -179,6 +201,13 @@ export default {
       :class="{ '!text-n-amber-11': mode === REPLY_EDITOR_MODES.NOTE }"
     >
       {{ recipientLabel }}
+    </span>
+    <span
+      v-if="whatsappWindowLabel"
+      class="flex items-center gap-1 text-xs shrink-0 text-n-teal-11"
+    >
+      <span class="i-ph-whatsapp-logo size-3.5" />
+      {{ whatsappWindowLabel }}
     </span>
     <div class="flex items-center mx-4 my-0">
       <div v-if="isMessageLengthReachingThreshold" class="text-xs">
