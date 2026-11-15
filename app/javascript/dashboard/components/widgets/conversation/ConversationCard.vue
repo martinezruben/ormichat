@@ -13,6 +13,7 @@ import SLACardLabel from './components/SLACardLabel.vue';
 import VoiceCallStatus from './VoiceCallStatus.vue';
 import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
 import CardQuickActions from './CardQuickActions.vue';
+import { useUISettings } from 'dashboard/composables/useUISettings';
 
 const props = defineProps({
   chat: { type: Object, required: true },
@@ -72,7 +73,13 @@ const hasSlaPolicyId = computed(
   () => props.chat?.applied_sla?.id && !props.currentContact?.blocked
 );
 
+const { uiSettings } = useUISettings();
+const isCompactList = computed(
+  () => !!uiSettings.value.conversation_list_compact
+);
+
 const showLabelsSection = computed(() => {
+  if (isCompactList.value) return false;
   return props.chat.labels?.length > 0 || hasSlaPolicyId.value;
 });
 
@@ -160,7 +167,10 @@ watch(
       @reopen="$emit('reopen')"
       @assign-to-me="$emit('assignToMe')"
     />
-    <div class="px-0 py-3 flex-1 min-w-0 border-line">
+    <div
+      class="px-0 flex-1 min-w-0 border-line"
+      :class="isCompactList ? 'py-2' : 'py-3'"
+    >
       <div
         v-if="showMetaSection"
         class="flex items-center min-w-0 gap-1"
@@ -200,35 +210,37 @@ watch(
       >
         {{ currentContact.name }}
       </h4>
-      <VoiceCallStatus
-        v-if="voiceCallData.status"
-        key="voice-status-row"
-        :status="voiceCallData.status"
-        :direction="voiceCallData.direction"
-        :message-preview-class="messagePreviewClass"
-      />
-      <MessagePreview
-        v-else-if="lastMessageInChat"
-        key="message-preview"
-        :message="lastMessageInChat"
-        class="my-0 mx-2 leading-6 h-6 flex-1 min-w-0 text-sm"
-        :class="messagePreviewClass"
-      />
-      <p
-        v-else
-        key="no-messages"
-        class="text-n-slate-11 text-sm my-0 mx-2 leading-6 h-6 flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
-        :class="messagePreviewClass"
-      >
-        <fluent-icon
-          size="16"
-          class="-mt-0.5 align-middle inline-block text-n-slate-10"
-          icon="info"
+      <template v-if="!isCompactList">
+        <VoiceCallStatus
+          v-if="voiceCallData.status"
+          key="voice-status-row"
+          :status="voiceCallData.status"
+          :direction="voiceCallData.direction"
+          :message-preview-class="messagePreviewClass"
         />
-        <span class="mx-0.5">
-          {{ $t(`CHAT_LIST.NO_MESSAGES`) }}
-        </span>
-      </p>
+        <MessagePreview
+          v-else-if="lastMessageInChat"
+          key="message-preview"
+          :message="lastMessageInChat"
+          class="my-0 mx-2 leading-6 h-6 flex-1 min-w-0 text-sm"
+          :class="messagePreviewClass"
+        />
+        <p
+          v-else
+          key="no-messages"
+          class="text-n-slate-11 text-sm my-0 mx-2 leading-6 h-6 flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
+          :class="messagePreviewClass"
+        >
+          <fluent-icon
+            size="16"
+            class="-mt-0.5 align-middle inline-block text-n-slate-10"
+            icon="info"
+          />
+          <span class="mx-0.5">
+            {{ $t(`CHAT_LIST.NO_MESSAGES`) }}
+          </span>
+        </p>
+      </template>
       <div
         class="absolute flex flex-col ltr:right-3 rtl:left-3"
         :class="showMetaSection ? 'top-8' : 'top-4'"
