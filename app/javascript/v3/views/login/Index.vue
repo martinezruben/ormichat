@@ -91,6 +91,11 @@ export default {
   },
   computed: {
     ...mapGetters({ globalConfig: 'globalConfig/get' }),
+    buildLabel() {
+      const { appVersion, gitSha } = this.globalConfig;
+      const sha = gitSha && gitSha !== 'unknown' ? gitSha.substring(0, 7) : '';
+      return [`v${appVersion}`, sha].filter(Boolean).join(' · ');
+    },
     allowedLoginMethods() {
       return window.chatwootConfig.allowedLoginMethods || ['email'];
     },
@@ -417,5 +422,10 @@ export default {
         <Spinner color-scheme="primary" size="" />
       </div>
     </section>
+    <p
+      class="mt-auto pt-10 mb-0 text-center text-xs tabular-nums text-n-slate-10"
+    >
+      {{ buildLabel }}
+    </p>
   </main>
 </template>
