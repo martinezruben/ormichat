@@ -15,4 +15,5 @@ export const BUS_EVENTS = {
   INSERT_INTO_NORMAL_EDITOR: 'insertIntoNormalEditor',
   ATTACH_FILE_TO_COMPOSER: 'attachFileToComposer',
   MFA_STATE_CHANGED: 'MFA_STATE_CHANGED',
+  OPEN_CONVERSATION_SEARCH: 'openConversationSearch',
 };
