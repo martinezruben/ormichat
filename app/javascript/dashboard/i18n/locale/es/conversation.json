@@ -433,7 +433,8 @@
       "TODAY": "Hoy",
       "YESTERDAY": "Ayer"
     },
-    "WAITING_FOR_CONTACT": "Sin respuesta de {name} desde hace {time}"
+    "WAITING_FOR_CONTACT": "Sin respuesta de {name} desde hace {time}",
+    "SYSTEM_EVENTS_FOLDED": "{count} eventos del sistema"
   },
   "EMAIL_TRANSCRIPT": {
     "TITLE": "Enviar transcripción de la conversación",

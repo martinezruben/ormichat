@@ -433,7 +433,8 @@
       "TODAY": "Today",
       "YESTERDAY": "Yesterday"
     },
-    "WAITING_FOR_CONTACT": "No reply from {name} for {time}"
+    "WAITING_FOR_CONTACT": "No reply from {name} for {time}",
+    "SYSTEM_EVENTS_FOLDED": "{count} system events"
   },
   "EMAIL_TRANSCRIPT": {
     "TITLE": "Send conversation transcript",
