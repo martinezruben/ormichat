@@ -27,6 +27,7 @@ namespace :ormichat do
     [
       ['sucursal_preferida', 'Sucursal preferida', :list, branches],
       ['consentimiento_contacto', 'Consentimiento de contacto', :checkbox, []],
+      ['estado_receta', 'Estado de la receta', :list, %w[Vigente Caducada Pendiente]],
       ['seguro', 'Seguro', :text, []],
       ['fidelidad', 'Programa de fidelidad', :text, []]
     ].each do |key, name, type, values|
@@ -36,7 +37,7 @@ namespace :ormichat do
         a.attribute_values = values
       end
     end
-    puts '✔ Atributos de contacto: sucursal_preferida, consentimiento_contacto, seguro, fidelidad'
+    puts '✔ Atributos de contacto: sucursal_preferida, consentimiento_contacto, estado_receta, seguro, fidelidad'
 
     # El motor encadena las condiciones con AND/OR en SQL y cada condición de contenido admite un solo valor,
     # por eso hay una regla por palabra clave. Solo mensajes entrantes; no detecta fotos sin texto.

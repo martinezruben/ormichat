@@ -439,6 +439,12 @@
       "PLACEHOLDER": "Buscar en esta conversación…",
       "COUNT": "{current} de {total}",
       "BUTTON": "Buscar en la conversación (Ctrl F)"
+    },
+    "AI_SUMMARY": {
+      "TITLE": "Resumen de la IA",
+      "GENERATE": "Resumir",
+      "REFRESH": "Actualizar",
+      "HINT": "Obtén en segundos qué pide el cliente y qué queda pendiente."
     }
   },
   "EMAIL_TRANSCRIPT": {
