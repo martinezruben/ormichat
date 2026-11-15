@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Reconstruye y reinicia Ormichat dejando grabado el commit desplegado,
+# que se muestra al pie del login junto a la versión de config/app.yml.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+git pull --ff-only
+GIT_SHA="$(git rev-parse HEAD)" docker compose up -d --build
