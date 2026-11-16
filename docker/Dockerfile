@@ -31,6 +31,7 @@ COPY . .
 COPY --from=frontend /app/public ./public
 RUN SECRET_KEY_BASE=precompile_placeholder VITE_RUBY_SKIP_ASSETS_PRECOMPILE_EXTENSION=true \
       bundle exec rake assets:precompile \
+    && ls public/assets/administrate/application-*.css public/vite/.vite/manifest.json \
     && rm -rf spec node_modules tmp/cache log/*
 ARG GIT_SHA=unknown
 RUN echo "$GIT_SHA" > .git_sha
