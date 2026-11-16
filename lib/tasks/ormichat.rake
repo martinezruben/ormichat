@@ -11,9 +11,9 @@ namespace :ormichat do
       'BRAND_NAME' => 'Ormichat',
       'BRAND_URL' => frontend_url,
       'WIDGET_BRAND_URL' => frontend_url,
-      'LOGO' => '/brand-assets/logo.svg',
-      'LOGO_DARK' => '/brand-assets/logo_dark.svg',
-      'LOGO_THUMBNAIL' => '/brand-assets/logo_thumbnail.svg',
+      'LOGO' => '/brand-assets/ormichat-logo.svg',
+      'LOGO_DARK' => '/brand-assets/ormichat-logo-dark.svg',
+      'LOGO_THUMBNAIL' => '/brand-assets/ormichat-icon.svg',
       'INSTALLATION_PRICING_PLAN' => 'enterprise'
     }.each { |name, value| InstallationConfig.find_by!(name: name).update!(value: value) }
     puts '✔ Branding Ormichat y plan enterprise'

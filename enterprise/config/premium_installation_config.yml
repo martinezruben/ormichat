@@ -2,11 +2,11 @@
 - name: INSTALLATION_NAME
   value: 'Ormichat'
 - name: LOGO_THUMBNAIL
-  value: '/brand-assets/logo_thumbnail.svg'
+  value: '/brand-assets/ormichat-icon.svg'
 - name: LOGO
-  value: '/brand-assets/logo.svg'
+  value: '/brand-assets/ormichat-logo.svg'
 - name: LOGO_DARK
-  value: '/brand-assets/logo_dark.svg'
+  value: '/brand-assets/ormichat-logo-dark.svg'
 - name: BRAND_URL
   value: 'https://github.com/martinezruben/ormichat'
 - name: WIDGET_BRAND_URL
