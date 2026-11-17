@@ -2,7 +2,7 @@ name: Depurar Cachés Diarias (> 1 día)
 
 on:
   schedule:
-    # Se ejecuta todos los días a las 03:00 AM hora de República Dominicana (07:00 UTC)
+    # Se ejecuta todos los días a la 01:00 AM hora de República Dominicana (05:00 UTC)
     - cron: '0 5 * * *'
   workflow_dispatch: # Permite ejecutarlo manualmente cuando quieras probarlo
 
@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Eliminar cachés con más de 24 horas
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const oneDayMs = 24 * 60 * 60 * 1000;
