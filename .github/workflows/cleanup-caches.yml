@@ -3,7 +3,7 @@ name: Depurar Cachés Diarias (> 1 día)
 on:
   schedule:
     # Se ejecuta todos los días a las 03:00 AM hora de República Dominicana (07:00 UTC)
-    - cron: '0 7 * * *'
+    - cron: '0 5 * * *'
   workflow_dispatch: # Permite ejecutarlo manualmente cuando quieras probarlo
 
 jobs:
