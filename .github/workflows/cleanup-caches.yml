@@ -1,30 +1,25 @@
-name: Depurar Cachés Antiguas (ormichat)
+name: Depurar Cachés Diarias (> 1 día)
 
 on:
   schedule:
-    # Se ejecuta todos los días a las 3:30 AM UTC
-    - cron: '30 3 * * *'
-  workflow_dispatch:
-    inputs:
-      days_to_keep:
-        description: 'Conservar cachés usadas en los últimos X días'
-        required: true
-        default: '3'
-        type: string
+    # Se ejecuta todos los días a las 03:00 AM hora de República Dominicana (07:00 UTC)
+    - cron: '0 7 * * *'
+  workflow_dispatch: # Permite ejecutarlo manualmente cuando quieras probarlo
 
 jobs:
-  delete-old-caches:
+  cleanup-caches:
     runs-on: ubuntu-latest
     permissions:
-      actions: write # Permiso necesario para borrar cachés
+      actions: write # Permiso obligatorio para borrar cachés
 
     steps:
-      - name: Eliminar cachés no usadas en más de 7 días
+      - name: Eliminar cachés con más de 24 horas
         uses: actions/github-script@v7
         with:
           script: |
-            const days = parseInt(context.payload.inputs?.days_to_keep || '7', 10);
-            const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+            const oneDayMs = 24 * 60 * 60 * 1000;
+            const cutoffDate = new Date(Date.now() - oneDayMs);
+            console.log(`Eliminando cachés usadas antes de: ${cutoffDate.toISOString()}`);
 
             const caches = await github.paginate(github.rest.actions.getActionsCacheList, {
               owner: context.repo.owner,
@@ -38,7 +33,7 @@ jobs:
             for (const cache of caches) {
               const lastAccessed = new Date(cache.last_accessed_at);
               if (lastAccessed < cutoffDate) {
-                console.log(`Eliminando caché: ${cache.key} | ${(cache.size_in_bytes / 1048576).toFixed(2)} MB | Último uso: ${cache.last_accessed_at}`);
+                console.log(`Borrando: ${cache.key} | ${(cache.size_in_bytes / 1048576).toFixed(2)} MB`);
                 await github.rest.actions.deleteActionsCacheById({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
@@ -49,4 +44,4 @@ jobs:
               }
             }
 
-            console.log(`Resumen: ${deletedCount} cachés eliminadas. Espacio liberado: ${(freedBytes / 1048576).toFixed(2)} MB.`);
+            console.log(`Total eliminado: ${deletedCount} cachés (${(freedBytes / 1048576).toFixed(2)} MB liberados).`);
