@@ -26,20 +26,27 @@ const count = computed(() =>
 <template>
   <component
     :is="to ? 'router-link' : 'div'"
-    class="flex items-center gap-2 px-1.5 py-1 rounded-lg h-8 min-w-0"
+    class="flex items-center gap-2.5 px-2.5 py-1 rounded-lg h-8 min-w-0 transition-colors"
     role="button"
     draggable="false"
     :to="to"
     :title="label"
     :class="{
-      'text-n-blue-11 bg-n-blue-3 font-medium': isActive && !hasActiveChild,
-      'text-n-blue-11 font-medium': hasActiveChild,
-      'text-n-slate-11 hover:bg-n-alpha-2': !isActive && !hasActiveChild,
+      'text-n-blue-11 bg-n-blue-3 font-semibold ring-1 ring-inset ring-n-blue-6':
+        isActive && !hasActiveChild,
+      'text-n-blue-11 font-semibold': hasActiveChild,
+      'text-n-slate-12/80 font-medium hover:bg-n-slate-3 hover:text-n-slate-12':
+        !isActive && !hasActiveChild,
     }"
     @click.stop="emit('toggle')"
   >
     <div v-if="icon" class="relative flex items-center gap-2">
-      <Icon v-if="icon" :icon="icon" class="size-4" />
+      <Icon
+        v-if="icon"
+        :icon="icon"
+        class="size-4"
+        :class="isActive || hasActiveChild ? 'text-n-brand' : 'text-n-slate-11'"
+      />
       <span
         v-if="showBadge"
         class="size-2 -top-px ltr:-right-px rtl:-left-px bg-n-brand absolute rounded-full border border-n-solid-2"
@@ -48,13 +55,7 @@ const count = computed(() =>
     <div
       class="flex items-center gap-1.5 flex-grow justify-between min-w-0 flex-1"
     >
-      <span
-        class="truncate"
-        :class="{
-          'text-body-main': !isActive,
-          'font-medium text-sm': isActive || hasActiveChild,
-        }"
-      >
+      <span class="truncate text-sm">
         {{ label }}
       </span>
       <span

@@ -6,19 +6,19 @@
     --brand-color: 79 70 229;
     --brand-foreground: 255 255 255;
 
-    // slate (cool neutral ramp)
-    --slate-1: 251 251 253;
-    --slate-2: 247 248 250;
-    --slate-3: 244 245 248;
-    --slate-4: 238 240 244;
-    --slate-5: 233 235 240;
-    --slate-6: 228 231 237;
-    --slate-7: 213 217 226;
-    --slate-8: 190 195 207;
-    --slate-9: 160 166 181;
-    --slate-10: 134 141 158;
-    --slate-11: 85 92 108;
-    --slate-12: 20 22 28;
+    // slate (zinc neutral ramp)
+    --slate-1: 252 252 252;
+    --slate-2: 250 250 250;
+    --slate-3: 244 244 245;
+    --slate-4: 239 239 241;
+    --slate-5: 233 233 236;
+    --slate-6: 228 228 231;
+    --slate-7: 212 212 216;
+    --slate-8: 185 185 192;
+    --slate-9: 161 161 170;
+    --slate-10: 138 138 147;
+    --slate-11: 113 113 122;
+    --slate-12: 9 9 11;
 
     --iris-1: 253 253 255;
     --iris-2: 248 248 255;
@@ -113,20 +113,20 @@
 
     --background-color: 255 255 255;
     --surface-1: 255 255 255;
-    --surface-2: 246 247 250;
-    --surface-active: 244 245 248;
+    --surface-2: 250 250 250;
+    --surface-active: 244 244 245;
     --background-input-box: 0, 0, 0, 0;
     --text-blue: 67 56 202;
     --text-purple: 2 4 49;
     --text-amber: 37 24 1;
-    --border-container: 228 231 237;
-    --border-strong: 213 217 226;
-    --border-weak: 228 231 237;
+    --border-container: 228 228 231;
+    --border-strong: 212 212 216;
+    --border-weak: 228 228 231;
     --border-blue-strong: 79 70 229;
     --solid-1: 255 255 255;
     --solid-2: 255 255 255;
     --solid-3: 255 255 255;
-    --solid-active: 244 245 248;
+    --solid-active: 244 244 245;
     --solid-amber: 255 228 181;
     --solid-blue: 238 238 253;
     --solid-blue-2: 247 247 255;
@@ -139,7 +139,7 @@
     --overlay-avatar: 255, 255, 255, 0.67;
     --button-color: 255 255 255;
     --button-hover-color: 255, 255, 255, 0.2;
-    --label-background: 244 245 248;
+    --label-background: 244 244 245;
     --label-border: 0, 0, 0, 0.06;
 
     --alpha-1: 0, 0, 0, 0.04;
@@ -162,19 +162,19 @@
     --brand-color: 111 105 245;
     --brand-foreground: 255 255 255;
 
-    // slate (cool neutral ramp)
-    --slate-1: 10 11 14;
-    --slate-2: 17 18 23;
-    --slate-3: 22 24 30;
-    --slate-4: 29 31 39;
-    --slate-5: 37 40 50;
-    --slate-6: 46 49 61;
-    --slate-7: 64 68 82;
-    --slate-8: 82 87 104;
-    --slate-9: 116 122 140;
-    --slate-10: 141 147 164;
-    --slate-11: 165 171 187;
-    --slate-12: 247 248 251;
+    // slate (zinc neutral ramp)
+    --slate-1: 9 9 11;
+    --slate-2: 17 17 19;
+    --slate-3: 24 24 27;
+    --slate-4: 31 31 35;
+    --slate-5: 39 39 42;
+    --slate-6: 48 48 53;
+    --slate-7: 63 63 70;
+    --slate-8: 82 82 91;
+    --slate-9: 113 113 122;
+    --slate-10: 138 138 147;
+    --slate-11: 161 161 170;
+    --slate-12: 250 250 250;
 
     --iris-1: 19 19 30;
     --iris-2: 23 22 37;
@@ -267,21 +267,21 @@
     --violet-11: 169 153 236;
     --violet-12: 226 221 254;
 
-    --background-color: 11 12 16;
-    --surface-1: 21 23 29;
-    --surface-2: 29 31 39;
-    --surface-active: 37 40 50;
+    --background-color: 9 9 11;
+    --surface-1: 17 17 19;
+    --surface-2: 24 24 27;
+    --surface-active: 39 39 42;
     --background-input-box: 255, 255, 255, 0.045;
     --text-blue: 165 168 255;
     --text-purple: 232 233 254;
     --text-amber: 255 247 234;
-    --border-strong: 51 55 69;
-    --border-weak: 38 42 52;
+    --border-strong: 63 63 70;
+    --border-weak: 39 39 42;
     --border-blue-strong: 132 128 255;
-    --solid-1: 21 23 29;
-    --solid-2: 26 28 35;
-    --solid-3: 36 39 49;
-    --solid-active: 46 49 61;
+    --solid-1: 17 17 19;
+    --solid-2: 24 24 27;
+    --solid-3: 39 39 42;
+    --solid-active: 48 48 53;
     --solid-amber: 56 50 41;
     --solid-blue: 37 35 63;
     --solid-blue-2: 24 23 44;
@@ -289,12 +289,12 @@
     --solid-purple: 51 51 107;
     --solid-red: 90 33 34;
     --solid-amber-button: 255 221 141;
-    --card-color: 21 23 29;
+    --card-color: 17 17 19;
     --overlay: 0, 0, 0, 0.6;
     --overlay-avatar: 0, 0, 0, 0.05;
     --button-color: 29 31 39;
     --button-hover-color: 0, 0, 0, 0.15;
-    --label-background: 38 42 52;
+    --label-background: 39 39 42;
     --label-border: 255, 255, 255, 0.06;
 
     --alpha-1: 38, 38, 38, 0.8;

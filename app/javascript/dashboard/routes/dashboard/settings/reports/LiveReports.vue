@@ -8,7 +8,10 @@ import StatsLiveReportsContainer from './components/StatsLiveReportsContainer.vu
 </script>
 
 <template>
-  <ReportHeader :header-title="$t('OVERVIEW_REPORTS.HEADER')" />
+  <ReportHeader
+    :header-title="$t('OVERVIEW_REPORTS.HEADER')"
+    :header-description="$t('OVERVIEW_REPORTS.DESCRIPTION')"
+  />
   <div class="flex flex-col gap-4 pb-6">
     <StatsLiveReportsContainer />
     <ConversationHeatmapContainer />

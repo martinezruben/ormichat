@@ -466,6 +466,7 @@
     }
   },
   "ONBOARDING": {
+    "GETTING_STARTED": "Primeros pasos",
     "TITLE": "Hola 👋, ¡Bienvenido a {installationName}!",
     "DESCRIPTION": "Gracias por registrarse. Queremos que saque el máximo provecho de {installationName}. Aquí hay algunas cosas que puede hacer en {installationName} para hacer que la experiencia sea agradable.",
     "GREETING_MORNING": "👋 Buenos días, {name}. Bienvenido a  {installationName}.",

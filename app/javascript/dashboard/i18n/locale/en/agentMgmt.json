@@ -5,6 +5,10 @@
     "LOADING": "Fetching Agent List",
     "DESCRIPTION": "An agent is a member of your customer support team who can view and respond to user messages. The list below shows all the agents in your account.",
     "LEARN_MORE": "Learn about user roles",
+    "AGENT_TYPE_DESCRIPTIONS": {
+      "ADMINISTRATOR": "Full access to the account, settings and billing.",
+      "AGENT": "Replies to and manages conversations."
+    },
     "AGENT_TYPES": {
       "ADMINISTRATOR": "Administrator",
       "AGENT": "Agent"

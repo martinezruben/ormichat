@@ -307,7 +307,13 @@
       "NEW_INBOX": "Añadir bandeja de entrada"
     }
   },
+  "TOP_BAR": {
+    "BREADCRUMB": "Ruta",
+    "HELP": "Ayuda y atajos de teclado"
+  },
   "SIDEBAR": {
+    "SECTION_ATTENTION": "Atención",
+    "SECTION_MANAGEMENT": "Gestión",
     "NO_ITEMS": "No hay elementos",
     "CURRENTLY_VIEWING_ACCOUNT": "Visualizando:",
     "SWITCH": "Cambiar",

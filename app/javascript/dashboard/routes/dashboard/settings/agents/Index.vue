@@ -168,7 +168,7 @@ const confirmDeletion = () => {
         <template #actions>
           <Button
             :label="$t('AGENT_MGMT.HEADER_BTN_TXT')"
-            size="sm"
+            icon="i-lucide-user-plus"
             @click="openAddPopup"
           />
         </template>
@@ -181,98 +181,119 @@ const confirmDeletion = () => {
       >
         {{ $t('AGENT_MGMT.NO_RESULTS') }}
       </span>
-      <div v-else class="divide-y divide-n-weak border-t border-n-weak">
-        <div
-          v-for="(agent, index) in filteredAgentList"
-          :key="agent.email"
-          class="flex justify-between flex-row items-start gap-4 py-4"
-        >
-          <div class="flex items-center gap-4">
-            <Avatar
-              :src="agent.thumbnail"
-              :name="agent.name"
-              :status="agent.availability_status"
-              :size="40"
-              hide-offline-status
-            />
-            <div class="flex flex-col gap-1.5 items-start">
-              <span class="block text-heading-3 text-n-slate-12 capitalize">
-                {{ agent.name }}
-              </span>
-              <div class="flex items-center gap-2">
-                <span class="text-body-main text-n-slate-11">
-                  {{ agent.email }}
-                </span>
-                <div class="w-px h-3 bg-n-strong rounded-lg" />
+      <div
+        v-else
+        class="overflow-hidden rounded-xl border shadow-sm bg-n-solid-1 border-n-weak"
+      >
+        <div class="divide-y divide-n-weak">
+          <div
+            v-for="(agent, index) in filteredAgentList"
+            :key="agent.email"
+            class="flex flex-row gap-4 justify-between items-center px-5 py-3 transition-colors hover:bg-n-slate-2"
+          >
+            <div class="flex gap-3 items-center min-w-0">
+              <Avatar
+                :src="agent.thumbnail"
+                :name="agent.name"
+                :status="agent.availability_status"
+                :size="40"
+                hide-offline-status
+              />
+              <div class="flex flex-col gap-0.5 items-start min-w-0">
                 <span
-                  class="block w-fit text-body-main text-n-slate-11 relative"
-                  :class="{
-                    'hover:text-n-slate-12 group cursor-pointer':
-                      agent.custom_role_id,
-                  }"
+                  class="flex gap-2 items-center text-sm font-semibold capitalize text-n-slate-12"
                 >
-                  {{ getAgentRoleName(agent) }}
-
-                  <div
-                    class="absolute ltr:left-0 rtl:right-0 z-10 hidden w-[300px] bg-n-alpha-3 backdrop-blur-[100px] rounded-xl outline outline-1 outline-n-container shadow-lg top-14 md:top-12"
-                    :class="{ 'group-hover:block': agent.custom_role_id }"
+                  {{ agent.name }}
+                  <span
+                    class="inline-flex gap-1 items-center px-2 h-[1.375rem] text-xs font-medium normal-case rounded-full border"
+                    :class="
+                      agent.confirmed
+                        ? 'bg-n-teal-3 border-n-teal-6 text-n-teal-11'
+                        : 'bg-n-amber-3 border-n-amber-6 text-n-amber-11'
+                    "
                   >
-                    <div class="flex flex-col gap-1 p-4">
-                      <span class="text-heading-3 text-n-slate-12">
-                        {{ $t('AGENT_MGMT.LIST.AVAILABLE_CUSTOM_ROLE') }}
-                      </span>
-                      <ul class="ltr:pl-4 rtl:pr-4 mb-0 list-disc">
-                        <li
-                          v-for="permission in getAgentRolePermissions(agent)"
-                          :key="permission"
-                          class="text-body-main text-n-slate-11"
-                        >
-                          {{
-                            $t(
-                              `CUSTOM_ROLE.PERMISSIONS.${permission.toUpperCase()}`
-                            )
-                          }}
-                        </li>
-                      </ul>
+                    <span
+                      class="size-3"
+                      :class="
+                        agent.confirmed
+                          ? 'i-lucide-badge-check'
+                          : 'i-lucide-clock'
+                      "
+                    />
+                    {{
+                      agent.confirmed
+                        ? $t('AGENT_MGMT.LIST.VERIFIED')
+                        : $t('AGENT_MGMT.LIST.VERIFICATION_PENDING')
+                    }}
+                  </span>
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[0.8125rem] truncate text-n-slate-11">
+                    {{ agent.email }}
+                  </span>
+                  <div class="w-px h-3 bg-n-strong rounded-lg" />
+                  <span
+                    class="inline-flex relative items-center px-2 h-[1.375rem] text-xs font-medium rounded-full border w-fit bg-n-blue-3 border-n-blue-6 text-n-blue-11"
+                    :class="{
+                      'hover:text-n-slate-12 group cursor-pointer':
+                        agent.custom_role_id,
+                    }"
+                  >
+                    {{ getAgentRoleName(agent) }}
+
+                    <div
+                      class="absolute ltr:left-0 rtl:right-0 z-10 hidden w-[300px] bg-n-alpha-3 backdrop-blur-[100px] rounded-xl outline outline-1 outline-n-container shadow-lg top-14 md:top-12"
+                      :class="{ 'group-hover:block': agent.custom_role_id }"
+                    >
+                      <div class="flex flex-col gap-1 p-4">
+                        <span class="text-heading-3 text-n-slate-12">
+                          {{ $t('AGENT_MGMT.LIST.AVAILABLE_CUSTOM_ROLE') }}
+                        </span>
+                        <ul class="ltr:pl-4 rtl:pr-4 mb-0 list-disc">
+                          <li
+                            v-for="permission in getAgentRolePermissions(agent)"
+                            :key="permission"
+                            class="text-body-main text-n-slate-11"
+                          >
+                            {{
+                              $t(
+                                `CUSTOM_ROLE.PERMISSIONS.${permission.toUpperCase()}`
+                              )
+                            }}
+                          </li>
+                        </ul>
+                      </div>
                     </div>
-                  </div>
-                </span>
-                <div class="w-px h-3 bg-n-strong rounded-lg" />
-                <span
-                  v-if="agent.confirmed"
-                  class="text-body-main text-n-slate-11"
-                >
-                  {{ $t('AGENT_MGMT.LIST.VERIFIED') }}
-                </span>
-                <span
-                  v-if="!agent.confirmed"
-                  class="text-body-main text-n-slate-11"
-                >
-                  {{ $t('AGENT_MGMT.LIST.VERIFICATION_PENDING') }}
-                </span>
+                  </span>
+                </div>
               </div>
             </div>
+            <div class="flex justify-end gap-3">
+              <Button
+                v-if="showEditAction(agent)"
+                v-tooltip.top="$t('AGENT_MGMT.EDIT.BUTTON_TEXT')"
+                icon="i-woot-edit-pen"
+                slate
+                sm
+                @click="openEditPopup(agent)"
+              />
+              <Button
+                v-if="showDeleteAction(agent)"
+                v-tooltip.top="$t('AGENT_MGMT.DELETE.BUTTON_TEXT')"
+                icon="i-woot-bin"
+                slate
+                sm
+                class="hover:enabled:text-n-ruby-11 hover:enabled:bg-n-ruby-2"
+                :is-loading="loading[agent.id]"
+                @click="openDeletePopup(agent, index)"
+              />
+            </div>
           </div>
-          <div class="flex justify-end gap-3">
-            <Button
-              v-if="showEditAction(agent)"
-              v-tooltip.top="$t('AGENT_MGMT.EDIT.BUTTON_TEXT')"
-              icon="i-woot-edit-pen"
-              slate
-              sm
-              @click="openEditPopup(agent)"
-            />
-            <Button
-              v-if="showDeleteAction(agent)"
-              v-tooltip.top="$t('AGENT_MGMT.DELETE.BUTTON_TEXT')"
-              icon="i-woot-bin"
-              slate
-              sm
-              class="hover:enabled:text-n-ruby-11 hover:enabled:bg-n-ruby-2"
-              :is-loading="loading[agent.id]"
-              @click="openDeletePopup(agent, index)"
-            />
-          </div>
+        </div>
+        <div
+          class="px-5 py-3 text-[0.8125rem] border-t bg-n-surface-2 border-n-weak text-n-slate-11"
+        >
+          {{ $t('AGENT_MGMT.COUNT', { n: filteredAgentList.length }) }}
         </div>
       </div>
     </template>

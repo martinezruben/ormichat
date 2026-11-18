@@ -4,6 +4,7 @@
     "LOAD_MORE_CONVERSATIONS": "Cargar más conversaciones",
     "EOF": "Todas las conversaciones cargadas 🎉",
     "LIST": {
+      "EMPTY_TITLE": "Todo al día",
       "404": "No hay conversaciones activas en este grupo."
     },
     "FAILED_TO_SEND": "Error al enviar",

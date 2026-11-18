@@ -307,7 +307,13 @@
       "NEW_INBOX": "Add Inbox"
     }
   },
+  "TOP_BAR": {
+    "BREADCRUMB": "Breadcrumb",
+    "HELP": "Help and keyboard shortcuts"
+  },
   "SIDEBAR": {
+    "SECTION_ATTENTION": "Support",
+    "SECTION_MANAGEMENT": "Management",
     "NO_ITEMS": "No items",
     "CURRENTLY_VIEWING_ACCOUNT": "Currently viewing:",
     "SWITCH": "Switch",

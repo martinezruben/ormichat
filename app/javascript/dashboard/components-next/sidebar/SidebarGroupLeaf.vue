@@ -44,9 +44,10 @@ const TREE_CONNECTOR =
       :is="to ? 'router-link' : 'div'"
       :to="to"
       :title="label"
-      class="flex h-8 items-center gap-2 px-2 py-1 rounded-lg ltr:hover:bg-gradient-to-r rtl:hover:bg-gradient-to-l from-transparent via-n-slate-3/70 to-n-slate-3/70 group min-w-0"
+      class="flex h-8 items-center gap-2 px-2 py-1 rounded-lg hover:bg-n-slate-3 hover:text-n-slate-12 transition-colors group min-w-0"
       :class="{
-        'text-n-slate-12 bg-n-alpha-2 active': active,
+        'text-n-blue-11 bg-n-blue-3 font-semibold ring-1 ring-inset ring-n-blue-6 active':
+          active,
       }"
     >
       <component

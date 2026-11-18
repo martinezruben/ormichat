@@ -159,7 +159,6 @@ onMounted(() => {
         <SectionLayout
           :title="t('CAPTAIN_SETTINGS.FEATURES.TITLE')"
           :description="t('CAPTAIN_SETTINGS.FEATURES.DESCRIPTION')"
-          with-border
         >
           <div class="grid gap-4">
             <FeatureToggle

@@ -466,6 +466,7 @@
     }
   },
   "ONBOARDING": {
+    "GETTING_STARTED": "Getting started",
     "TITLE": "Hey 👋, Welcome to {installationName}!",
     "DESCRIPTION": "Thanks for signing up. We want you to get the most out of {installationName}. Here are a few things you can do in {installationName} to make the experience delightful.",
     "GREETING_MORNING": "👋 Good morning, {name}. Welcome to {installationName}.",

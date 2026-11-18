@@ -18,21 +18,21 @@ defineProps({
 </script>
 
 <template>
-  <section class="flex flex-col gap-1 pt-6 pb-5">
+  <section class="flex flex-col gap-1 pt-8 pb-6">
     <div v-if="hasBackButton">
       <BackButton compact />
     </div>
     <div class="flex justify-between w-full gap-5">
       <div class="flex flex-col gap-2">
-        <div class="flex flex-col gap-3 items-start">
-          <span
-            class="text-heading-1 text-n-slate-12 min-h-10 flex items-center"
+        <div class="flex flex-col gap-1.5 items-start">
+          <h1
+            class="flex items-center m-0 text-2xl font-semibold tracking-tight leading-tight text-n-slate-12 min-h-10"
           >
             {{ headerTitle }}
-          </span>
+          </h1>
           <p
             v-if="headerDescription"
-            class="text-n-slate-11 mb-0 line-clamp-5 sm:line-clamp-none text-body-main"
+            class="mb-0 text-sm text-n-slate-11 line-clamp-5 sm:line-clamp-none"
           >
             {{ headerDescription }}
           </p>

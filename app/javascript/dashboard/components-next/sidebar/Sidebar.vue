@@ -354,6 +354,11 @@ const newReportRoutes = () => [
 
 const reportRoutes = computed(() => newReportRoutes());
 
+const SECTION_HEADINGS = {
+  Inbox: 'SIDEBAR.SECTION_ATTENTION',
+  Contacts: 'SIDEBAR.SECTION_MANAGEMENT',
+};
+
 const menuItems = computed(() => {
   return [
     {
@@ -996,7 +1001,7 @@ const menuItems = computed(() => {
         <RouterLink
           v-if="!isEffectivelyCollapsed"
           :to="{ name: 'search' }"
-          class="flex gap-2 items-center px-2 py-1 w-full h-7 rounded-lg outline outline-1 outline-n-weak bg-n-button-color transition-all duration-100 ease-out"
+          class="flex gap-2 items-center px-2.5 py-1 w-full h-8 rounded-lg bg-n-slate-3 text-n-slate-11 hover:bg-n-slate-4 transition-colors duration-100 ease-out"
         >
           <span class="flex-shrink-0 i-lucide-search size-4 text-n-slate-10" />
           <span class="flex-grow text-start text-n-slate-10">
@@ -1042,11 +1047,16 @@ const menuItems = computed(() => {
         class="flex flex-col gap-1 m-0 list-none min-w-0"
         :class="{ 'items-center': isEffectivelyCollapsed }"
       >
-        <SidebarGroup
-          v-for="item in menuItems"
-          :key="item.name"
-          v-bind="item"
-        />
+        <template v-for="item in menuItems" :key="item.name">
+          <li
+            v-if="SECTION_HEADINGS[item.name] && !isEffectivelyCollapsed"
+            class="px-2.5 pb-1.5 text-[0.6875rem] font-semibold tracking-wider uppercase text-n-slate-11"
+            :class="{ 'pt-4': item.name !== 'Inbox' }"
+          >
+            {{ t(SECTION_HEADINGS[item.name]) }}
+          </li>
+          <SidebarGroup v-bind="item" />
+        </template>
       </ul>
     </nav>
     <section

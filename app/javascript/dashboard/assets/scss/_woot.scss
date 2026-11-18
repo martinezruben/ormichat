@@ -3,6 +3,7 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+@import 'shared/assets/fonts/inter';
 @import 'shared/assets/fonts/geist';
 
 // Next Colors
@@ -17,6 +18,7 @@
 html,
 body {
   font-family:
+    'Inter',
     'Geist',
     -apple-system,
     system-ui,

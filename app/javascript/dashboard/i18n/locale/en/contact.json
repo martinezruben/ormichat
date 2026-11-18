@@ -306,7 +306,14 @@
   },
 
   "CONTACTS_LAYOUT": {
+    "COLUMNS": {
+      "CONTACT": "Contact",
+      "PHONE": "Phone",
+      "LOCATION": "Location",
+      "COMPANY": "Company"
+    },
     "HEADER": {
+      "SUBTITLE": "The people who write to your team, all in one place.",
       "TITLE": "Contacts",
       "SEARCH_TITLE": "Search contacts",
       "ACTIVE_TITLE": "Active contacts",
@@ -431,6 +438,7 @@
       "OF": "of",
       "VIEW_DETAILS": "View details",
       "EDIT_DETAILS_FORM": {
+        "DESCRIPTION": "Update the customer details. Changes apply to all of their conversations.",
         "TITLE": "Edit contact details",
         "FORM": {
           "FIRST_NAME": {

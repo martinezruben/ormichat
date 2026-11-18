@@ -36,6 +36,7 @@ const updateContact = async updatedData => {
   try {
     await store.dispatch('contacts/update', updatedData);
     useAlert(t('CONTACTS_LAYOUT.CARD.EDIT_DETAILS_FORM.SUCCESS_MESSAGE'));
+    expandedCardId.value = null;
   } catch (error) {
     const i18nPrefix = 'CONTACTS_LAYOUT.CARD.EDIT_DETAILS_FORM.FORM';
     if (error instanceof DuplicateContactException) {
@@ -86,7 +87,18 @@ const handleAvatarHover = (id, isHovered) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
+  <div
+    class="overflow-hidden rounded-xl border divide-y shadow-sm bg-n-solid-1 border-n-weak divide-n-weak"
+  >
+    <div
+      class="hidden md:grid grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)_minmax(0,1.4fr)_minmax(0,1fr)_4.5rem] gap-4 items-center px-5 h-10 text-xs font-semibold bg-n-surface-2 text-n-slate-11"
+    >
+      <span class="ps-12">{{ $t('CONTACTS_LAYOUT.COLUMNS.CONTACT') }}</span>
+      <span>{{ $t('CONTACTS_LAYOUT.COLUMNS.PHONE') }}</span>
+      <span>{{ $t('CONTACTS_LAYOUT.COLUMNS.LOCATION') }}</span>
+      <span>{{ $t('CONTACTS_LAYOUT.COLUMNS.COMPANY') }}</span>
+      <span />
+    </div>
     <div v-for="contact in contacts" :key="contact.id" class="relative">
       <ContactsCard
         :id="contact.id"

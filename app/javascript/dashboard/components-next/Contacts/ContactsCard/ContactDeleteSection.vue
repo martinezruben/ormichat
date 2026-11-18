@@ -26,7 +26,7 @@ const openConfirmDeleteContactDialog = () => {
 
 <template>
   <Policy :permissions="['administrator']">
-    <div class="flex flex-col items-start border-t border-n-strong px-6 py-5">
+    <div class="flex flex-col items-start pt-5 border-t border-n-weak">
       <Button
         :label="t('CONTACTS_LAYOUT.DETAILS.DELETE_CONTACT')"
         sm
