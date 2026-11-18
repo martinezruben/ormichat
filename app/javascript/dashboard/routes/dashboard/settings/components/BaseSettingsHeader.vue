@@ -53,7 +53,9 @@ const helpURL = getHelpUrlForFeature(props.featureName);
       class="flex items-center justify-between w-full gap-4 min-h-8 mb-2"
     >
       <slot name="title">
-        <h1 class="text-heading-1 text-n-slate-12">
+        <h1
+          class="m-0 text-2xl font-semibold tracking-tight leading-tight text-n-slate-12"
+        >
           {{ title }}
         </h1>
       </slot>
@@ -64,7 +66,7 @@ const helpURL = getHelpUrlForFeature(props.featureName);
     >
       <p
         v-if="description || $slots.description"
-        class="mb-0 line-clamp-5 sm:line-clamp-none max-w-3xl text-body-main"
+        class="mb-0 text-sm line-clamp-5 sm:line-clamp-none max-w-3xl"
       >
         <slot name="description">{{ description }}</slot>
       </p>
