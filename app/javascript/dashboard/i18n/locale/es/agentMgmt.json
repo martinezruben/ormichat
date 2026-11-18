@@ -5,6 +5,10 @@
     "LOADING": "Se están listando los agentes",
     "DESCRIPTION": "Un agente es miembro de su equipo de atención al cliente, quién puede ver y responder a los mensajes del usuario.  La siguiente lista muestra todos los agentes en su cuenta.",
     "LEARN_MORE": "Aprender acerca de roles de usuario",
+    "AGENT_TYPE_DESCRIPTIONS": {
+      "ADMINISTRATOR": "Acceso completo a la cuenta, ajustes y facturación.",
+      "AGENT": "Responde y gestiona conversaciones."
+    },
     "AGENT_TYPES": {
       "ADMINISTRATOR": "Administrador",
       "AGENT": "Agente"

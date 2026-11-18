@@ -306,6 +306,12 @@
     }
   },
   "CONTACTS_LAYOUT": {
+    "COLUMNS": {
+      "CONTACT": "Contacto",
+      "PHONE": "Teléfono",
+      "LOCATION": "Ubicación",
+      "COMPANY": "Empresa"
+    },
     "HEADER": {
       "SUBTITLE": "Las personas que escriben a tu equipo, en un solo lugar.",
       "TITLE": "Contactos",
@@ -432,6 +438,7 @@
       "OF": "de",
       "VIEW_DETAILS": "Ver detalles",
       "EDIT_DETAILS_FORM": {
+        "DESCRIPTION": "Actualiza la información del cliente. Los cambios se reflejan en todas sus conversaciones.",
         "TITLE": "Editar detalles del contacto",
         "FORM": {
           "FIRST_NAME": {

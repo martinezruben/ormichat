@@ -37,11 +37,13 @@ const roles = computed(() => {
       id: 'administrator',
       name: 'administrator',
       label: t('AGENT_MGMT.AGENT_TYPES.ADMINISTRATOR'),
+      description: t('AGENT_MGMT.AGENT_TYPE_DESCRIPTIONS.ADMINISTRATOR'),
     },
     {
       id: 'agent',
       name: 'agent',
       label: t('AGENT_MGMT.AGENT_TYPES.AGENT'),
+      description: t('AGENT_MGMT.AGENT_TYPE_DESCRIPTIONS.AGENT'),
     },
   ];
 
@@ -49,6 +51,7 @@ const roles = computed(() => {
     id: role.id,
     name: `custom_${role.id}`,
     label: role.name,
+    description: role.description,
   }));
 
   return [...defaultRoles, ...customRoles];
@@ -104,6 +107,12 @@ const addAgent = async () => {
 
 <template>
   <div class="flex flex-col h-auto overflow-auto">
+    <span
+      aria-hidden="true"
+      class="inline-flex justify-center items-center mx-6 mt-6 -mb-2 rounded-[0.625rem] size-10 bg-n-blue-3 text-n-brand"
+    >
+      <span class="i-lucide-user-plus size-5" />
+    </span>
     <woot-modal-header
       :header-title="$t('AGENT_MGMT.ADD.TITLE')"
       :header-content="$t('AGENT_MGMT.ADD.DESC')"
@@ -121,19 +130,49 @@ const addAgent = async () => {
         </label>
       </div>
 
-      <div class="w-full">
-        <label :class="{ error: v$.selectedRoleId.$error }">
+      <fieldset class="p-0 m-0 mb-4 w-full border-0">
+        <legend class="p-0 mb-2 text-sm font-medium text-n-slate-12">
           {{ $t('AGENT_MGMT.ADD.FORM.AGENT_TYPE.LABEL') }}
-          <select v-model="selectedRoleId" @change="v$.selectedRoleId.$touch">
-            <option v-for="role in roles" :key="role.id" :value="role.id">
-              {{ role.label }}
-            </option>
-          </select>
-          <span v-if="v$.selectedRoleId.$error" class="message">
-            {{ $t('AGENT_MGMT.ADD.FORM.AGENT_TYPE.ERROR') }}
-          </span>
-        </label>
-      </div>
+        </legend>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label
+            v-for="role in roles"
+            :key="role.id"
+            class="flex gap-3 items-start p-3 m-0 rounded-[0.625rem] border cursor-pointer transition-colors"
+            :class="
+              selectedRoleId === role.id
+                ? 'border-n-brand bg-n-blue-3'
+                : 'border-n-weak hover:border-n-strong'
+            "
+          >
+            <input
+              v-model="selectedRoleId"
+              type="radio"
+              name="agent-role"
+              :value="role.id"
+              class="mt-0.5 mb-0 accent-n-brand size-4 shrink-0"
+              @change="v$.selectedRoleId.$touch"
+            />
+            <span class="min-w-0">
+              <span class="block text-sm font-semibold text-n-slate-12">
+                {{ role.label }}
+              </span>
+              <span
+                v-if="role.description"
+                class="block mt-0.5 text-[0.8125rem] font-normal leading-snug text-n-slate-11"
+              >
+                {{ role.description }}
+              </span>
+            </span>
+          </label>
+        </div>
+        <span
+          v-if="v$.selectedRoleId.$error"
+          class="block mt-1 text-xs text-n-ruby-11"
+        >
+          {{ $t('AGENT_MGMT.ADD.FORM.AGENT_TYPE.ERROR') }}
+        </span>
+      </fieldset>
 
       <div class="w-full">
         <label :class="{ error: v$.agentEmail.$error }">

@@ -76,9 +76,9 @@ onMounted(() => {
       @mousedown="handleMouseDown"
     >
       <div
-        class="relative max-h-full overflow-auto bg-n-alpha-3 shadow-md modal-container rtl:text-right skip-context-menu"
+        class="relative max-h-full overflow-auto bg-n-solid-1 border border-n-weak shadow-2xl modal-container rtl:text-right skip-context-menu"
         :class="{
-          'rounded-xl w-[37.5rem]': !fullWidth,
+          'rounded-[0.875rem] w-[37.5rem]': !fullWidth,
           'items-center rounded-none flex h-full justify-center w-full':
             fullWidth,
           [size]: true,
@@ -91,7 +91,7 @@ onMounted(() => {
           ghost
           slate
           icon="i-lucide-x"
-          class="absolute z-10 ltr:right-2 rtl:left-2 top-2"
+          class="absolute z-10 ltr:right-3.5 rtl:left-3.5 top-3.5"
           @click="close"
         />
         <slot />
@@ -113,12 +113,12 @@ onMounted(() => {
     //   @apply h-auto p-0;
     // }
     .content {
-      @apply p-8;
+      @apply p-6;
     }
 
     form,
     .modal-content {
-      @apply pt-4 pb-8 px-8 self-center;
+      @apply pt-5 pb-6 px-6 self-center;
 
       a {
         @apply p-4;
