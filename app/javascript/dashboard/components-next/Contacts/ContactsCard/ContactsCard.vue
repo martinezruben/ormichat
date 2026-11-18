@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import CardLayout from 'dashboard/components-next/CardLayout.vue';
 import ContactsForm from 'dashboard/components-next/Contacts/ContactsForm/ContactsForm.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
@@ -110,14 +109,11 @@ const handleAvatarHover = isHovered => {
 
 <template>
   <div class="relative">
-    <CardLayout
-      :key="id"
-      layout="row"
-      :class="{
-        'outline-n-weak !bg-n-slate-3 dark:!bg-n-solid-3': isSelected,
-      }"
+    <div
+      class="flex gap-3 justify-between items-center px-5 py-3 transition-colors hover:bg-n-slate-2"
+      :class="{ 'bg-n-blue-3/50': isSelected }"
     >
-      <div class="flex items-center justify-start flex-1 gap-4">
+      <div class="flex flex-1 gap-3 justify-start items-center min-w-0">
         <div
           class="relative"
           @mouseenter="handleAvatarHover(true)"
@@ -126,7 +122,7 @@ const handleAvatarHover = isHovered => {
           <Avatar
             :name="name"
             :src="thumbnail"
-            :size="42"
+            :size="36"
             :status="availabilityStatus"
             hide-offline-status
           >
@@ -144,19 +140,15 @@ const handleAvatarHover = isHovered => {
             </template>
           </Avatar>
         </div>
-        <div class="flex flex-col gap-0.5 flex-1">
+        <div class="flex flex-col flex-1 gap-0.5 min-w-0">
           <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span class="text-base font-medium truncate text-n-slate-12">
+            <span class="text-sm font-semibold truncate text-n-slate-12">
               {{ name }}
             </span>
             <span class="inline-flex items-center gap-1">
               <span
                 v-if="additionalAttributes?.companyName"
-                class="i-ph-building-light size-4 text-n-slate-10 mb-0.5"
-              />
-              <span
-                v-if="additionalAttributes?.companyName"
-                class="text-sm truncate text-n-slate-11"
+                class="inline-flex items-center px-2 h-[1.375rem] text-xs font-medium truncate rounded-md border bg-n-blue-3 border-n-blue-6 text-n-blue-11"
               >
                 {{ additionalAttributes.companyName }}
               </span>
@@ -166,7 +158,7 @@ const handleAvatarHover = isHovered => {
             class="flex flex-wrap items-center justify-start gap-x-3 gap-y-1"
           >
             <div v-if="email" class="truncate max-w-72" :title="email">
-              <span class="text-sm text-n-slate-11">
+              <span class="text-[0.8125rem] text-n-slate-11">
                 {{ email }}
               </span>
             </div>
@@ -201,44 +193,40 @@ const handleAvatarHover = isHovered => {
         :class="{ 'rotate-180': isExpanded }"
         @click="onClickExpand"
       />
+    </div>
 
-      <template #after>
+    <div
+      class="transition-all duration-500 ease-in-out grid overflow-hidden"
+      :class="
+        isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+      "
+    >
+      <div class="overflow-hidden">
         <div
-          class="transition-all duration-500 ease-in-out grid overflow-hidden"
-          :class="
-            isExpanded
-              ? 'grid-rows-[1fr] opacity-100'
-              : 'grid-rows-[0fr] opacity-0'
-          "
+          class="flex flex-col gap-6 p-6 border-t border-n-weak bg-n-surface-2"
         >
-          <div class="overflow-hidden">
-            <div class="flex flex-col gap-6 p-6 border-t border-n-strong">
-              <ContactsForm
-                ref="contactsFormRef"
-                :contact-data="contactData"
-                @update="handleFormUpdate"
-              />
-              <div>
-                <Button
-                  :label="
-                    t('CONTACTS_LAYOUT.CARD.EDIT_DETAILS_FORM.UPDATE_BUTTON')
-                  "
-                  size="sm"
-                  :is-loading="isUpdating"
-                  :disabled="isUpdating || isFormInvalid"
-                  @click="handleUpdateContact"
-                />
-              </div>
-            </div>
-            <ContactDeleteSection
-              :selected-contact="{
-                id: props.id,
-                name: props.name,
-              }"
+          <ContactsForm
+            ref="contactsFormRef"
+            :contact-data="contactData"
+            @update="handleFormUpdate"
+          />
+          <div>
+            <Button
+              :label="t('CONTACTS_LAYOUT.CARD.EDIT_DETAILS_FORM.UPDATE_BUTTON')"
+              size="sm"
+              :is-loading="isUpdating"
+              :disabled="isUpdating || isFormInvalid"
+              @click="handleUpdateContact"
             />
           </div>
         </div>
-      </template>
-    </CardLayout>
+        <ContactDeleteSection
+          :selected-contact="{
+            id: props.id,
+            name: props.name,
+          }"
+        />
+      </div>
+    </div>
   </div>
 </template>

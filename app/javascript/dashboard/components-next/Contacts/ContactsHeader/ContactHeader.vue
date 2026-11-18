@@ -32,13 +32,20 @@ const emit = defineEmits([
 </script>
 
 <template>
-  <header class="sticky top-0 z-20 px-6">
+  <header class="sticky top-0 z-20 px-6 md:px-10 bg-n-surface-2">
     <div
-      class="flex items-start sm:items-center justify-between w-full py-6 gap-2 mx-auto max-w-5xl"
+      class="flex flex-wrap items-end justify-between w-full pt-8 pb-6 gap-4 mx-auto max-w-[65rem]"
     >
-      <span class="text-xl font-medium font-heading truncate text-n-slate-12">
-        {{ headerTitle }}
-      </span>
+      <div class="min-w-0">
+        <h1
+          class="m-0 text-2xl font-semibold tracking-tight leading-tight truncate text-n-slate-12"
+        >
+          {{ headerTitle }}
+        </h1>
+        <p class="mt-1.5 mb-0 text-sm text-n-slate-11">
+          {{ $t('CONTACTS_LAYOUT.HEADER.SUBTITLE') }}
+        </p>
+      </div>
       <div class="flex items-center flex-col sm:flex-row flex-shrink-0 gap-4">
         <div v-if="showSearch" class="flex items-center gap-2 w-full">
           <Input
@@ -46,7 +53,7 @@ const emit = defineEmits([
             type="search"
             :placeholder="$t('CONTACTS_LAYOUT.HEADER.SEARCH_PLACEHOLDER')"
             :custom-input-class="[
-              'h-8 [&:not(.focus)]:!border-transparent bg-n-alpha-2 dark:bg-n-solid-1 ltr:!pl-8 !py-1 rtl:!pr-8',
+              'h-9 bg-n-solid-1 shadow-sm ltr:!pl-9 !py-1 rtl:!pr-9 sm:w-72',
             ]"
             class="w-full"
             @input="emit('search', $event.target.value)"
@@ -54,7 +61,7 @@ const emit = defineEmits([
             <template #prefix>
               <Icon
                 icon="i-lucide-search"
-                class="absolute -translate-y-1/2 text-n-slate-11 size-4 top-1/2 ltr:left-2 rtl:right-2"
+                class="absolute -translate-y-1/2 text-n-slate-11 size-4 top-1/2 ltr:left-3 rtl:right-3"
               />
             </template>
           </Input>
@@ -115,7 +122,7 @@ const emit = defineEmits([
           <div class="w-px h-4 bg-n-strong" />
           <ComposeConversation>
             <template #trigger>
-              <Button :label="buttonLabel" size="sm" />
+              <Button :label="buttonLabel" icon="i-lucide-plus" />
             </template>
           </ComposeConversation>
         </div>

@@ -307,6 +307,7 @@
 
   "CONTACTS_LAYOUT": {
     "HEADER": {
+      "SUBTITLE": "The people who write to your team, all in one place.",
       "TITLE": "Contacts",
       "SEARCH_TITLE": "Search contacts",
       "ACTIVE_TITLE": "Active contacts",

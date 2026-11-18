@@ -297,7 +297,9 @@ defineExpose({
 <template>
   <div class="flex flex-col gap-6">
     <div class="flex flex-col items-start gap-2">
-      <span class="py-1 text-sm font-medium text-n-slate-12">
+      <span
+        class="flex gap-3 items-center w-full py-1 text-xs font-semibold tracking-wider uppercase text-n-slate-11 after:flex-1 after:h-px after:bg-n-weak after:content-['']"
+      >
         {{ t('CONTACTS_LAYOUT.CARD.EDIT_DETAILS_FORM.TITLE') }}
       </span>
       <div class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
@@ -307,7 +309,7 @@ defineExpose({
             v-model="state.additionalAttributes.countryCode"
             :options="countryOptions"
             :placeholder="item.placeholder"
-            class="[&>div>button]:h-8"
+            class="[&>div>button]:h-9"
             :class="{
               '[&>div>button]:bg-n-alpha-black2 [&>div>button:not(.focused)]:!outline-transparent':
                 !isDetailsView,
@@ -332,7 +334,7 @@ defineExpose({
             v-else-if="item.key === 'LOCATION'"
             v-model="getFormBinding(item.key).value"
             :placeholder="item.placeholder"
-            :custom-input-class="`h-8 !pt-1 !pb-1 ${
+            :custom-input-class="`h-9 !pt-1 !pb-1 ${
               !isDetailsView
                 ? '[&:not(.error,.focus)]:!outline-transparent'
                 : ''
@@ -345,7 +347,7 @@ defineExpose({
             v-model="getFormBinding(item.key).value"
             :placeholder="item.placeholder"
             :message-type="getMessageType(item.key)"
-            :custom-input-class="`h-8 !pt-1 !pb-1 ${
+            :custom-input-class="`h-9 !pt-1 !pb-1 ${
               !isDetailsView
                 ? '[&:not(.error,.focus)]:!outline-transparent'
                 : ''
@@ -364,7 +366,9 @@ defineExpose({
       </div>
     </div>
     <div class="flex flex-col items-start gap-2">
-      <span class="py-1 text-sm font-medium text-n-slate-12">
+      <span
+        class="flex gap-3 items-center w-full py-1 text-xs font-semibold tracking-wider uppercase text-n-slate-11 after:flex-1 after:h-px after:bg-n-weak after:content-['']"
+      >
         {{ t('CONTACTS_LAYOUT.CARD.SOCIAL_MEDIA.TITLE') }}
       </span>
       <div class="flex flex-wrap gap-2">
