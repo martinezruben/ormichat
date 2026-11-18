@@ -9,6 +9,7 @@ const {
 } = require('@egoist/tailwindcss-icons');
 
 const defaultSansFonts = [
+  'Inter',
   'Geist',
   '-apple-system',
   'system-ui',
@@ -43,7 +44,7 @@ const tailwindConfig = {
     extend: {
       fontFamily: {
         sans: defaultSansFonts,
-        // shadcn/ui typography: Geist everywhere; legacy family names alias to it
+        // Inter everywhere (Ormichat redesign); legacy family names alias to it
         inter: defaultSansFonts,
         interDisplay: defaultSansFonts,
         manrope: defaultSansFonts,

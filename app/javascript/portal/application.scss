@@ -4,6 +4,7 @@
 @import 'tailwindcss/utilities';
 
 @import 'widget/assets/scss/reset';
+@import 'shared/assets/fonts/inter';
 @import 'shared/assets/fonts/geist';
 @import 'dashboard/assets/scss/next-colors';
 
@@ -17,6 +18,7 @@ body {
 
 .font-default {
   font-family:
+    'Inter',
     'Geist',
     -apple-system,
     system-ui,
