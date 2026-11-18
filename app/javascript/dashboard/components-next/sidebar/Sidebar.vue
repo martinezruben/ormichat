@@ -354,6 +354,11 @@ const newReportRoutes = () => [
 
 const reportRoutes = computed(() => newReportRoutes());
 
+const SECTION_HEADINGS = {
+  Inbox: 'SIDEBAR.SECTION_ATTENTION',
+  Contacts: 'SIDEBAR.SECTION_MANAGEMENT',
+};
+
 const menuItems = computed(() => {
   return [
     {
@@ -1042,11 +1047,16 @@ const menuItems = computed(() => {
         class="flex flex-col gap-1 m-0 list-none min-w-0"
         :class="{ 'items-center': isEffectivelyCollapsed }"
       >
-        <SidebarGroup
-          v-for="item in menuItems"
-          :key="item.name"
-          v-bind="item"
-        />
+        <template v-for="item in menuItems" :key="item.name">
+          <li
+            v-if="SECTION_HEADINGS[item.name] && !isEffectivelyCollapsed"
+            class="px-2.5 pb-1.5 text-[0.6875rem] font-semibold tracking-wider uppercase text-n-slate-11"
+            :class="{ 'pt-4': item.name !== 'Inbox' }"
+          >
+            {{ t(SECTION_HEADINGS[item.name]) }}
+          </li>
+          <SidebarGroup v-bind="item" />
+        </template>
       </ul>
     </nav>
     <section
