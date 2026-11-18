@@ -947,12 +947,24 @@ watch(conversationFilters, (newVal, oldVal) => {
       @chat-tab-change="updateAssigneeTab"
     />
 
-    <p
+    <div
       v-if="!chatListLoading && !conversationList.length"
-      class="flex overflow-auto justify-center items-center p-4"
+      class="flex flex-col gap-3.5 justify-center items-center px-6 py-10 text-center"
     >
-      {{ $t('CHAT_LIST.LIST.404') }}
-    </p>
+      <span
+        class="inline-flex justify-center items-center rounded-xl border size-12 bg-n-blue-3 border-n-blue-6 text-n-brand"
+      >
+        <span class="i-lucide-inbox size-5" />
+      </span>
+      <div>
+        <p class="mb-0 text-sm font-semibold text-n-slate-12">
+          {{ $t('CHAT_LIST.LIST.EMPTY_TITLE') }}
+        </p>
+        <p class="mt-1 mb-0 text-[0.8125rem] leading-normal text-n-slate-11">
+          {{ $t('CHAT_LIST.LIST.404') }}
+        </p>
+      </div>
+    </div>
     <ConversationBulkActions
       :conversations="selectedConversations"
       :all-conversations-selected="allConversationsSelected"
