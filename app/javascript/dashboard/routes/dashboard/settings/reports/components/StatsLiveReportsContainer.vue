@@ -26,24 +26,36 @@ const teamMenuList = computed(() => {
   ];
 });
 
-const agentStatusMetrics = computed(() => {
-  let metric = {};
-  Object.keys(agentStatus.value).forEach(key => {
-    const metricName = t(
-      `OVERVIEW_REPORTS.AGENT_STATUS.${OVERVIEW_METRICS[key]}`
-    );
-    metric[metricName] = agentStatus.value[key];
-  });
-  return metric;
-});
-const conversationMetrics = computed(() => {
-  let metric = {};
-  Object.keys(accountConversationMetric.value).forEach(key => {
-    const metricName = t(`${accounti18nKey}.${OVERVIEW_METRICS[key]}`);
-    metric[metricName] = accountConversationMetric.value[key];
-  });
-  return metric;
-});
+const METRIC_ICONS = {
+  open: { icon: 'i-lucide-message-circle', tone: 'bg-n-blue-3 text-n-blue-11' },
+  unattended: {
+    icon: 'i-lucide-bell-ring',
+    tone: 'bg-n-ruby-3 text-n-ruby-11',
+  },
+  unassigned: { icon: 'i-lucide-user-x', tone: 'bg-n-amber-3 text-n-amber-11' },
+  pending: { icon: 'i-lucide-clock', tone: 'bg-n-slate-3 text-n-slate-12' },
+  online: { icon: 'i-lucide-circle-check', tone: 'bg-n-teal-3 text-n-teal-11' },
+  busy: { icon: 'i-lucide-circle-minus', tone: 'bg-n-amber-3 text-n-amber-11' },
+  offline: {
+    icon: 'i-lucide-circle-off',
+    tone: 'bg-n-slate-3 text-n-slate-12',
+  },
+};
+
+const buildMetrics = (values, i18nPrefix) =>
+  Object.keys(values).map(key => ({
+    key,
+    name: t(`${i18nPrefix}.${OVERVIEW_METRICS[key]}`),
+    value: values[key],
+    ...METRIC_ICONS[key],
+  }));
+
+const agentStatusMetrics = computed(() =>
+  buildMetrics(agentStatus.value, 'OVERVIEW_REPORTS.AGENT_STATUS')
+);
+const conversationMetrics = computed(() =>
+  buildMetrics(accountConversationMetric.value, accounti18nKey)
+);
 
 const selectedTeam = ref(null);
 const selectedTeamLabel = computed(() => {
@@ -83,6 +95,7 @@ onMounted(() => {
     >
       <MetricCard
         :header="t(`${accounti18nKey}.HEADER`)"
+        accent-class="border-t-[3px] border-t-n-brand"
         :is-loading="uiFlags.isFetchingAccountConversationMetric"
         :loading-message="t(`${accounti18nKey}.LOADING_MESSAGE`)"
       >
@@ -109,31 +122,54 @@ onMounted(() => {
           </div>
         </template>
         <div
-          v-for="(metric, name, index) in conversationMetrics"
-          :key="index"
-          class="flex-1 min-w-0 pb-2"
+          v-for="metric in conversationMetrics"
+          :key="metric.key"
+          class="flex flex-col flex-1 gap-2.5 min-w-0"
         >
-          <h3 class="text-base text-n-slate-11">
-            {{ name }}
+          <h3
+            class="inline-flex gap-2 items-center m-0 text-[0.8125rem] font-medium text-n-slate-11"
+          >
+            <span
+              class="inline-flex justify-center items-center rounded-[0.4375rem] size-6"
+              :class="metric.tone"
+            >
+              <span class="size-3.5" :class="metric.icon" />
+            </span>
+            {{ metric.name }}
           </h3>
-          <p class="text-n-slate-12 text-3xl mb-0 mt-1">
-            {{ metric }}
+          <p
+            class="m-0 text-[2rem] font-semibold tracking-tight leading-none tabular-nums text-n-slate-12"
+          >
+            {{ metric.value }}
           </p>
         </div>
       </MetricCard>
     </div>
     <div class="flex-1 w-full max-w-full md:w-[35%] md:max-w-[35%]">
-      <MetricCard :header="$t('OVERVIEW_REPORTS.AGENT_STATUS.HEADER')">
+      <MetricCard
+        :header="$t('OVERVIEW_REPORTS.AGENT_STATUS.HEADER')"
+        accent-class="border-t-[3px] border-t-n-teal-9"
+      >
         <div
-          v-for="(metric, name, index) in agentStatusMetrics"
-          :key="index"
-          class="flex-1 min-w-0 pb-2"
+          v-for="metric in agentStatusMetrics"
+          :key="metric.key"
+          class="flex flex-col flex-1 gap-2.5 min-w-0"
         >
-          <h3 class="text-base text-n-slate-11">
-            {{ name }}
+          <h3
+            class="inline-flex gap-2 items-center m-0 text-[0.8125rem] font-medium text-n-slate-11"
+          >
+            <span
+              class="inline-flex justify-center items-center rounded-[0.4375rem] size-6"
+              :class="metric.tone"
+            >
+              <span class="size-3.5" :class="metric.icon" />
+            </span>
+            {{ metric.name }}
           </h3>
-          <p class="text-n-slate-12 text-3xl mb-0 mt-1">
-            {{ metric }}
+          <p
+            class="m-0 text-[2rem] font-semibold tracking-tight leading-none tabular-nums text-n-slate-12"
+          >
+            {{ metric.value }}
           </p>
         </div>
       </MetricCard>

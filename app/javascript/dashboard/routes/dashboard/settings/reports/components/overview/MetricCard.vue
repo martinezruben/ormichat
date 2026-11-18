@@ -14,28 +14,31 @@ defineProps({
     type: String,
     default: '',
   },
+  accentClass: {
+    type: String,
+    default: '',
+  },
 });
 </script>
 
 <template>
   <div
-    class="flex flex-col m-0.5 px-6 py-5 rounded-xl flex-grow text-n-slate-12 shadow outline-1 outline outline-n-container bg-n-solid-2 min-h-[10rem]"
+    class="flex flex-col flex-grow p-5 rounded-xl border shadow-sm text-n-slate-12 border-n-weak bg-n-solid-1 min-h-[10rem]"
+    :class="accentClass"
   >
     <div
-      class="card-header grid w-full mb-6 grid-cols-[repeat(auto-fit,minmax(max-content,50%))] gap-y-2"
+      class="card-header grid w-full mb-5 grid-cols-[repeat(auto-fit,minmax(max-content,50%))] gap-y-2"
     >
       <slot name="header">
         <div class="flex items-center gap-2 flex-row">
-          <h5 class="mb-0 text-n-slate-12 font-medium text-lg">
+          <h2 class="m-0 text-base font-semibold text-n-slate-12">
             {{ header }}
-          </h5>
+          </h2>
           <span
-            class="flex flex-row items-center py-0.5 px-2 rounded bg-n-teal-3 text-xs"
+            class="inline-flex gap-1.5 items-center px-2 h-[1.375rem] text-xs font-medium rounded-full border bg-n-teal-3 border-n-teal-6"
           >
-            <span
-              class="bg-n-teal-9 h-1 w-1 rounded-full mr-1 rtl:mr-0 rtl:ml-0"
-            />
-            <span class="text-xs text-n-teal-11">
+            <span class="rounded-full bg-n-teal-9 size-1.5" />
+            <span class="text-n-teal-11">
               {{ $t('OVERVIEW_REPORTS.LIVE') }}
             </span>
           </span>

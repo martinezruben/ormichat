@@ -546,6 +546,7 @@
     }
   },
   "OVERVIEW_REPORTS": {
+    "DESCRIPTION": "Actividad de tu equipo y de tus conversaciones, en tiempo real.",
     "HEADER": "Resumen",
     "LIVE": "En vivo",
     "ACCOUNT_CONVERSATIONS": {

@@ -546,6 +546,7 @@
     }
   },
   "OVERVIEW_REPORTS": {
+    "DESCRIPTION": "Your team and conversation activity, in real time.",
     "HEADER": "Overview",
     "LIVE": "Live",
     "HEATMAP_ARIA_LABEL": "{metric} by day and hour",
