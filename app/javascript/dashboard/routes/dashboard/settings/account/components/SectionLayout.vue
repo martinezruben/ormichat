@@ -6,6 +6,8 @@ defineProps({
   description: { type: String, required: true },
   hideContent: { type: Boolean, default: false },
   beta: { type: Boolean, default: false },
+  icon: { type: String, default: '' },
+  iconTone: { type: String, default: 'bg-n-blue-3 text-n-brand' },
 });
 const { t } = useI18n();
 </script>
@@ -16,6 +18,14 @@ const { t } = useI18n();
     :class="{ 'gap-5': !hideContent }"
   >
     <header class="grid grid-cols-4">
+      <span
+        v-if="icon"
+        aria-hidden="true"
+        class="inline-flex justify-center items-center mb-3 rounded-[0.625rem] size-9"
+        :class="iconTone"
+      >
+        <span class="size-[1.125rem]" :class="icon" />
+      </span>
       <div
         v-if="
           title || beta || $slots.title || description || $slots.description

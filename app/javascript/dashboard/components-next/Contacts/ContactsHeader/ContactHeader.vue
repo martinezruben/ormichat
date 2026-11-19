@@ -4,6 +4,7 @@ import Input from 'dashboard/components-next/input/Input.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import ContactSortMenu from './components/ContactSortMenu.vue';
 import ContactMoreActions from './components/ContactMoreActions.vue';
+import { usePolicy } from 'dashboard/composables/usePolicy';
 import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
 
 defineProps({
@@ -29,6 +30,8 @@ const emit = defineEmits([
   'createSegment',
   'deleteSegment',
 ]);
+
+const { checkPermissions } = usePolicy();
 </script>
 
 <template>
@@ -120,6 +123,19 @@ const emit = defineEmits([
             />
           </div>
           <div class="w-px h-4 bg-n-strong" />
+          <Button
+            v-if="checkPermissions(['administrator', 'contact_manage'])"
+            :label="
+              $t(
+                'CONTACTS_LAYOUT.HEADER.ACTIONS.CONTACT_CREATION.IMPORT_CONTACT'
+              )
+            "
+            icon="i-lucide-download"
+            color="slate"
+            variant="outline"
+            class="hidden sm:inline-flex"
+            @click="emit('import')"
+          />
           <ComposeConversation>
             <template #trigger>
               <Button :label="buttonLabel" icon="i-lucide-plus" />

@@ -38,6 +38,8 @@ const toggleAudioTranscription = async () => {
 
 <template>
   <SectionLayout
+    icon="i-lucide-audio-lines"
+    icon-tone="bg-n-iris-3 text-n-iris-11"
     :title="t('GENERAL_SETTINGS.FORM.AUDIO_TRANSCRIPTION.TITLE')"
     :description="t('GENERAL_SETTINGS.FORM.AUDIO_TRANSCRIPTION.NOTE')"
   >

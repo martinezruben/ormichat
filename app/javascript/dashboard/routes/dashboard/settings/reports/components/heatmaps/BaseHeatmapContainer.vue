@@ -27,6 +27,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    default: '',
+  },
+  icon: {
+    type: String,
+    default: '',
+  },
   downloadTitle: {
     type: String,
     required: true,
@@ -290,7 +298,7 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-row flex-wrap max-w-full">
-    <MetricCard :header="title">
+    <MetricCard :header="title" :description="description" :icon="icon">
       <template #control>
         <HeatmapDateRangeSelector
           v-model:from="selectedFrom"

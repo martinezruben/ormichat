@@ -9,6 +9,8 @@ const { t } = useI18n();
   <BaseHeatmapContainer
     metric="conversations_count"
     :title="t('OVERVIEW_REPORTS.CONVERSATION_HEATMAP.HEADER')"
+    :description="t('OVERVIEW_REPORTS.CONVERSATION_HEATMAP.DESCRIPTION')"
+    icon="i-lucide-chart-no-axes-column"
     download-title="conversation_heatmap"
     store-getter="getAccountConversationHeatmapData"
     store-action="fetchAccountConversationHeatmap"

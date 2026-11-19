@@ -121,8 +121,10 @@ const handleAvatarDelete = async () => {
 </script>
 
 <template>
-  <div class="flex flex-col items-start gap-8 pb-6">
-    <div class="flex flex-col items-start gap-3">
+  <div class="flex flex-col items-start gap-6 pb-6">
+    <div
+      class="flex flex-col gap-3 items-start p-6 w-full rounded-xl border shadow-sm bg-n-solid-1 border-n-weak"
+    >
       <Avatar
         :src="avatarSrc || ''"
         :name="selectedContact?.name || ''"
@@ -132,7 +134,7 @@ const handleAvatarDelete = async () => {
         @delete="handleAvatarDelete"
       />
       <div class="flex flex-col gap-1">
-        <h3 class="text-base font-medium text-n-slate-12">
+        <h3 class="m-0 text-xl font-semibold tracking-tight text-n-slate-12">
           {{ selectedContact?.name }}
         </h3>
         <div class="flex flex-col gap-1.5">
@@ -160,7 +162,9 @@ const handleAvatarDelete = async () => {
       </div>
       <ContactLabels :contact-id="selectedContact?.id" />
     </div>
-    <div class="flex flex-col items-start gap-6">
+    <div
+      class="flex flex-col gap-6 items-start p-6 w-full rounded-xl border shadow-sm bg-n-solid-1 border-n-weak"
+    >
       <ContactsForm
         ref="contactsFormRef"
         :contact-data="contactData"
@@ -177,10 +181,10 @@ const handleAvatarDelete = async () => {
     </div>
     <Policy :permissions="['administrator']">
       <div
-        class="flex flex-col items-start w-full gap-4 pt-6 border-t border-n-strong"
+        class="flex flex-col gap-4 items-start p-6 w-full rounded-xl border shadow-sm bg-n-solid-1 border-n-ruby-6"
       >
         <div class="flex flex-col gap-2">
-          <h6 class="text-base font-medium text-n-slate-12">
+          <h6 class="m-0 text-base font-semibold text-n-slate-12">
             {{ t('CONTACTS_LAYOUT.DETAILS.DELETE_CONTACT') }}
           </h6>
           <span class="text-sm text-n-slate-11">

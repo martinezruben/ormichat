@@ -1,5 +1,9 @@
 {
   "AGENT_MGMT": {
+    "ROLE_FILTER": {
+      "ALL": "Todos los roles",
+      "LABEL": "Filtrar por rol"
+    },
     "HEADER": "Agentes",
     "HEADER_BTN_TXT": "Añadir agente",
     "LOADING": "Se están listando los agentes",

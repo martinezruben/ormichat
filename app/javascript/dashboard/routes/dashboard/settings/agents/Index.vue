@@ -27,6 +27,7 @@ const showEditPopup = ref(false);
 const agentAPI = ref({ message: '' });
 const currentAgent = ref({});
 const searchQuery = ref('');
+const roleFilter = ref('all');
 
 const deleteConfirmText = computed(
   () => `${t('AGENT_MGMT.DELETE.CONFIRM.YES')} ${currentAgent.value.name}`
@@ -40,15 +41,46 @@ const deleteMessage = computed(() => {
 
 const agentList = computed(() => getters['agents/getAgents'].value);
 
+const customRoles = useMapGetter('customRole/getCustomRoles');
+
+const STATUS_DOT = {
+  online: 'bg-n-teal-9',
+  busy: 'bg-n-amber-9',
+  offline: 'bg-n-slate-8',
+};
+
+const statusLabel = status =>
+  t(
+    `PROFILE_SETTINGS.FORM.AVAILABILITY.STATUS.${(status || 'offline').toUpperCase()}`
+  );
+
+const roleOptions = computed(() => [
+  { value: 'all', label: t('AGENT_MGMT.ROLE_FILTER.ALL') },
+  { value: 'administrator', label: t('AGENT_MGMT.AGENT_TYPES.ADMINISTRATOR') },
+  { value: 'agent', label: t('AGENT_MGMT.AGENT_TYPES.AGENT') },
+  ...customRoles.value.map(role => ({
+    value: `custom_${role.id}`,
+    label: role.name,
+  })),
+]);
+
+const matchesRole = agent => {
+  if (roleFilter.value === 'all') return true;
+  if (agent.custom_role_id) {
+    return roleFilter.value === `custom_${agent.custom_role_id}`;
+  }
+  return agent.role === roleFilter.value;
+};
+
 const filteredAgentList = computed(() => {
   const query = searchQuery.value.trim();
-  if (!query) return agentList.value;
-  return picoSearch(agentList.value, query, ['name', 'email']);
+  const byRole = agentList.value.filter(matchesRole);
+  if (!query) return byRole;
+  return picoSearch(byRole, query, ['name', 'email']);
 });
 
 const uiFlags = computed(() => getters['agents/getUIFlags'].value);
 const currentUserId = computed(() => getters.getCurrentUserID.value);
-const customRoles = useMapGetter('customRole/getCustomRoles');
 
 onMounted(() => {
   store.dispatch('agents/get');
@@ -166,6 +198,19 @@ const confirmDeletion = () => {
           </span>
         </template>
         <template #actions>
+          <select
+            v-model="roleFilter"
+            :aria-label="$t('AGENT_MGMT.ROLE_FILTER.LABEL')"
+            class="!mb-0 !w-auto h-8 text-sm"
+          >
+            <option
+              v-for="option in roleOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
           <Button
             :label="$t('AGENT_MGMT.HEADER_BTN_TXT')"
             icon="i-lucide-user-plus"
@@ -268,7 +313,18 @@ const confirmDeletion = () => {
                 </div>
               </div>
             </div>
-            <div class="flex justify-end gap-3">
+            <div class="flex gap-3 justify-end items-center">
+              <span
+                class="hidden gap-1.5 items-center text-[0.8125rem] sm:inline-flex text-n-slate-12/80"
+              >
+                <span
+                  class="rounded-full size-2"
+                  :class="
+                    STATUS_DOT[agent.availability_status] || 'bg-n-slate-8'
+                  "
+                />
+                {{ statusLabel(agent.availability_status) }}
+              </span>
               <Button
                 v-if="showEditAction(agent)"
                 v-tooltip.top="$t('AGENT_MGMT.EDIT.BUTTON_TEXT')"
