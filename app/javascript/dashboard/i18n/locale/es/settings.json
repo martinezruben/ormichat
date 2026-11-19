@@ -308,6 +308,7 @@
     }
   },
   "TOP_BAR": {
+    "TOGGLE_SIDEBAR": "Mostrar u ocultar el menú lateral",
     "BREADCRUMB": "Ruta",
     "HELP": "Ayuda y atajos de teclado"
   },
