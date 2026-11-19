@@ -119,7 +119,7 @@ const handleCreateAssistant = () => {
 </script>
 
 <template>
-  <section class="flex flex-col w-full h-full overflow-hidden bg-n-surface-1">
+  <section class="flex flex-col w-full h-full overflow-hidden bg-n-surface-2">
     <header class="sticky top-0 z-10 px-6">
       <div class="w-full mx-auto" :class="containerClass">
         <div
@@ -134,7 +134,7 @@ const handleCreateAssistant = () => {
               <div class="flex items-center gap-2">
                 <span
                   v-if="!isFetchingAssistants"
-                  class="text-xl font-medium font-heading truncate text-n-slate-12"
+                  class="text-2xl font-semibold tracking-tight truncate text-n-slate-12"
                 >
                   {{ activeAssistantName }}
                 </span>
@@ -172,7 +172,7 @@ const handleCreateAssistant = () => {
               />
               <span
                 v-if="headerTitle"
-                class="text-xl font-medium font-heading text-n-slate-12"
+                class="text-2xl font-semibold tracking-tight text-n-slate-12"
               >
                 {{ headerTitle }}
               </span>

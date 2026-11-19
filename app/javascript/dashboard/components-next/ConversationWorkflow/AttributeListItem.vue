@@ -35,7 +35,7 @@ const attributeIcon = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col py-4 min-w-0">
+  <div class="flex flex-col px-5 py-4 min-w-0">
     <div class="flex justify-between flex-row items-center gap-4 min-w-0">
       <div class="flex items-center gap-4 min-w-0">
         <div

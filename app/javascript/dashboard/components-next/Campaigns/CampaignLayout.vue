@@ -21,13 +21,13 @@ const handleButtonClick = () => {
 </script>
 
 <template>
-  <section class="flex flex-col w-full h-full overflow-hidden bg-n-surface-1">
+  <section class="flex flex-col w-full h-full overflow-hidden bg-n-surface-2">
     <header class="sticky top-0 z-10 px-6">
       <div class="w-full max-w-5xl mx-auto">
         <div class="flex items-center justify-between w-full h-20 gap-2">
-          <span class="text-heading-1 text-n-slate-12">
+          <h1 class="m-0 text-2xl font-semibold tracking-tight text-n-slate-12">
             {{ headerTitle }}
-          </span>
+          </h1>
           <div
             v-on-click-outside="[
               () => emit('close'),

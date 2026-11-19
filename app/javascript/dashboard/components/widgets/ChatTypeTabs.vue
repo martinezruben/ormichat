@@ -57,7 +57,7 @@ useKeyboardEvents(keyboardEvents);
         type="button"
         role="tab"
         :aria-selected="index === activeTabIndex"
-        class="flex flex-1 gap-1.5 justify-center items-center h-[1.875rem] min-w-0 text-[0.8125rem] font-medium rounded-[0.4375rem] transition-colors"
+        class="flex flex-1 gap-1 justify-center items-center px-1 h-[1.875rem] min-w-0 text-xs font-medium rounded-[0.4375rem] transition-colors"
         :class="
           index === activeTabIndex
             ? 'bg-n-solid-1 text-n-slate-12 shadow-sm'
@@ -67,7 +67,7 @@ useKeyboardEvents(keyboardEvents);
       >
         <span class="truncate">{{ item.name }}</span>
         <span
-          class="px-1.5 min-w-[1.125rem] rounded-full text-[0.6875rem] tabular-nums bg-n-slate-6 text-n-slate-12/80"
+          class="px-1 min-w-4 text-center rounded-full text-[0.6875rem] tabular-nums bg-n-slate-6 text-n-slate-12/80"
         >
           {{ item.count }}
         </span>

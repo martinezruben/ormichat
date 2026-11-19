@@ -290,11 +290,14 @@ onBeforeUnmount(() => {
         />
       </div>
 
-      <div v-else class="divide-y divide-n-weak border-t border-n-weak">
+      <div
+        v-else
+        class="overflow-hidden rounded-xl border shadow-sm bg-n-solid-1 border-n-weak divide-y divide-n-weak"
+      >
         <div
           v-for="dataImport in dataImports"
           :key="dataImport.id"
-          class="group flex cursor-pointer items-center justify-between gap-4 py-4"
+          class="flex gap-4 justify-between items-center px-5 py-4 transition-colors cursor-pointer group hover:bg-n-slate-2"
           role="button"
           tabindex="0"
           @click="openImport(dataImport)"
