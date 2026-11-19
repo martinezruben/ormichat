@@ -51,7 +51,7 @@ defineEmits(['continue', 'skip']);
             </slot>
           </div>
           <div>
-            <h1 class="text-heading-1 text-n-slate-12">
+            <h1 class="text-2xl font-semibold tracking-tight text-n-slate-12">
               {{ greeting }}
             </h1>
             <p v-if="subtitle" class="text-sm text-n-slate-11">

@@ -9,7 +9,9 @@ export default {
 
 <template>
   <div class="flex flex-col gap-1.5 w-full items-start mb-4">
-    <h2 class="text-heading-1 text-n-slate-12 break-words">
+    <h2
+      class="text-2xl font-semibold tracking-tight text-n-slate-12 break-words"
+    >
       {{ headerTitle }}
     </h2>
     <p
