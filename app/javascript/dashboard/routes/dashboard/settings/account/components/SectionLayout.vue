@@ -18,20 +18,20 @@ const { t } = useI18n();
     :class="{ 'gap-5': !hideContent }"
   >
     <header class="grid grid-cols-4">
-      <span
-        v-if="icon"
-        aria-hidden="true"
-        class="inline-flex justify-center items-center mb-3 rounded-[0.625rem] size-9"
-        :class="iconTone"
-      >
-        <span class="size-[1.125rem]" :class="icon" />
-      </span>
       <div
         v-if="
           title || beta || $slots.title || description || $slots.description
         "
         class="col-span-3"
       >
+        <span
+          v-if="icon"
+          aria-hidden="true"
+          class="inline-flex justify-center items-center mb-3 rounded-[0.625rem] size-9"
+          :class="iconTone"
+        >
+          <span class="size-[1.125rem]" :class="icon" />
+        </span>
         <h4
           v-if="title || beta || $slots.title"
           class="flex gap-2 items-center m-0 text-base font-semibold text-n-slate-12"

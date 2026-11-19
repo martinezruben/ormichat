@@ -78,7 +78,7 @@ const confirmDeletion = () => {
         />
       </div>
       <div>
-        <h3 class="mb-1 text-heading-1 text-n-slate-12">
+        <h3 class="mb-1 text-2xl font-semibold tracking-tight text-n-slate-12">
           {{ integrationName }}
         </h3>
         <p class="text-n-slate-11 text-body-main">

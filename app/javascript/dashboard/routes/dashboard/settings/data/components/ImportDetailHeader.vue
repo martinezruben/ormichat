@@ -79,7 +79,9 @@ const canAbandonImport = computed(() => isAbandonableImport(props.dataImport));
   >
     <template #title>
       <div class="flex w-full items-center justify-between gap-4">
-        <h1 class="min-w-0 truncate text-heading-1 text-n-slate-12">
+        <h1
+          class="min-w-0 truncate text-2xl font-semibold tracking-tight text-n-slate-12"
+        >
           {{ title }}
         </h1>
         <div class="flex shrink-0 items-center gap-2">

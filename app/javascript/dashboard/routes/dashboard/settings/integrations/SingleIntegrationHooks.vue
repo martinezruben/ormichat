@@ -35,7 +35,7 @@ const { replaceInstallationName } = useBranding();
         />
       </div>
       <div class="flex flex-col justify-center m-0 mx-4 flex-1">
-        <h3 class="mb-1 text-heading-1 text-n-slate-12">
+        <h3 class="mb-1 text-2xl font-semibold tracking-tight text-n-slate-12">
           {{ integration.name }}
         </h3>
         <p class="text-n-slate-11 text-body-main">
