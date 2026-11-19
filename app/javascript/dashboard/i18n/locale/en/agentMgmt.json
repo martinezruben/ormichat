@@ -1,5 +1,9 @@
 {
   "AGENT_MGMT": {
+    "ROLE_FILTER": {
+      "ALL": "All roles",
+      "LABEL": "Filter by role"
+    },
     "HEADER": "Agents",
     "HEADER_BTN_TXT": "Add Agent",
     "LOADING": "Fetching Agent List",

@@ -13,6 +13,8 @@ const getAccountId = computed(() => currentAccount.value?.id?.toString());
 
 <template>
   <SectionLayout
+    icon="i-lucide-hash"
+    icon-tone="bg-n-slate-3 text-n-slate-12"
     :title="t('GENERAL_SETTINGS.FORM.ACCOUNT_ID.TITLE')"
     :description="t('GENERAL_SETTINGS.FORM.ACCOUNT_ID.NOTE')"
   >

@@ -558,6 +558,7 @@
       "PENDING": "Pendientes"
     },
     "CONVERSATION_HEATMAP": {
+      "DESCRIPTION": "Cuándo escriben tus clientes, por día y hora.",
       "HEADER": "Tráfico de Conversación",
       "NO_CONVERSATIONS": "No hay conversaciones",
       "CONVERSATION": "{count} conversación",
@@ -565,6 +566,7 @@
       "DOWNLOAD_REPORT": "Descargar reporte"
     },
     "RESOLUTION_HEATMAP": {
+      "DESCRIPTION": "Cuándo se resuelven las conversaciones, por día y hora.",
       "HEADER": "Resoluciones",
       "NO_CONVERSATIONS": "No hay conversaciones",
       "CONVERSATION": "{count} conversación",

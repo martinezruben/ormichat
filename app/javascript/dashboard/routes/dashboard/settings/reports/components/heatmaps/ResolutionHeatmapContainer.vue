@@ -9,6 +9,8 @@ const { t } = useI18n();
   <BaseHeatmapContainer
     metric="resolutions_count"
     :title="t('OVERVIEW_REPORTS.RESOLUTION_HEATMAP.HEADER')"
+    :description="t('OVERVIEW_REPORTS.RESOLUTION_HEATMAP.DESCRIPTION')"
+    icon="i-lucide-circle-check"
     download-title="resolution_heatmap"
     store-getter="getAccountResolutionHeatmapData"
     store-action="fetchAccountResolutionHeatmap"

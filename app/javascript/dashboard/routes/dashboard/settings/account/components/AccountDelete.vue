@@ -101,6 +101,8 @@ async function clearDeletionMark() {
 
 <template>
   <SectionLayout
+    icon="i-lucide-trash-2"
+    icon-tone="bg-n-ruby-3 text-n-ruby-11"
     :title="t('GENERAL_SETTINGS.ACCOUNT_DELETE_SECTION.TITLE')"
     :description="t('GENERAL_SETTINGS.ACCOUNT_DELETE_SECTION.NOTE')"
   >
