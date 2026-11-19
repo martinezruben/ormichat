@@ -33,7 +33,7 @@ const statusLabel = computed(() =>
 
 <template>
   <div
-    class="flex items-center justify-between gap-4 py-4 cursor-pointer group"
+    class="flex gap-4 justify-between items-center px-5 py-4 transition-colors cursor-pointer group hover:bg-n-slate-2"
     role="button"
     tabindex="0"
     @click="emit('preview')"

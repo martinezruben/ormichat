@@ -415,7 +415,10 @@ onDeactivated(abortTemplateRequest);
         </span>
       </div>
 
-      <div v-else class="border-t divide-y divide-n-weak border-n-weak">
+      <div
+        v-else
+        class="overflow-hidden rounded-xl border shadow-sm bg-n-solid-1 border-n-weak divide-y divide-n-weak"
+      >
         <TemplateCard
           v-for="template in filteredTemplates"
           :key="template.key"
