@@ -14,10 +14,19 @@ const MAX_WIDTH = 320;
 const activePopover = ref(null);
 let globalCloseTimeout = null;
 
+// Shared so the top bar toggle and the sidebar stay in sync
+let sidebarWidth = null;
+
 export function useSidebarResize() {
   const { uiSettings, updateUISettings } = useUISettings();
 
-  const sidebarWidth = ref(uiSettings.value.sidebar_width || MIN_WIDTH);
+  // The sidebar always opens expanded, even if it was collapsed last time
+  if (!sidebarWidth) {
+    const storedWidth = uiSettings.value.sidebar_width;
+    sidebarWidth = ref(
+      storedWidth >= COLLAPSED_THRESHOLD ? storedWidth : DEFAULT_WIDTH
+    );
+  }
   const isCollapsed = computed(() => sidebarWidth.value < COLLAPSED_THRESHOLD);
 
   const setSidebarWidth = width => {
@@ -38,9 +47,15 @@ export function useSidebarResize() {
     updateUISettings({ sidebar_width: DEFAULT_WIDTH });
   };
 
+  const toggleSidebar = () => {
+    if (isCollapsed.value) snapToExpanded();
+    else snapToCollapsed();
+  };
+
   return {
     sidebarWidth,
     isCollapsed,
+    toggleSidebar,
     setSidebarWidth,
     saveWidth,
     snapToCollapsed,
