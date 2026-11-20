@@ -13,6 +13,9 @@ import { useWindowSize } from '@vueuse/core';
 import wootConstants from 'dashboard/constants/globals';
 import { isUpgradePageBypassRoute } from 'dashboard/helper/routeHelpers';
 
+const CHAT_ROUTE_PATTERN =
+  /\/accounts\/\d+\/(dashboard|conversations|inbox|inbox-view|label|team|custom_view|mentions|participating|unattended)(\/|$)/;
+
 const CommandBar = defineAsyncComponent(
   () => import('./commands/commandbar.vue')
 );
@@ -76,6 +79,9 @@ export default {
     isAccountPaywalled() {
       return this.upgradePageRef?.isAccountPaywalled;
     },
+    isChatRoute() {
+      return CHAT_ROUTE_PATTERN.test(this.$route.path);
+    },
     bypassUpgradePage() {
       return isUpgradePageBypassRoute(this.$route.name);
     },
@@ -131,7 +137,9 @@ export default {
 </script>
 
 <template>
-  <div class="flex flex-grow overflow-hidden text-n-slate-12">
+  <div
+    class="flex flex-grow overflow-hidden text-n-slate-12 bg-n-canvas md:p-6 md:gap-4"
+  >
     <NextSidebar
       :is-mobile-sidebar-open="isMobileSidebarOpen"
       @toggle-account-modal="toggleAccountModal"
@@ -141,9 +149,7 @@ export default {
       @close-mobile-sidebar="closeMobileSidebar"
     />
 
-    <main
-      class="flex flex-1 h-full w-full min-h-0 px-0 overflow-hidden bg-n-surface-1"
-    >
+    <main class="flex flex-1 h-full w-full min-h-0 px-0 overflow-hidden">
       <UpgradePage
         v-show="showUpgradePage"
         ref="upgradePageRef"
@@ -155,9 +161,16 @@ export default {
         />
       </UpgradePage>
       <template v-if="!showUpgradePage">
-        <div class="flex flex-col flex-1 min-w-0 min-h-0">
+        <div class="flex flex-col flex-1 min-w-0 min-h-0 md:gap-4">
           <TopBar @open-key-shortcut-modal="toggleKeyShortcutModal" />
-          <div class="flex flex-1 min-h-0 overflow-hidden">
+          <div
+            class="flex flex-1 min-h-0 overflow-hidden"
+            :class="
+              isChatRoute
+                ? 'md:gap-4'
+                : 'md:rounded-[1.25rem] md:border md:border-n-weak md:shadow-sm bg-n-surface-1'
+            "
+          >
             <router-view />
           </div>
         </div>

@@ -106,6 +106,7 @@ export const colors = {
 
   // next design system color
   n: {
+    canvas: 'rgb(var(--canvas-color) / <alpha-value>)',
     slate: {
       1: 'rgb(var(--slate-1) / <alpha-value>)',
       2: 'rgb(var(--slate-2) / <alpha-value>)',

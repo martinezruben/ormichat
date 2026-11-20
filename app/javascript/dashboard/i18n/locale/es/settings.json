@@ -308,6 +308,7 @@
     }
   },
   "TOP_BAR": {
+    "SEARCH_PLACEHOLDER": "Buscar en todo Ormichat",
     "TOGGLE_SIDEBAR": "Mostrar u ocultar el menú lateral",
     "BREADCRUMB": "Ruta",
     "HELP": "Ayuda y atajos de teclado"
