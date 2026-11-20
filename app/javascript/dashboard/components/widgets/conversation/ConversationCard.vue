@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { getLastMessage } from 'dashboard/helper/conversationHelper';
 import Avatar from 'next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
@@ -40,7 +41,21 @@ const emit = defineEmits([
   'assignToMe',
 ]);
 
+const { t } = useI18n();
 const hovered = ref(false);
+
+const STATUS_CLASSES = {
+  open: 'bg-n-teal-3 text-n-teal-11',
+  pending: 'bg-n-amber-3 text-n-amber-11',
+  resolved: 'bg-n-slate-3 text-n-slate-11',
+  snoozed: 'bg-n-iris-3 text-n-iris-11',
+};
+const statusClass = computed(
+  () => STATUS_CLASSES[props.chat.status] || STATUS_CLASSES.open
+);
+const statusLabel = computed(() =>
+  t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${props.chat.status}.TEXT`)
+);
 
 const unreadCount = computed(() => props.chat.unread_count);
 const hasUnread = computed(() => unreadCount.value > 0);
@@ -55,14 +70,6 @@ const voiceCallData = computed(() => {
     status: last.call.status,
     direction: last.call.direction === 'outgoing' ? 'outbound' : 'inbound',
   };
-});
-
-const showMetaSection = computed(() => {
-  return (
-    props.showInboxName ||
-    (props.showAssignee && props.assignee.name) ||
-    props.chat.priority
-  );
 });
 
 const isAgentBotAssignee = computed(
@@ -122,13 +129,12 @@ watch(
 
 <template>
   <div
-    class="relative flex items-start flex-grow-0 flex-shrink-0 w-auto max-w-full py-0 cursor-pointer conversation border-b border-n-slate-3 hover:border-n-surface-1 hover:bg-n-alpha-1 dark:hover:bg-n-alpha-3 group hover:z-[1] before:content-[none] before:absolute before:-top-px before:inset-x-0 before:h-px before:bg-n-surface-1 before:pointer-events-none hover:before:content-['']"
+    class="relative flex items-start flex-grow-0 flex-shrink-0 gap-3 mb-0.5 w-auto max-w-full cursor-pointer conversation rounded-[0.875rem] hover:bg-n-slate-2 group"
     :class="{
-      'active animate-card-select bg-n-blue-3 !border-n-surface-1':
-        isActiveChat,
-      'selected bg-n-slate-2 !border-n-surface-1': selected,
-      'px-0': compact,
-      'px-3': !compact,
+      'active animate-card-select !bg-n-blue-3': isActiveChat,
+      'selected !bg-n-slate-3': selected,
+      'px-2 py-2': compact,
+      'px-3 py-3': !compact,
     }"
     @click="$emit('click', $event)"
     @contextmenu="$emit('contextmenu', $event)"
@@ -142,9 +148,8 @@ watch(
         v-if="!hideThumbnail"
         :name="currentContact.name"
         :src="currentContact.thumbnail"
-        :size="32"
+        :size="42"
         :status="currentContact.availability_status"
-        :class="!showInboxName ? 'mt-4' : 'mt-8'"
         hide-offline-status
       >
         <template #overlay="{ size }">
@@ -167,50 +172,30 @@ watch(
       @reopen="$emit('reopen')"
       @assign-to-me="$emit('assignToMe')"
     />
-    <div
-      class="px-0 flex-1 min-w-0 border-line"
-      :class="isCompactList ? 'py-2' : 'py-3'"
-    >
-      <div
-        v-if="showMetaSection"
-        class="flex items-center min-w-0 gap-1"
-        :class="{
-          'ltr:ml-2 rtl:mr-2': !compact,
-          'mx-2': compact,
-        }"
-      >
-        <InboxName v-if="showInboxName" :inbox="inbox" class="flex-1 min-w-0" />
-        <div
-          class="flex items-baseline gap-2 flex-shrink-0"
-          :class="{
-            'flex-1 justify-between': !showInboxName,
-          }"
+    <div class="flex-1 min-w-0 border-line">
+      <div class="flex gap-2 items-center min-w-0">
+        <h4
+          class="flex-1 m-0 min-w-0 text-sm capitalize truncate conversation--user text-n-slate-12"
+          :class="hasUnread ? 'font-semibold' : 'font-medium'"
         >
-          <span
-            v-if="showAssignee && assignee.name"
-            class="text-n-slate-11 text-xs font-medium leading-3 py-0.5 px-0 inline-flex items-center gap-px truncate"
-          >
-            <Icon
-              :icon="
-                isAgentBotAssignee ? 'i-lucide-bot' : 'i-lucide-user-round'
-              "
-              class="size-3 text-n-slate-11 flex-shrink-0"
-            />
-            <span class="truncate">{{ assignee.name }}</span>
-          </span>
-          <CardPriorityIcon
-            :priority="chat.priority"
-            class="flex-shrink-0 !size-3.5"
+          {{ currentContact.name }}
+        </h4>
+        <CardPriorityIcon
+          :priority="chat.priority"
+          class="flex-shrink-0 !size-3.5"
+        />
+        <span
+          class="flex-shrink-0 text-xs font-normal leading-4 text-n-slate-11"
+          :class="{ '!text-n-blue-11 !font-semibold': hasUnread }"
+        >
+          <TimeAgo
+            :last-activity-timestamp="chat.timestamp"
+            :created-at-timestamp="chat.created_at"
+            :conversation-id="chat.id"
           />
-        </div>
+        </span>
       </div>
-      <h4
-        class="conversation--user text-sm my-0 mx-2 capitalize pt-0.5 text-ellipsis overflow-hidden whitespace-nowrap flex-1 min-w-0 ltr:pr-16 rtl:pl-16 text-n-slate-12"
-        :class="hasUnread ? 'font-semibold' : 'font-medium'"
-      >
-        {{ currentContact.name }}
-      </h4>
-      <template v-if="!isCompactList">
+      <div v-if="!isCompactList" class="flex gap-2 items-center mt-0.5 min-w-0">
         <VoiceCallStatus
           v-if="voiceCallData.status"
           key="voice-status-row"
@@ -222,13 +207,13 @@ watch(
           v-else-if="lastMessageInChat"
           key="message-preview"
           :message="lastMessageInChat"
-          class="my-0 mx-2 leading-6 h-6 flex-1 min-w-0 text-sm"
+          class="flex-1 min-w-0 h-5 text-[0.8125rem] leading-5 !m-0"
           :class="messagePreviewClass"
         />
         <p
           v-else
           key="no-messages"
-          class="text-n-slate-11 text-sm my-0 mx-2 leading-6 h-6 flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
+          class="overflow-hidden flex-1 m-0 min-w-0 h-5 text-[0.8125rem] leading-5 whitespace-nowrap text-n-slate-11 text-ellipsis"
           :class="messagePreviewClass"
         >
           <fluent-icon
@@ -240,31 +225,39 @@ watch(
             {{ $t(`CHAT_LIST.NO_MESSAGES`) }}
           </span>
         </p>
-      </template>
+        <UnreadBadge v-if="hasUnread" :count="unreadCount" class="flex-none" />
+      </div>
       <div
-        class="absolute flex flex-col ltr:right-3 rtl:left-3"
-        :class="showMetaSection ? 'top-8' : 'top-4'"
+        v-if="!isCompactList"
+        class="flex flex-wrap gap-1.5 items-center mt-1.5 min-w-0"
       >
-        <span
-          class="ml-auto font-normal leading-4 text-xxs"
-          :class="{ '!text-n-blue-11 !font-semibold': hasUnread }"
-        >
-          <TimeAgo
-            :last-activity-timestamp="chat.timestamp"
-            :created-at-timestamp="chat.created_at"
-            :conversation-id="chat.id"
-          />
-        </span>
-        <UnreadBadge
-          v-if="hasUnread"
-          :count="unreadCount"
-          class="ltr:ml-auto rtl:mr-auto mt-1"
+        <InboxName
+          v-if="showInboxName"
+          :inbox="inbox"
+          class="px-1.5 h-[1.125rem] rounded-full bg-n-slate-3 !text-xs max-w-32"
         />
+        <span
+          class="inline-flex gap-1.5 items-center px-2 h-5 text-xs font-medium rounded-full"
+          :class="statusClass"
+        >
+          <span class="rounded-full size-1.5 bg-current" />
+          {{ statusLabel }}
+        </span>
+        <span
+          v-if="showAssignee && assignee.name"
+          class="inline-flex gap-1 items-center text-xs font-medium truncate text-n-slate-11"
+        >
+          <Icon
+            :icon="isAgentBotAssignee ? 'i-lucide-bot' : 'i-lucide-user-round'"
+            class="flex-shrink-0 size-3"
+          />
+          <span class="truncate">{{ assignee.name }}</span>
+        </span>
       </div>
       <CardLabels
         v-if="showLabelsSection"
         :conversation-labels="chat.labels"
-        class="mt-0.5 mx-2 mb-0"
+        class="mx-0 mt-1.5 mb-0"
       >
         <template v-if="hasSlaPolicyId" #before>
           <SLACardLabel :chat="chat" class="ltr:mr-1 rtl:ml-1" />

@@ -7,7 +7,6 @@ import { useUISettings } from 'dashboard/composables/useUISettings';
 import { useMapGetter, useStore } from 'dashboard/composables/store.js';
 import wootConstants from 'dashboard/constants/globals';
 import SelectMenu from 'dashboard/components-next/selectmenu/SelectMenu.vue';
-import NextButton from 'dashboard/components-next/button/Button.vue';
 import Switch from 'dashboard/components-next/switch/Switch.vue';
 
 defineProps({
@@ -122,6 +121,28 @@ const activeChatSortLabel = computed(
     ''
 );
 
+const STATUS_DOTS = {
+  open: 'bg-n-teal-9',
+  pending: 'bg-n-amber-9',
+  resolved: 'bg-n-slate-9',
+  snoozed: 'bg-n-iris-9',
+};
+
+const chips = computed(() => [
+  {
+    key: 'status',
+    label: t('CHAT_LIST.CHAT_SORT.STATUS'),
+    value: activeChatStatusLabel.value,
+    dot: STATUS_DOTS[currentStatusFilter.value],
+  },
+  {
+    key: 'order',
+    label: t('CHAT_LIST.CHAT_SORT.ORDER_BY'),
+    value: activeChatSortLabel.value,
+    dot: null,
+  },
+]);
+
 const saveSelectedFilter = (type, value) => {
   updateUISettings({
     conversations_filter_by: {
@@ -145,19 +166,25 @@ const handleSortChange = value => {
 </script>
 
 <template>
-  <div class="relative flex">
-    <NextButton
-      v-tooltip.right="$t('CHAT_LIST.SORT_TOOLTIP_LABEL')"
-      icon="i-lucide-arrow-up-down"
-      slate
-      faded
-      xs
+  <div class="relative flex gap-2 px-4 pb-2">
+    <button
+      v-for="chip in chips"
+      :key="chip.key"
+      type="button"
+      class="inline-flex gap-1.5 items-center px-2.5 h-[1.875rem] text-[0.8125rem] rounded-lg border transition-colors border-n-weak bg-n-slate-2 hover:bg-n-slate-3"
       @click="toggleDropdown()"
-    />
+    >
+      <span class="text-n-slate-11">{{ chip.label }}</span>
+      <span v-if="chip.dot" class="rounded-full size-1.5" :class="chip.dot" />
+      <b class="font-semibold truncate max-w-[5.5rem] text-n-slate-12">
+        {{ chip.value }}
+      </b>
+      <span class="i-lucide-chevron-down size-3.5 text-n-slate-10" />
+    </button>
     <div
       v-if="showActionsDropdown"
       v-on-click-outside="() => toggleDropdown()"
-      class="mt-1 bg-n-alpha-3 backdrop-blur-[100px] border border-n-weak w-72 rounded-xl p-4 absolute z-40 top-full"
+      class="mt-1 bg-n-solid-1 shadow-lg border border-n-weak w-72 rounded-xl p-4 absolute z-40 top-full"
       :class="{
         'ltr:left-0 rtl:right-0': !isOnExpandedLayout,
         'ltr:right-0 rtl:left-0': isOnExpandedLayout,

@@ -1598,10 +1598,10 @@ export default {
 }
 
 .reply-box {
-  @apply relative mb-4 mx-4 border border-n-weak rounded-2xl bg-n-solid-1 shadow-sm transition-colors;
+  @apply relative mb-4 mx-4 border border-n-weak rounded-[0.875rem] bg-n-solid-1 shadow-sm transition-colors;
 
   &.is-focused:not(.is-private) {
-    @apply border-n-brand;
+    @apply border-n-brand ring-[3px] ring-n-brand/15;
   }
 
   &.is-private {
