@@ -174,7 +174,7 @@ const handleSortChange = value => {
       class="inline-flex gap-1.5 items-center px-2.5 h-[1.875rem] text-[0.8125rem] rounded-lg border transition-colors border-n-weak bg-n-slate-2 hover:bg-n-slate-3"
       @click="toggleDropdown()"
     >
-      <span class="text-n-slate-11">{{ chip.label }}</span>
+      <span class="whitespace-nowrap text-n-slate-11">{{ chip.label }}</span>
       <span v-if="chip.dot" class="rounded-full size-1.5" :class="chip.dot" />
       <b class="font-semibold truncate max-w-[5.5rem] text-n-slate-12">
         {{ chip.value }}
