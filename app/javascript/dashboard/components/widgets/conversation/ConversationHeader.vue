@@ -178,7 +178,7 @@ const copyConversationId = async () => {
 <template>
   <div
     ref="conversationHeader"
-    class="flex flex-col gap-3 items-center justify-between flex-1 w-full min-w-0 xl:flex-row px-3 pt-3 pb-2 h-24 xl:h-12"
+    class="flex flex-col gap-3 items-center justify-between flex-1 w-full min-w-0 xl:flex-row px-4 py-3 h-24 xl:h-[4.5rem]"
   >
     <div
       class="flex items-center justify-start w-full xl:w-auto max-w-full min-w-0 xl:flex-1"
@@ -194,7 +194,7 @@ const copyConversationId = async () => {
             <Avatar
               :name="currentContact.name"
               :src="currentContact.thumbnail"
-              :size="32"
+              :size="42"
               :status="currentContact.availability_status"
               hide-offline-status
             />
@@ -229,16 +229,16 @@ const copyConversationId = async () => {
           </div>
         </HoverCardContent>
       </HoverCard>
-      <div class="flex flex-col items-start min-w-0 ms-2 overflow-hidden">
+      <div class="flex flex-col items-start min-w-0 ms-3 overflow-hidden">
         <div class="flex flex-row items-center max-w-full gap-1 p-0 m-0">
           <span
-            class="text-sm font-medium font-heading truncate leading-tight text-n-slate-12"
+            class="text-base font-semibold truncate leading-tight text-n-slate-12"
           >
             {{ currentContact.name }}
           </span>
           <span
             v-if="priorityStyle"
-            class="px-1.5 rounded text-xs font-medium leading-5 shrink-0"
+            class="px-2 ms-1 rounded-full text-xs font-medium leading-5 shrink-0"
             :class="priorityStyle"
           >
             {{
@@ -265,7 +265,11 @@ const copyConversationId = async () => {
             {{ `#${chat.id}` }}
           </button>
           <span v-if="hasMultipleInboxes">•</span>
-          <InboxName v-if="hasMultipleInboxes" :inbox="inbox" class="!mx-0" />
+          <InboxName
+            v-if="hasMultipleInboxes"
+            :inbox="inbox"
+            class="!mx-0 px-1.5 h-[1.125rem] rounded-full bg-n-slate-3"
+          />
           <span v-if="statusStyle">•</span>
           <span
             v-if="statusStyle"

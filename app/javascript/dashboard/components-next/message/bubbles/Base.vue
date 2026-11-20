@@ -34,7 +34,7 @@ const isCaptainMessage = computed(
 
 const metaColorClassMap = {
   [MESSAGE_VARIANTS.PRIVATE]: 'text-n-amber-12/50',
-  [MESSAGE_VARIANTS.AGENT]: 'text-white/70',
+  [MESSAGE_VARIANTS.AGENT]: 'text-n-slate-11',
 };
 
 const metaColorClass = computed(
@@ -46,12 +46,11 @@ const emailMetaClass = computed(() =>
 );
 
 const varaintBaseMap = {
-  // Agent bubbles are solid iris; the slate text ramp is remapped to white so nested bubble content stays readable
-  [MESSAGE_VARIANTS.AGENT]:
-    'bg-n-brand text-n-brand-foreground [--slate-10:255_255_255] [--slate-11:255_255_255] [--slate-12:255_255_255]',
+  // Agent bubbles use a soft accent tint; incoming bubbles a soft neutral
+  [MESSAGE_VARIANTS.AGENT]: 'bg-n-blue-3 text-n-slate-12',
   [MESSAGE_VARIANTS.PRIVATE]:
     'bg-n-solid-amber text-n-amber-12 border border-dashed border-n-amber-8 [&_.prosemirror-mention-node]:font-semibold',
-  [MESSAGE_VARIANTS.USER]: 'bg-n-solid-1 border border-n-weak text-n-slate-12',
+  [MESSAGE_VARIANTS.USER]: 'bg-n-slate-3 text-n-slate-12',
   [MESSAGE_VARIANTS.ACTIVITY]: 'text-n-slate-11 text-xs',
   [MESSAGE_VARIANTS.BOT]: 'bg-n-solid-iris text-n-slate-12',
   [MESSAGE_VARIANTS.TEMPLATE]: 'bg-n-solid-iris text-n-slate-12',
@@ -63,9 +62,9 @@ const varaintBaseMap = {
 
 const orientationMap = {
   [ORIENTATION.LEFT]:
-    'left-bubble rounded-xl ltr:rounded-bl-sm rtl:rounded-br-sm',
+    'left-bubble rounded-2xl ltr:rounded-bl-[0.25rem] rtl:rounded-br-[0.25rem]',
   [ORIENTATION.RIGHT]:
-    'right-bubble rounded-xl ltr:rounded-br-sm rtl:rounded-bl-sm',
+    'right-bubble rounded-2xl ltr:rounded-br-[0.25rem] rtl:rounded-bl-[0.25rem]',
   [ORIENTATION.CENTER]: 'rounded-md',
 };
 

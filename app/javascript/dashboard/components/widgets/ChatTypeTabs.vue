@@ -46,28 +46,30 @@ useKeyboardEvents(keyboardEvents);
 </script>
 
 <template>
-  <div class="px-4 pt-3 pb-2">
-    <div
-      role="tablist"
-      class="flex gap-0.5 p-[0.1875rem] rounded-[0.625rem] bg-n-slate-3"
-    >
+  <div class="px-4 pt-1 pb-2">
+    <div role="tablist" class="flex flex-wrap gap-1.5">
       <button
         v-for="(item, index) in items"
         :key="item.key"
         type="button"
         role="tab"
         :aria-selected="index === activeTabIndex"
-        class="flex flex-1 gap-1 justify-center items-center px-1 h-[1.875rem] min-w-0 text-xs font-medium rounded-[0.4375rem] transition-colors"
+        class="inline-flex gap-1.5 justify-center items-center px-3 h-7 text-[0.8125rem] font-medium rounded-full border transition-colors"
         :class="
           index === activeTabIndex
-            ? 'bg-n-solid-1 text-n-slate-12 shadow-sm'
-            : 'text-n-slate-11 hover:text-n-slate-12'
+            ? 'bg-n-blue-3 border-n-blue-6 text-n-blue-11'
+            : 'bg-n-solid-1 border-n-weak text-n-slate-11 hover:text-n-slate-12'
         "
         @click="onTabChange(index)"
       >
-        <span class="truncate">{{ item.name }}</span>
+        {{ item.name }}
         <span
-          class="px-1 min-w-4 text-center rounded-full text-[0.6875rem] tabular-nums bg-n-slate-6 text-n-slate-12/80"
+          class="px-1.5 min-w-4 text-center rounded-full text-[0.6875rem] tabular-nums"
+          :class="
+            index === activeTabIndex
+              ? 'bg-n-blue-5 text-n-blue-11'
+              : 'bg-n-slate-3 text-n-slate-12/80'
+          "
         >
           {{ item.count }}
         </span>

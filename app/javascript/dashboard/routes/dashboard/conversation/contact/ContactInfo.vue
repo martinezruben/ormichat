@@ -231,15 +231,20 @@ export default {
 
 <template>
   <div class="relative items-center w-full p-4">
-    <div class="flex flex-col w-full gap-2 text-left rtl:text-right">
+    <div
+      aria-hidden="true"
+      class="absolute inset-x-0 top-0 pointer-events-none h-[4.75rem] bg-gradient-to-b from-n-blue-3 to-transparent"
+    />
+    <div class="flex relative flex-col w-full gap-2 text-left rtl:text-right">
       <div class="flex flex-row justify-center">
         <Avatar
           v-if="showAvatar"
           :src="contact.thumbnail"
           :name="contact.name"
           :status="contact.availability_status"
-          :size="64"
+          :size="88"
           hide-offline-status
+          class="ring-4 ring-n-solid-1 rounded-full"
         />
       </div>
 
@@ -253,7 +258,7 @@ export default {
               v-if="isEditingName"
               ref="nameInput"
               v-model="editName"
-              custom-input-class="!text-base !font-medium !w-auto max-w-full [field-sizing:content]"
+              custom-input-class="!text-lg !font-semibold !w-auto max-w-full [field-sizing:content]"
               class="!w-fit min-w-0"
               @enter-press="saveNameEdit"
               @escape-press="cancelNameEdit"
@@ -261,7 +266,7 @@ export default {
             />
             <h3
               v-else
-              class="flex-shrink max-w-full min-w-0 my-0 text-base capitalize break-words text-n-slate-12 cursor-pointer hover:text-n-slate-12/80"
+              class="flex-shrink max-w-full min-w-0 my-0 text-lg font-semibold tracking-tight capitalize break-words text-n-slate-12 cursor-pointer hover:text-n-slate-12/80"
               :title="$t('CONTACT_PANEL.CLICK_TO_EDIT')"
               @click="startEditingName"
             >

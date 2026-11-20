@@ -4,15 +4,14 @@ import { useUISettings } from 'dashboard/composables/useUISettings';
 import { formatNumber } from '@chatwoot/utils';
 import wootConstants from 'dashboard/constants/globals';
 
-import ConversationBasicFilter from './widgets/conversation/ConversationBasicFilter.vue';
 import SwitchLayout from 'dashboard/routes/dashboard/conversation/search/SwitchLayout.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
 
 const props = defineProps({
   pageTitle: { type: String, required: true },
   hasAppliedFilters: { type: Boolean, required: true },
   hasActiveFolders: { type: Boolean, required: true },
-  activeStatus: { type: String, required: true },
   isOnExpandedLayout: { type: Boolean, required: true },
   conversationStats: { type: Object, required: true },
   isListLoading: { type: Boolean, required: true },
@@ -22,19 +21,10 @@ const emit = defineEmits([
   'addFolders',
   'deleteFolders',
   'resetFilters',
-  'basicFilterChange',
   'filtersModal',
 ]);
 
 const { uiSettings, updateUISettings } = useUISettings();
-
-const onBasicFilterChange = (value, type) => {
-  emit('basicFilterChange', value, type);
-};
-
-const hasAppliedFiltersOrActiveFolders = computed(() => {
-  return props.hasAppliedFilters || props.hasActiveFolders;
-});
 
 const allCount = computed(() => props.conversationStats?.allCount || 0);
 const formattedAllCount = computed(() => formatNumber(allCount.value));
@@ -67,19 +57,11 @@ const toggleConversationLayout = () => {
         {{ pageTitle }}
       </h1>
       <span
-        v-if="
-          allCount > 0 && hasAppliedFiltersOrActiveFolders && !isListLoading
-        "
-        class="px-2 py-1 my-0.5 mx-1 rounded-md capitalize bg-n-slate-3 text-xxs text-n-slate-12 shrink-0"
+        v-if="allCount > 0 && !isListLoading"
+        class="inline-flex items-center px-2 mx-2 h-5 text-xs font-medium rounded-full shrink-0 bg-n-slate-3 text-n-slate-12"
         :title="allCount"
       >
         {{ formattedAllCount }}
-      </span>
-      <span
-        v-if="!hasAppliedFiltersOrActiveFolders"
-        class="inline-flex items-center h-6 px-2 mx-2 rounded-full border border-n-weak text-xs font-medium capitalize text-n-slate-12 shrink-0"
-      >
-        {{ $t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${activeStatus}.TEXT`) }}
       </span>
     </div>
     <div class="flex items-center gap-1">
@@ -151,15 +133,19 @@ const toggleConversationLayout = () => {
           :class="{ 'ltr:right-0 rtl:left-0': isOnExpandedLayout }"
         />
       </div>
-      <ConversationBasicFilter
-        v-if="!hasAppliedFiltersOrActiveFolders"
-        :is-on-expanded-layout="isOnExpandedLayout"
-        @change-filter="onBasicFilterChange"
-      />
       <SwitchLayout
         :is-on-expanded-layout="isOnExpandedLayout"
         @toggle="toggleConversationLayout"
       />
+      <ComposeConversation>
+        <template #trigger>
+          <NextButton
+            v-tooltip.bottom="$t('CHAT_LIST.NEW_CONVERSATION')"
+            icon="i-lucide-plus"
+            sm
+          />
+        </template>
+      </ComposeConversation>
     </div>
   </div>
 </template>

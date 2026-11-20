@@ -8,6 +8,7 @@ import {
 } from 'dashboard/composables/store.js';
 
 import ChatListHeader from './ChatListHeader.vue';
+import ConversationBasicFilter from './widgets/conversation/ConversationBasicFilter.vue';
 import ConversationList from './ConversationList.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import ConversationFilter from 'next/filter/ConversationFilter.vue';
@@ -888,10 +889,10 @@ watch(conversationFilters, (newVal, oldVal) => {
 
 <template>
   <div
-    class="flex flex-col flex-shrink-0 conversations-list-wrap bg-n-surface-1 relative"
+    class="flex flex-col flex-shrink-0 conversations-list-wrap bg-n-surface-1 relative md:rounded-[1.25rem] md:border md:border-n-weak md:shadow-sm md:overflow-hidden"
     :class="[
       { hidden: !showConversationList },
-      isOnExpandedLayout ? 'basis-full' : 'w-[340px] 2xl:w-[412px]',
+      isOnExpandedLayout ? 'basis-full' : 'w-[340px] 2xl:w-[22rem]',
     ]"
   >
     <slot />
@@ -899,7 +900,6 @@ watch(conversationFilters, (newVal, oldVal) => {
       :page-title="pageTitle"
       :has-applied-filters="hasAppliedFilters"
       :has-active-folders="hasActiveFolders"
-      :active-status="activeStatus"
       :is-on-expanded-layout="isOnExpandedLayout"
       :conversation-stats="conversationStats"
       :is-list-loading="chatListLoading && !conversationList.length"
@@ -907,7 +907,6 @@ watch(conversationFilters, (newVal, oldVal) => {
       @delete-folders="onClickOpenDeleteFoldersModal"
       @filters-modal="onToggleAdvanceFiltersModal"
       @reset-filters="resetAndFetchData"
-      @basic-filter-change="onBasicFilterChange"
     />
 
     <RouterLink
@@ -917,6 +916,12 @@ watch(conversationFilters, (newVal, oldVal) => {
       <span class="i-lucide-search size-4" />
       {{ $t('CHAT_LIST.SEARCH_PLACEHOLDER') }}
     </RouterLink>
+
+    <ConversationBasicFilter
+      v-if="!hasAppliedFiltersOrActiveFolders"
+      :is-on-expanded-layout="isOnExpandedLayout"
+      @change-filter="onBasicFilterChange"
+    />
 
     <TeleportWithDirection
       v-if="showAddFoldersModal"

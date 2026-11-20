@@ -308,6 +308,7 @@
     }
   },
   "TOP_BAR": {
+    "SEARCH_PLACEHOLDER": "Search everything in Ormichat",
     "TOGGLE_SIDEBAR": "Show or hide the sidebar",
     "BREADCRUMB": "Breadcrumb",
     "HELP": "Help and keyboard shortcuts"
