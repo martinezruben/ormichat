@@ -98,11 +98,13 @@ class Products::SampleCatalog
     @slug, @name, @brand, @category, @description, @ai_description, @variants = attrs
   end
 
+  # Safe to repeat: creates what is missing and fills blank fields, never overwrites what the account edited.
   def upsert!
     product = @account.products.find_or_initialize_by(sku: sku)
-    product.update!(name: @name, brand: @brand, category: @category, description: @description, ai_description: @ai_description,
-                    image_url: "#{IMAGE_PATH}/#{@slug}.svg", requires_prescription: false)
-    @variants.each_with_index { |variant, index| upsert_variant(product, variant, index) }
+    fill_blank(product, name: @name, brand: @brand, category: @category, description: @description,
+                        ai_description: @ai_description, image_url: "#{IMAGE_PATH}/#{@slug}.svg")
+    product.save!
+    @variants.each_with_index { |variant, index| create_variant(product, variant, index) }
     product
   end
 
@@ -112,8 +114,13 @@ class Products::SampleCatalog
     "PH-#{@slug.upcase.tr('-', '_')}"
   end
 
-  def upsert_variant(product, (name, price, stock), index)
-    record = product.variants.find_or_initialize_by(sku: "#{sku}-#{index + 1}")
-    record.update!(name: name, price: price, stock: stock, currency: 'BOB')
+  def fill_blank(product, attributes)
+    attributes.each { |attribute, value| product[attribute] = value if product[attribute].blank? }
+  end
+
+  def create_variant(product, (name, price, stock), index)
+    product.variants.find_or_create_by!(sku: "#{sku}-#{index + 1}") do |variant|
+      variant.assign_attributes(name: name, price: price, stock: stock, currency: 'BOB')
+    end
   end
 end

@@ -51,7 +51,11 @@
       "SAVE": "Save",
       "CANCEL": "Cancel",
       "SAVED": "Product saved",
-      "ERROR": "The product could not be saved. Check the details."
+      "ERROR": "The product could not be saved. Check the details.",
+      "PHOTO": "Photo",
+      "UPLOAD_PHOTO": "Upload photo",
+      "REMOVE_PHOTO": "Remove uploaded photo",
+      "PHOTO_HELP": "JPG, PNG, GIF or WebP up to 5 MB. If you do not upload a photo, the URL below is used."
     },
     "DELETE_CONFIRM": {
       "TITLE": "Delete product",

@@ -37,17 +37,12 @@ class Products::ChatFormatter
     lines = []
     lines << "When to recommend and guidance: #{@product.ai_description}" if @product.ai_description.present?
     lines << "Requires prescription: #{@product.requires_prescription ? 'yes' : 'no'}"
-    lines << "Photo: #{image_url}" if image_url.present?
+    lines << "Photo: #{@product.photo_url}" if @product.photo_url.present?
     lines
   end
 
   def variant_lines
     @product.variants.select(&:active).map { |variant| variant_line(variant) }
-  end
-
-  def image_url
-    url = @product.image_url.to_s
-    url.start_with?('/') ? "#{ENV.fetch('FRONTEND_URL', '')}#{url}" : url
   end
 
   def variant_line(variant)

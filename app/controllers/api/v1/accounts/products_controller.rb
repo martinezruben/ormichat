@@ -1,7 +1,7 @@
 class Api::V1::Accounts::ProductsController < Api::V1::Accounts::BaseController
   RESULTS_PER_PAGE = 25
 
-  before_action :fetch_product, only: [:show, :update, :destroy]
+  before_action :fetch_product, only: [:show, :update, :destroy, :upload_image, :remove_image]
   before_action :check_authorization
 
   def index
@@ -26,6 +26,17 @@ class Api::V1::Accounts::ProductsController < Api::V1::Accounts::BaseController
   def destroy
     @product.destroy!
     head :ok
+  end
+
+  def upload_image
+    @product.image.attach(params.require(:image))
+    @product.save!
+    render :show
+  end
+
+  def remove_image
+    @product.image.purge
+    render :show
   end
 
   private

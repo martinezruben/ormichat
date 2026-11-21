@@ -133,7 +133,12 @@ Rails.application.routes.draw do
             end
           end
           resources :canned_responses, only: [:index, :create, :update, :destroy]
-          resources :products, only: [:index, :show, :create, :update, :destroy]
+          resources :products, only: [:index, :show, :create, :update, :destroy] do
+            member do
+              post :image, action: :upload_image
+              delete :image, action: :remove_image
+            end
+          end
           resources :automation_rules, only: [:index, :create, :show, :update, :destroy] do
             post :clone
           end

@@ -51,7 +51,11 @@
       "SAVE": "Guardar",
       "CANCEL": "Cancelar",
       "SAVED": "Producto guardado",
-      "ERROR": "No se pudo guardar el producto. Revisa los datos."
+      "ERROR": "No se pudo guardar el producto. Revisa los datos.",
+      "PHOTO": "Foto",
+      "UPLOAD_PHOTO": "Subir foto",
+      "REMOVE_PHOTO": "Quitar foto subida",
+      "PHOTO_HELP": "JPG, PNG, GIF o WebP de hasta 5 MB. Si no subes una foto, se usa la URL de abajo."
     },
     "DELETE_CONFIRM": {
       "TITLE": "Eliminar producto",

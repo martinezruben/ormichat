@@ -235,6 +235,16 @@ onMounted(fetchProducts);
                         )
                       }}
                     </div>
+                    <div
+                      class="mt-0.5 text-xs tabular-nums md:hidden text-n-slate-11"
+                    >
+                      {{ priceRange(product) }} ·
+                      {{
+                        t('PRODUCTS.STOCK_UNITS', {
+                          count: product.total_stock,
+                        })
+                      }}
+                    </div>
                   </div>
                 </div>
                 <div class="hidden md:block">
