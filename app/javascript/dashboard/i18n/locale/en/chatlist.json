@@ -1,5 +1,6 @@
 {
   "CHAT_LIST": {
+    "UNREAD": "Unread",
     "NEW_CONVERSATION": "New conversation",
     "LOADING": "Fetching conversations",
     "LOAD_MORE_CONVERSATIONS": "Load more conversations",

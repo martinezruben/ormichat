@@ -465,6 +465,13 @@
       }
     }
   },
+  "CONVERSATION_FIELDS_BAR": {
+    "STATUS": "Status",
+    "ASSIGNEE": "Assignee",
+    "TEAM": "Team",
+    "PRIORITY": "Priority",
+    "ADD_LABEL": "Label"
+  },
   "ONBOARDING": {
     "GETTING_STARTED": "Getting started",
     "TITLE": "Hey 👋, Welcome to {installationName}!",

@@ -6,7 +6,6 @@ import { useElementSize } from '@vueuse/core';
 import BackButton from '../BackButton.vue';
 import InboxName from '../InboxName.vue';
 import MoreActions from './MoreActions.vue';
-import HeaderAssignee from './HeaderAssignee.vue';
 import Avatar from 'next/avatar/Avatar.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import {
@@ -310,7 +309,6 @@ const copyConversationId = async () => {
         :parent-width="width"
         class="hidden md:flex"
       />
-      <HeaderAssignee :chat="chat" />
       <NextButton
         v-if="!isAssignedToMe"
         :label="$t('CONVERSATION.ASSIGN_TO_ME')"

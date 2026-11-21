@@ -12,9 +12,15 @@ const props = defineProps({
     type: String,
     default: wootConstants.ASSIGNEE_TYPE.ME,
   },
+  unreadCount: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const emit = defineEmits(['chatTabChange']);
+
+const unreadOnly = defineModel('unreadOnly', { type: Boolean, default: false });
 
 const activeTabIndex = computed(() => {
   return props.items.findIndex(item => item.key === props.activeTab);
@@ -72,6 +78,29 @@ useKeyboardEvents(keyboardEvents);
           "
         >
           {{ item.count }}
+        </span>
+      </button>
+      <button
+        type="button"
+        :aria-pressed="unreadOnly"
+        class="inline-flex gap-1.5 justify-center items-center px-3 h-7 text-[0.8125rem] font-medium rounded-full border transition-colors"
+        :class="
+          unreadOnly
+            ? 'bg-n-blue-3 border-n-blue-6 text-n-blue-11'
+            : 'bg-n-solid-1 border-n-weak text-n-slate-11 hover:text-n-slate-12'
+        "
+        @click="unreadOnly = !unreadOnly"
+      >
+        {{ $t('CHAT_LIST.UNREAD') }}
+        <span
+          class="px-1.5 min-w-4 text-center rounded-full text-[0.6875rem] tabular-nums"
+          :class="
+            unreadOnly
+              ? 'bg-n-blue-5 text-n-blue-11'
+              : 'bg-n-slate-3 text-n-slate-12/80'
+          "
+        >
+          {{ unreadCount }}
         </span>
       </button>
     </div>

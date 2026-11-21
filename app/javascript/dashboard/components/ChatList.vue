@@ -318,7 +318,9 @@ function sortByUnreadStatus(conversations) {
   });
 }
 
-const conversationList = computed(() => {
+const showUnreadOnly = ref(false);
+
+const baseConversationList = computed(() => {
   let localConversationList = [];
 
   if (!hasAppliedFiltersOrActiveFolders.value) {
@@ -356,6 +358,16 @@ const conversationList = computed(() => {
 
   return localConversationList;
 });
+
+const unreadCount = computed(
+  () => baseConversationList.value.filter(chat => chat.unread_count > 0).length
+);
+
+const conversationList = computed(() =>
+  showUnreadOnly.value
+    ? baseConversationList.value.filter(chat => chat.unread_count > 0)
+    : baseConversationList.value
+);
 
 const showEndOfListMessage = computed(() => {
   return !!(
@@ -946,7 +958,9 @@ watch(conversationFilters, (newVal, oldVal) => {
 
     <ChatTypeTabs
       v-if="!hasAppliedFiltersOrActiveFolders"
+      v-model:unread-only="showUnreadOnly"
       :items="assigneeTabItems"
+      :unread-count="unreadCount"
       :active-tab="activeAssigneeTab"
       is-compact
       @chat-tab-change="updateAssigneeTab"
