@@ -1,0 +1,63 @@
+{
+  "PRODUCTS": {
+    "TITLE": "Productos",
+    "SUBTITLE": "El catálogo que usa el asistente para responder precio, variedades y stock en el chat.",
+    "NEW": "Nuevo producto",
+    "SEARCH": "Buscar por nombre, marca o necesidad",
+    "ALL_CATEGORIES": "Todas las categorías",
+    "IN_STOCK_ONLY": "Solo con stock",
+    "COLUMNS": {
+      "PRODUCT": "Producto",
+      "CATEGORY": "Categoría",
+      "PRICE": "Precio",
+      "STOCK": "Stock"
+    },
+    "VARIANTS_COUNT": "{count} variedad | {count} variedades",
+    "STOCK_UNITS": "{count} unidades",
+    "AVAILABILITY": {
+      "in_stock": "Disponible",
+      "low_stock": "Stock bajo",
+      "out_of_stock": "Agotado"
+    },
+    "INACTIVE": "Inactivo",
+    "EMPTY": "No hay productos que coincidan.",
+    "LOADING": "Cargando productos…",
+    "EDIT": "Editar producto",
+    "DELETE": "Eliminar producto",
+    "PAGINATION": "Página {page} de {pages}",
+    "PREVIOUS": "Anterior",
+    "NEXT": "Siguiente",
+    "FORM": {
+      "CREATE_TITLE": "Nuevo producto",
+      "EDIT_TITLE": "Editar producto",
+      "DESCRIPTION": "Estos datos los usa el asistente para recomendar y responder a tus clientes.",
+      "NAME": "Nombre",
+      "SKU": "Código (SKU)",
+      "CATEGORY": "Categoría",
+      "BRAND": "Marca",
+      "DESCRIPTION_LABEL": "Descripción",
+      "AI_DESCRIPTION": "Cuándo recomendarlo (para la IA)",
+      "AI_DESCRIPTION_HELP": "Explica a qué necesidad responde, para quién es y cuándo derivar a una persona. El asistente lo lee para recomendar según lo que pide el cliente.",
+      "IMAGE_URL": "URL de la foto",
+      "REQUIRES_PRESCRIPTION": "Requiere receta",
+      "ACTIVE": "Visible para el asistente",
+      "VARIANTS": "Variedades",
+      "VARIANT_NAME": "Nombre",
+      "VARIANT_SKU": "SKU",
+      "VARIANT_PRICE": "Precio",
+      "VARIANT_STOCK": "Stock",
+      "ADD_VARIANT": "Añadir variedad",
+      "REMOVE_VARIANT": "Quitar variedad",
+      "SAVE": "Guardar",
+      "CANCEL": "Cancelar",
+      "SAVED": "Producto guardado",
+      "ERROR": "No se pudo guardar el producto. Revisa los datos."
+    },
+    "DELETE_CONFIRM": {
+      "TITLE": "Eliminar producto",
+      "DESCRIPTION": "Se eliminará {name} y todas sus variedades. Esta acción no se puede deshacer.",
+      "CONFIRM": "Eliminar",
+      "DONE": "Producto eliminado"
+    }
+  }
+}

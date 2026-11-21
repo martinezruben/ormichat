@@ -653,6 +653,13 @@ const menuItems = computed(() => {
       ],
     },
     {
+      name: 'Products',
+      label: t('SIDEBAR.PRODUCTS'),
+      icon: 'i-lucide-package',
+      to: accountScopedRoute('products_dashboard_index'),
+      activeOn: ['products_dashboard_index'],
+    },
+    {
       name: 'Companies',
       label: t('SIDEBAR.COMPANIES'),
       icon: 'i-lucide-building-2',

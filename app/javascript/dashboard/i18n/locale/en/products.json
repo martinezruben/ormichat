@@ -1,0 +1,63 @@
+{
+  "PRODUCTS": {
+    "TITLE": "Products",
+    "SUBTITLE": "The catalog the assistant uses to answer price, varieties and stock in the chat.",
+    "NEW": "New product",
+    "SEARCH": "Search by name, brand or need",
+    "ALL_CATEGORIES": "All categories",
+    "IN_STOCK_ONLY": "In stock only",
+    "COLUMNS": {
+      "PRODUCT": "Product",
+      "CATEGORY": "Category",
+      "PRICE": "Price",
+      "STOCK": "Stock"
+    },
+    "VARIANTS_COUNT": "{count} variety | {count} varieties",
+    "STOCK_UNITS": "{count} units",
+    "AVAILABILITY": {
+      "in_stock": "In stock",
+      "low_stock": "Low stock",
+      "out_of_stock": "Out of stock"
+    },
+    "INACTIVE": "Inactive",
+    "EMPTY": "No products match.",
+    "LOADING": "Loading products…",
+    "EDIT": "Edit product",
+    "DELETE": "Delete product",
+    "PAGINATION": "Page {page} of {pages}",
+    "PREVIOUS": "Previous",
+    "NEXT": "Next",
+    "FORM": {
+      "CREATE_TITLE": "New product",
+      "EDIT_TITLE": "Edit product",
+      "DESCRIPTION": "The assistant uses these details to recommend and answer your customers.",
+      "NAME": "Name",
+      "SKU": "Code (SKU)",
+      "CATEGORY": "Category",
+      "BRAND": "Brand",
+      "DESCRIPTION_LABEL": "Description",
+      "AI_DESCRIPTION": "When to recommend it (for the AI)",
+      "AI_DESCRIPTION_HELP": "Explain which need it covers, who it is for and when to hand off to a person. The assistant reads it to recommend based on what the customer asks.",
+      "IMAGE_URL": "Photo URL",
+      "REQUIRES_PRESCRIPTION": "Requires prescription",
+      "ACTIVE": "Visible to the assistant",
+      "VARIANTS": "Varieties",
+      "VARIANT_NAME": "Name",
+      "VARIANT_SKU": "SKU",
+      "VARIANT_PRICE": "Price",
+      "VARIANT_STOCK": "Stock",
+      "ADD_VARIANT": "Add variety",
+      "REMOVE_VARIANT": "Remove variety",
+      "SAVE": "Save",
+      "CANCEL": "Cancel",
+      "SAVED": "Product saved",
+      "ERROR": "The product could not be saved. Check the details."
+    },
+    "DELETE_CONFIRM": {
+      "TITLE": "Delete product",
+      "DESCRIPTION": "{name} and all its varieties will be deleted. This cannot be undone.",
+      "CONFIRM": "Delete",
+      "DONE": "Product deleted"
+    }
+  }
+}
