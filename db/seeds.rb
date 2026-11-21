@@ -41,6 +41,8 @@ unless Rails.env.production?
     role: :administrator
   )
 
+  Products::SampleCatalog.seed!(account)
+
   web_widget = Channel::WebWidget.create!(account: account, website_url: 'https://acme.inc')
 
   inbox = Inbox.create!(channel: web_widget, account: account, name: 'Acme Support')

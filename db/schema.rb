@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_16_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_21_130000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1375,6 +1375,38 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_16_120000) do
     t.index ["portal_id", "user_id"], name: "index_portals_members_on_portal_id_and_user_id", unique: true
     t.index ["portal_id"], name: "index_portals_members_on_portal_id"
     t.index ["user_id"], name: "index_portals_members_on_user_id"
+  end
+
+  create_table "product_variants", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "sku", null: false
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.string "currency", default: "BOB", null: false
+    t.integer "stock", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "sku"], name: "index_product_variants_on_account_id_and_sku", unique: true
+    t.index ["product_id"], name: "index_product_variants_on_product_id"
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "sku", null: false
+    t.string "category", null: false
+    t.string "brand"
+    t.text "description"
+    t.string "image_url"
+    t.boolean "requires_prescription", default: false, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "ai_description"
+    t.index ["account_id", "category"], name: "index_products_on_account_id_and_category"
+    t.index ["account_id", "sku"], name: "index_products_on_account_id_and_sku", unique: true
   end
 
   create_table "related_categories", force: :cascade do |t|

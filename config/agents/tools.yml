@@ -30,6 +30,11 @@
   description: 'Search FAQ responses using semantic similarity'
   icon: 'search'
 
+- id: product_catalog
+  title: 'Product Catalog'
+  description: 'Look up product price, varieties, stock and photos'
+  icon: 'search'
+
 - id: resolve_conversation
   title: 'Resolve Conversation'
   description: 'Resolve a conversation when the issue has been addressed'

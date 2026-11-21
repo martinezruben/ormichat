@@ -209,6 +209,7 @@ class Captain::Assistant < ApplicationRecord
   def agent_tools
     [
       self.class.resolve_tool_class('faq_lookup').new(self),
+      self.class.resolve_tool_class('product_catalog').new(self),
       self.class.resolve_tool_class('handoff').new(self),
       *account.captain_custom_tools.enabled.map { |custom_tool| custom_tool.tool(self) }
     ]

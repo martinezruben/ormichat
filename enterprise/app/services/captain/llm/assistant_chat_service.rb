@@ -30,7 +30,10 @@ class Captain::Llm::AssistantChatService < Llm::BaseAiService
   private
 
   def build_tools
-    tools = [Captain::Tools::SearchDocumentationService.new(@assistant, user: nil)]
+    tools = [
+      Captain::Tools::SearchDocumentationService.new(@assistant, user: nil),
+      Captain::Tools::SearchProductsService.new(@assistant, user: nil)
+    ]
     return tools unless custom_tools_enabled?
 
     tools + @assistant.account.captain_custom_tools.enabled.map do |ct|
