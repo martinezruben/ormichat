@@ -10,6 +10,7 @@ import campaign from './campaign.json';
 import cannedMgmt from './cannedMgmt.json';
 import chatlist from './chatlist.json';
 import companies from './companies.json';
+import products from './products.json';
 import components from './components.json';
 import contact from './contact.json';
 import contactFilters from './contactFilters.json';
@@ -55,6 +56,7 @@ export default {
   ...cannedMgmt,
   ...chatlist,
   ...companies,
+  ...products,
   ...components,
   ...contact,
   ...contactFilters,

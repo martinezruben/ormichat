@@ -26,6 +26,7 @@ const SECTION_LABELS = {
   'inbox-view': 'SIDEBAR.INBOX',
   contacts: 'SIDEBAR.CONTACTS',
   companies: 'SIDEBAR.COMPANIES',
+  products: 'SIDEBAR.PRODUCTS',
   reports: 'SIDEBAR.REPORTS',
   campaigns: 'SIDEBAR.CAMPAIGNS',
   settings: 'SIDEBAR.SETTINGS',
