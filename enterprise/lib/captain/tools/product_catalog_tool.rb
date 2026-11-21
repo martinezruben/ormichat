@@ -9,7 +9,7 @@ class Captain::Tools::ProductCatalogTool < Captain::Tools::BasePublicTool
     products = Product.where(account_id: @assistant.account_id).lookup(query: query, category: category)
     return "No products found for: #{query}" if products.empty?
 
-    "Use only this catalog information. Do not give medical advice.\n\n#{Products::ChatFormatter.format(products)}"
+    Products::ChatFormatter.assistant_context(products)
   end
 
   private

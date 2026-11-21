@@ -44,7 +44,7 @@ class Api::V1::Accounts::ProductsController < Api::V1::Accounts::BaseController
 
   def product_params
     params.require(:product).permit(
-      :name, :sku, :category, :brand, :description, :image_url, :requires_prescription, :active,
+      :name, :sku, :category, :brand, :description, :ai_description, :image_url, :requires_prescription, :active,
       variants_attributes: [:id, :name, :sku, :price, :currency, :stock, :active, :_destroy]
     )
   end

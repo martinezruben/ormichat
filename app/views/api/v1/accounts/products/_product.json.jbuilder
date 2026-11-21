@@ -4,6 +4,7 @@ json.sku product.sku
 json.category product.category
 json.brand product.brand
 json.description product.description
+json.ai_description product.ai_description
 json.image_url product.image_url.to_s.start_with?('/') ? "#{ENV.fetch('FRONTEND_URL', '')}#{product.image_url}" : product.image_url
 json.requires_prescription product.requires_prescription
 json.active product.active

@@ -6,8 +6,14 @@ class Products::ChatFormatter
     'out_of_stock' => 'out of stock'
   }.freeze
 
+  INSTRUCTIONS = 'Use only this catalog information to recommend products based on what the customer needs. Do not give medical advice.'.freeze
+
   def self.format(products)
     products.map { |product| new(product).to_text }.join("\n\n")
+  end
+
+  def self.assistant_context(products)
+    "#{INSTRUCTIONS}\n\n#{format(products)}"
   end
 
   def initialize(product)
@@ -15,17 +21,29 @@ class Products::ChatFormatter
   end
 
   def to_text
-    lines = ["Product: #{@product.name} (SKU #{@product.sku})", "Category: #{@product.category}"]
-    lines << "Brand: #{@product.brand}" if @product.brand.present?
-    lines << "Description: #{@product.description}" if @product.description.present?
-    lines << "Requires prescription: #{@product.requires_prescription ? 'yes' : 'no'}"
-    lines << "Photo: #{image_url}" if image_url.present?
-    lines << 'Varieties:'
-    lines.concat(@product.variants.select(&:active).map { |variant| variant_line(variant) })
-    lines.join("\n")
+    (header_lines + guidance_lines + ['Varieties:'] + variant_lines).join("\n")
   end
 
   private
+
+  def header_lines
+    lines = ["Product: #{@product.name} (SKU #{@product.sku})", "Category: #{@product.category}"]
+    lines << "Brand: #{@product.brand}" if @product.brand.present?
+    lines << "Description: #{@product.description}" if @product.description.present?
+    lines
+  end
+
+  def guidance_lines
+    lines = []
+    lines << "When to recommend and guidance: #{@product.ai_description}" if @product.ai_description.present?
+    lines << "Requires prescription: #{@product.requires_prescription ? 'yes' : 'no'}"
+    lines << "Photo: #{image_url}" if image_url.present?
+    lines
+  end
+
+  def variant_lines
+    @product.variants.select(&:active).map { |variant| variant_line(variant) }
+  end
 
   def image_url
     url = @product.image_url.to_s
