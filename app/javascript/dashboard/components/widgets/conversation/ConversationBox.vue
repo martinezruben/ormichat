@@ -1,5 +1,6 @@
 <script>
 import { mapGetters } from 'vuex';
+import ConversationFieldsBar from './ConversationFieldsBar.vue';
 import ConversationHeader from './ConversationHeader.vue';
 import DashboardAppFrame from '../DashboardApp/Frame.vue';
 import EmptyState from './EmptyState/EmptyState.vue';
@@ -8,6 +9,7 @@ import MessagesView from './MessagesView.vue';
 export default {
   components: {
     ConversationHeader,
+    ConversationFieldsBar,
     DashboardAppFrame,
     EmptyState,
     MessagesView,
@@ -104,6 +106,7 @@ export default {
         'border-b border-b-n-weak !pt-2': !dashboardApps.length,
       }"
     />
+    <ConversationFieldsBar v-if="currentChat.id" :chat="currentChat" />
     <woot-tabs
       v-if="dashboardApps.length && currentChat.id"
       :index="activeIndex"
