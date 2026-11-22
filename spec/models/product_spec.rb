@@ -88,6 +88,15 @@ RSpec.describe Product do
   end
 
   describe '.lookup' do
+    it 'ignores accents and ñ in both the catalog and the query' do
+      panales = account.products.create!(name: 'Pañales Bebé', sku: 'PAN-1', category: 'Cuidado del bebé', description: 'Para bebé')
+
+      ['panales', 'panales para bebe', 'bebe', 'pañales para bebé'].each do |query|
+        expect(described_class.lookup(query: query)).to include(panales)
+      end
+      expect(described_class.search('PANALES')).to include(panales)
+    end
+
     it 'finds a product by the need the customer describes' do
       expect(described_class.lookup(query: 'me duele la cabeza')).to contain_exactly(paracetamol)
     end
