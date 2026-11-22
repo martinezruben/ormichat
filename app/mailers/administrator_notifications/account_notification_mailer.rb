@@ -58,6 +58,14 @@ class AdministratorNotifications::AccountNotificationMailer < AdministratorNotif
     send_notification(subject, action_url: action_url, meta: meta)
   end
 
+  def captain_generation_failed(model, reason)
+    subject = 'Captain could not answer a customer and handed the conversation to a human.'
+    action_url = settings_url('captain/assistants')
+    meta = { 'model' => model, 'reason' => reason }
+
+    send_notification(subject, action_url: action_url, meta: meta)
+  end
+
   private
 
   def format_deletion_date(deletion_date_str)
