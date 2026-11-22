@@ -14,6 +14,11 @@ const { t } = useI18n();
 const dialogRef = ref(null);
 const isSaving = ref(false);
 const productId = ref(null);
+const fileInputRef = ref(null);
+const imageFile = ref(null);
+const imagePreview = ref('');
+const hasUploadedImage = ref(false);
+const removeUploadedImage = ref(false);
 
 const blankVariant = () => ({ name: '', sku: '', price: '', stock: 0 });
 
@@ -48,7 +53,26 @@ const open = (product = null) => {
       : [blankVariant()],
     removedVariantIds: [],
   });
+  imageFile.value = null;
+  imagePreview.value = product?.image_url ?? '';
+  hasUploadedImage.value = product?.has_uploaded_image ?? false;
+  removeUploadedImage.value = false;
   dialogRef.value?.open();
+};
+
+const onFileChange = event => {
+  const [file] = event.target.files;
+  if (!file) return;
+  imageFile.value = file;
+  removeUploadedImage.value = false;
+  imagePreview.value = URL.createObjectURL(file);
+};
+
+const clearImage = () => {
+  imageFile.value = null;
+  imagePreview.value = form.imageUrl;
+  removeUploadedImage.value = hasUploadedImage.value;
+  if (fileInputRef.value) fileInputRef.value.value = '';
 };
 
 const addVariant = () => form.variants.push(blankVariant());
@@ -86,8 +110,12 @@ const save = async () => {
   isSaving.value = true;
   try {
     const payload = buildPayload();
-    if (productId.value) await ProductsAPI.update(productId.value, payload);
-    else await ProductsAPI.create(payload);
+    const { data } = productId.value
+      ? await ProductsAPI.update(productId.value, payload)
+      : await ProductsAPI.create(payload);
+    if (imageFile.value)
+      await ProductsAPI.uploadImage(data.id, imageFile.value);
+    else if (removeUploadedImage.value) await ProductsAPI.removeImage(data.id);
     useAlert(t('PRODUCTS.FORM.SAVED'));
     dialogRef.value?.close();
     emit('saved');
@@ -128,6 +156,53 @@ defineExpose({ open });
       <Input v-model="form.sku" :label="t('PRODUCTS.FORM.SKU')" />
       <Input v-model="form.category" :label="t('PRODUCTS.FORM.CATEGORY')" />
       <Input v-model="form.brand" :label="t('PRODUCTS.FORM.BRAND')" />
+      <div class="flex gap-4 items-center sm:col-span-2">
+        <img
+          v-if="imagePreview"
+          :src="imagePreview"
+          :alt="form.name"
+          class="object-cover flex-none rounded-lg border size-20 border-n-weak bg-n-slate-2"
+        />
+        <span
+          v-else
+          class="flex flex-none justify-center items-center rounded-lg size-20 bg-n-slate-3 text-n-slate-10"
+        >
+          <span class="i-lucide-image size-6" />
+        </span>
+        <div class="flex flex-col gap-2 items-start">
+          <span class="text-sm font-medium text-n-slate-12">
+            {{ t('PRODUCTS.FORM.PHOTO') }}
+          </span>
+          <div class="flex flex-wrap gap-2">
+            <Button
+              :label="t('PRODUCTS.FORM.UPLOAD_PHOTO')"
+              icon="i-lucide-upload"
+              color="slate"
+              variant="outline"
+              size="sm"
+              @click="fileInputRef?.click()"
+            />
+            <Button
+              v-if="imageFile || (hasUploadedImage && !removeUploadedImage)"
+              :label="t('PRODUCTS.FORM.REMOVE_PHOTO')"
+              color="ruby"
+              variant="ghost"
+              size="sm"
+              @click="clearImage"
+            />
+          </div>
+          <input
+            ref="fileInputRef"
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            class="hidden"
+            @change="onFileChange"
+          />
+          <span class="text-xs text-n-slate-11">
+            {{ t('PRODUCTS.FORM.PHOTO_HELP') }}
+          </span>
+        </div>
+      </div>
       <Input
         v-model="form.imageUrl"
         class="sm:col-span-2"

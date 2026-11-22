@@ -25,6 +25,32 @@ RSpec.describe Llm::Config do
     end
   end
 
+  describe '.agents_api_base' do
+    it 'adds /v1 to an endpoint that does not have it' do
+      configure_llm('CAPTAIN_OPEN_AI_ENDPOINT' => 'http://ollama.test:11434')
+
+      expect(described_class.agents_api_base).to eq('http://ollama.test:11434/v1')
+    end
+
+    it 'does not duplicate /v1 for endpoints that already include it, like Azure OpenAI' do
+      configure_llm('CAPTAIN_OPEN_AI_ENDPOINT' => 'https://recurso.openai.azure.com/openai/v1')
+
+      expect(described_class.agents_api_base).to eq('https://recurso.openai.azure.com/openai/v1')
+    end
+
+    it 'ignores a trailing slash' do
+      configure_llm('CAPTAIN_OPEN_AI_ENDPOINT' => 'https://recurso.openai.azure.com/openai/v1/')
+
+      expect(described_class.agents_api_base).to eq('https://recurso.openai.azure.com/openai/v1')
+    end
+
+    it 'falls back to the OpenAI API when no endpoint is configured' do
+      configure_llm('CAPTAIN_OPEN_AI_ENDPOINT' => '')
+
+      expect(described_class.agents_api_base).to eq('https://api.openai.com/v1')
+    end
+  end
+
   describe '.embedding_credentials' do
     it 'falls back to the chat provider when there is no embedding endpoint or key' do
       configure_llm('CAPTAIN_OPEN_AI_API_KEY' => 'chat-key', 'CAPTAIN_OPEN_AI_ENDPOINT' => 'http://chat.test',

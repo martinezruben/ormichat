@@ -38,6 +38,12 @@ module Llm::Config
       context.chat(model: model, provider: :openai, assume_model_exists: true)
     end
 
+    # Base URL del SDK de agentes (ai-agents), que usa el runner de Captain V2. Igual que el chat directo, debe
+    # terminar en /v1 una sola vez: un endpoint que ya lo trae (p. ej. Azure .../openai/v1) no puede recibir otro.
+    def agents_api_base
+      normalize_endpoint(openai_endpoint) || "#{LlmConstants::OPENAI_API_ENDPOINT}/v1"
+    end
+
     def chat_credentials
       { api_key: system_api_key, api_base: normalize_endpoint(openai_endpoint) }
     end

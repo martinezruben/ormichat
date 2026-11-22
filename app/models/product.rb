@@ -22,11 +22,16 @@
 #  index_products_on_account_id_and_sku       (account_id,sku) UNIQUE
 #
 class Product < ApplicationRecord
+  ALLOWED_IMAGE_TYPES = %w[image/jpeg image/png image/gif image/webp].freeze
+  MAX_IMAGE_SIZE = 5.megabytes
+
   belongs_to :account
+  has_one_attached :image
   has_many :variants, -> { order(:price) }, class_name: 'ProductVariant', dependent: :destroy_async, inverse_of: :product
 
   validates :name, :sku, :category, presence: true
   validates :sku, uniqueness: { scope: :account_id }
+  validate :acceptable_image, if: -> { image.attached? && image.changed? }
 
   accepts_nested_attributes_for :variants, allow_destroy: true
 
@@ -74,5 +79,18 @@ class Product < ApplicationRecord
 
   def total_stock
     variants.select(&:active).sum(&:stock)
+  end
+
+  # Uploaded photo first, then the configured URL; relative paths are made absolute with FRONTEND_URL.
+  def photo_url
+    path = image.attached? ? Rails.application.routes.url_helpers.rails_blob_path(image, only_path: true) : image_url.to_s
+    path.start_with?('/') ? "#{ENV.fetch('FRONTEND_URL', '')}#{path}" : path
+  end
+
+  private
+
+  def acceptable_image
+    errors.add(:image, 'is too big') if image.byte_size > MAX_IMAGE_SIZE
+    errors.add(:image, 'filetype not supported') unless ALLOWED_IMAGE_TYPES.include?(image.content_type)
   end
 end

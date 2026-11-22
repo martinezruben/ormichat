@@ -18,4 +18,12 @@ class ProductPolicy < ApplicationPolicy
   def destroy?
     create?
   end
+
+  def upload_image?
+    create?
+  end
+
+  def remove_image?
+    create?
+  end
 end
