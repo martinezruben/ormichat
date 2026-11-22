@@ -2,6 +2,7 @@ class Captain::Conversation::ResponseBuilderJob < ApplicationJob
   include Captain::Conversation::V1ActionClassifier
   include Captain::Conversation::V1FalsePromiseHandler
   include Captain::Conversation::V2LifecycleEvents
+  include Captain::Conversation::GenerationFailureReporting
   include Captain::Conversation::MessageBuilder
   include Captain::Conversation::ResponseLifecycleLogging
 
@@ -70,6 +71,7 @@ class Captain::Conversation::ResponseBuilderJob < ApplicationJob
     # The V2 runner rescues its own generation errors and signals them via an error
     # response instead of raising, so the failure event must be emitted here — the
     # top-level handle_error path only sees exceptions raised outside the runner.
+    report_generation_failure(@response['error_reason'], @response['reasoning']) if v2_generation_errored?
     record_v2_response_failure(@response['error_reason']) if v2_generation_errored?
 
     if v2_handoff_tool_fired?
@@ -200,6 +202,7 @@ class Captain::Conversation::ResponseBuilderJob < ApplicationJob
 
   def log_error(error)
     ChatwootExceptionTracker.new(error, account: account).capture_exception
+    report_generation_failure(error.class.name, error.message)
   end
 
   def error_action_reason(error)

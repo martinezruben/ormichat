@@ -36,13 +36,17 @@ class Product < ApplicationRecord
   accepts_nested_attributes_for :variants, allow_destroy: true
 
   SEARCH_COLUMNS = %w[name description ai_description brand category].freeze
-  SEARCH_SQL = SEARCH_COLUMNS.map { |column| "products.#{column} ILIKE :p" }.join(' OR ').freeze
-  WORD_SQL = SEARCH_COLUMNS.map { |column| "products.#{column} ~* :re" }.join(' OR ').freeze
+  ACCENTED = 'áéíóúüñ'.freeze
+  UNACCENTED = 'aeiouun'.freeze
+  # Accent-insensitive matching (pañales == panales, bebé == bebe) without needing the unaccent extension.
+  FOLDED_COLUMNS = SEARCH_COLUMNS.map { |column| "translate(lower(products.#{column}), '#{ACCENTED}', '#{UNACCENTED}')" }.freeze
+  SEARCH_SQL = FOLDED_COLUMNS.map { |column| "#{column} LIKE :p" }.join(' OR ').freeze
+  WORD_SQL = FOLDED_COLUMNS.map { |column| "#{column} ~ :re" }.join(' OR ').freeze
 
   scope :active, -> { where(active: true) }
   scope :in_stock, -> { where(id: ProductVariant.active.where('stock > 0').select(:product_id)) }
   scope :search, lambda { |term|
-    pattern = "%#{sanitize_sql_like(term.to_s.delete("\0").strip)}%"
+    pattern = "%#{sanitize_sql_like(fold(term.to_s.delete("\0").strip))}%"
     where(SEARCH_SQL, p: pattern)
   }
 
@@ -67,11 +71,15 @@ class Product < ApplicationRecord
   end
 
   def self.word_start(term)
-    "\\m#{Regexp.escape(term.to_s.strip)}"
+    "\\m#{Regexp.escape(fold(term.to_s.strip))}"
+  end
+
+  def self.fold(text)
+    text.downcase.tr(ACCENTED, UNACCENTED)
   end
 
   def self.best_word_matches(scope, query, limit)
-    terms = query.to_s.downcase.scan(/[[:alpha:]]+/).select { |term| term.length > 2 && LOOKUP_STOPWORDS.exclude?(term) }
+    terms = fold(query.to_s).scan(/[[:alpha:]]+/).select { |term| term.length > 2 && LOOKUP_STOPWORDS.exclude?(term) }
     hits = terms.flat_map { |term| scope.where(WORD_SQL, re: word_start(term)).to_a }
     hits.tally.sort_by { |_product, count| -count }.first(limit).map(&:first)
   end
