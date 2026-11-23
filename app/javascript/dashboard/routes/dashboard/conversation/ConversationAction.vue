@@ -5,7 +5,10 @@ import { useAlert } from 'dashboard/composables';
 import { useAgentsList } from 'dashboard/composables/useAgentsList';
 import MultiselectDropdown from 'shared/components/ui/MultiselectDropdown.vue';
 import ConversationLabels from './labels/LabelBox.vue';
-import { CONVERSATION_PRIORITY } from '../../../../shared/constants/messages';
+import {
+  CONVERSATION_PRIORITY,
+  CONVERSATION_STATUS,
+} from '../../../../shared/constants/messages';
 import { CONVERSATION_EVENTS } from '../../../helper/AnalyticsHelper/events';
 import { useTrack } from 'dashboard/composables';
 import NextButton from 'dashboard/components-next/button/Button.vue';
@@ -38,6 +41,14 @@ export default {
   },
   data() {
     return {
+      statusOptions: [
+        CONVERSATION_STATUS.OPEN,
+        CONVERSATION_STATUS.PENDING,
+        CONVERSATION_STATUS.RESOLVED,
+      ].map(status => ({
+        id: status,
+        name: this.$t(`CONVERSATION.STATUS_LABEL.${status.toUpperCase()}`),
+      })),
       priorityOptions: [
         {
           id: null,
@@ -128,6 +139,12 @@ export default {
             useAlert(this.$t('CONVERSATION.CHANGE_TEAM'));
           });
       },
+    },
+    assignedStatus() {
+      return (
+        this.statusOptions.find(opt => opt.id === this.currentChat.status) ||
+        null
+      );
     },
     assignedPriority: {
       get() {
@@ -233,6 +250,16 @@ export default {
       }
     },
 
+    onClickAssignStatus(selectedStatusItem) {
+      if (selectedStatusItem.id === this.currentChat.status) return;
+      this.$store
+        .dispatch('toggleStatus', {
+          conversationId: this.currentChat.id,
+          status: selectedStatusItem.id,
+        })
+        .then(() => useAlert(this.$t('CONVERSATION.CHANGE_STATUS')));
+    },
+
     onClickAssignPriority(selectedPriorityItem) {
       const isSamePriority =
         this.assignedPriority &&
@@ -311,6 +338,27 @@ export default {
             $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.INPUT_PLACEHOLDER')
           "
           @select="onClickAssignPriority"
+        />
+      </div>
+      <div :class="fieldClass">
+        <span :class="labelClass">
+          {{ $t('CONVERSATION_FIELDS_BAR.STATUS') }}
+        </span>
+        <MultiselectDropdown
+          class="flex-1 min-w-0"
+          :options="statusOptions"
+          :selected-item="assignedStatus"
+          :multiselector-title="$t('CONVERSATION_FIELDS_BAR.STATUS')"
+          :multiselector-placeholder="
+            $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.SELECT_PLACEHOLDER')
+          "
+          :no-search-result="
+            $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.NO_RESULTS')
+          "
+          :input-placeholder="
+            $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.INPUT_PLACEHOLDER')
+          "
+          @select="onClickAssignStatus"
         />
       </div>
     </div>
