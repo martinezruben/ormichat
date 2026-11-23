@@ -30,7 +30,19 @@ RSpec.describe 'ormichat:pharmacy_setup', type: :task do
     expect(account.custom_attribute_definitions.contact_attribute.pluck(:attribute_key))
       .to contain_exactly('sucursal_preferida', 'consentimiento_contacto', 'estado_receta', 'seguro', 'fidelidad')
     expect(account.automation_rules.count).to eq(6)
-    expect(account.captain_assistants.find_by(name: 'Asistente de farmacia').guardrails.join(' ')).to include('Nunca diagnostiques')
+    expect(account.captain_assistants.find_by(name: 'Asistente de farmacia').guardrails.join(' ')).to include('Nunca des un diagnóstico')
+  end
+
+  it 'replaces the legacy no-recommendation guardrail on an existing assistant' do
+    assistant = account.captain_assistants.create!(
+      name: 'Asistente de farmacia', description: 'x',
+      guardrails: ['Nunca diagnostiques, recomiendes tratamientos, indiques dosis ni sugieras cambiar un medicamento por otro. Deriva siempre al farmacéutico.']
+    )
+
+    run_task
+
+    expect(assistant.reload.guardrails.join(' ')).not_to include('recomiendes tratamientos')
+    expect(assistant.guardrails.join(' ')).to include('no es un diagnóstico ni una indicación médica oficial')
   end
 
   it 'is safe to run twice' do

@@ -98,8 +98,15 @@ namespace :ormichat do
                     a.description = 'Atiende consultas generales de la farmacia: horarios, sucursales, domicilios y pedidos.'
                   end
                 end
+    # Versión anterior de la regla (prohibía recomendar); se retira para que no contradiga a la nueva en asistentes ya configurados.
+    legacy_guardrails = [
+      'Nunca diagnostiques, recomiendes tratamientos, indiques dosis ni sugieras cambiar un medicamento por otro. Deriva siempre al farmacéutico.'
+    ]
     guardrails = [
-      'Nunca diagnostiques, recomiendes tratamientos, indiques dosis ni sugieras cambiar un medicamento por otro. Deriva siempre al farmacéutico.',
+      'Nunca des un diagnóstico, indiques dosis ni sugieras cambiar un medicamento por otro. Puedes orientar con los productos del catálogo ' \
+      'según la necesidad del cliente, solo como información.',
+      'Siempre que sugieras un producto según una necesidad o síntoma, empieza el mensaje aclarando que es solo información, que no es un ' \
+      'diagnóstico ni una indicación médica oficial y que debe acudir a un médico para ello.',
       'No interpretes recetas médicas ni fotos de recetas: confirma que las recibiste y deriva la conversación al farmacéutico.',
       'Si el cliente menciona una reacción adversa, alergia, síntomas graves o una emergencia, dile que acuda a urgencias si es grave y ' \
       'pasa la conversación a una persona de inmediato.',
@@ -111,7 +118,7 @@ namespace :ormichat do
       'Si la respuesta depende de la ubicación, pregunta primero la sucursal de preferencia del cliente.',
       'Si no puedes resolver la consulta, avisa que pasarás la conversación a una persona del equipo.'
     ]
-    assistant.update!(guardrails: ((assistant.guardrails || []) + guardrails).uniq,
+    assistant.update!(guardrails: (((assistant.guardrails || []) - legacy_guardrails) + guardrails).uniq,
                       response_guidelines: ((assistant.response_guidelines || []) + guidelines).uniq)
     puts "✔ Asistente \"#{assistant.name}\": #{assistant.guardrails.size} reglas de seguridad y #{assistant.response_guidelines.size} pautas"
   end
