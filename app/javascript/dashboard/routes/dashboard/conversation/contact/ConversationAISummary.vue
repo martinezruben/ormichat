@@ -33,7 +33,7 @@ watch(
 <template>
   <div
     v-if="captainTasksEnabled"
-    class="flex flex-col gap-2 p-3 mx-4 mb-3 border rounded-xl border-n-iris-6 bg-n-iris-2"
+    class="flex flex-col gap-2 p-3 border rounded-xl border-n-iris-6 bg-n-iris-2"
   >
     <div class="flex items-center gap-2">
       <span class="i-ph-sparkle-fill size-4 text-n-iris-11" />

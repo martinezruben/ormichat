@@ -563,7 +563,9 @@
       "CONTACT": "Contacto",
       "ACTIVITY": "Actividad"
     },
-    "SEARCH_PLACEHOLDER": "Buscar en los detalles…"
+    "SEARCH_PLACEHOLDER": "Buscar en los detalles…",
+    "QUICK_ACTIONS": "Acciones rápidas",
+    "NO_ACTIVITY": "Aún no hay actividad"
   },
   "CONVERSATION_CUSTOM_ATTRIBUTES": {
     "ADD_BUTTON_TEXT": "Crear atributo",

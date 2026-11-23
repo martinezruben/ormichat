@@ -49,8 +49,12 @@ export default {
       type: Boolean,
       default: true,
     },
+    mode: {
+      type: String,
+      default: 'header',
+    },
   },
-  emits: ['panelClose'],
+  emits: ['panelClose', 'goContact'],
   setup() {
     const { isAdmin } = useAdmin();
     return {
@@ -72,6 +76,26 @@ export default {
       currentChat: 'getSelectedChat',
       getAttributesByModel: 'attributes/getAttributesByModel',
     }),
+    missingFields() {
+      const { email, phone_number: phone } = this.contact;
+      return [
+        !email && {
+          key: 'email',
+          icon: 'i-lucide-mail',
+          label: 'CONTACT_PANEL.ADD_EMAIL',
+        },
+        !phone && {
+          key: 'phone',
+          icon: 'i-lucide-phone',
+          label: 'CONTACT_PANEL.ADD_PHONE',
+        },
+        !this.additionalAttributes.address && {
+          key: 'address',
+          icon: 'i-lucide-map-pin',
+          label: 'CONTACT_PANEL.ADD_ADDRESS',
+        },
+      ].filter(Boolean);
+    },
     loadedCustomAttributes() {
       const values = this.contact.custom_attributes || {};
       return this.getAttributesByModel('contact_attribute')
@@ -230,7 +254,155 @@ export default {
 </script>
 
 <template>
-  <div class="relative items-center w-full p-4">
+  <div
+    v-if="mode === 'details'"
+    class="flex flex-col items-start w-full min-w-0 gap-2"
+  >
+    <p v-if="additionalAttributes.description" class="break-words mb-0.5">
+      {{ additionalAttributes.description }}
+    </p>
+    <div class="flex flex-col items-start w-full gap-2">
+      <ContactInfoRow
+        :href="contact.email ? `mailto:${contact.email}` : ''"
+        :value="contact.email"
+        icon="mail"
+        emoji="✉️"
+        :title="$t('CONTACT_PANEL.EMAIL_ADDRESS')"
+        show-copy
+        editable
+        @update="value => onFieldUpdate('email', value)"
+      />
+      <ContactInfoRow
+        :href="contact.phone_number ? `tel:${contact.phone_number}` : ''"
+        :value="contact.phone_number"
+        icon="call"
+        emoji="📞"
+        :title="$t('CONTACT_PANEL.PHONE_NUMBER')"
+        show-copy
+        editable
+        @update="value => onFieldUpdate('phone_number', value)"
+      />
+      <ContactInfoRow
+        v-if="contact.identifier"
+        :value="contact.identifier"
+        icon="contact-identify"
+        emoji="🪪"
+        :title="$t('CONTACT_PANEL.IDENTIFIER')"
+      />
+      <ContactInfoRow
+        :value="additionalAttributes.address"
+        icon="location"
+        emoji="📍"
+        :title="$t('CONTACT_PANEL.ADDRESS')"
+        editable
+        @update="
+          value =>
+            updateContactField({
+              additional_attributes: {
+                ...additionalAttributes,
+                address: value,
+              },
+            })
+        "
+      />
+      <ContactInfoRow
+        v-if="locationLabel"
+        :href="googleMapsUrl"
+        :value="locationLabel"
+        icon="map"
+        emoji="🌍"
+        :title="$t('CONTACT_PANEL.LOCATION')"
+        :trailing-html="countryFlagHtml"
+      />
+      <SocialIcons :social-profiles="socialProfiles" />
+      <div
+        v-if="loadedCustomAttributes.length"
+        class="flex flex-col items-start w-full gap-2 pt-2 mt-1 border-t border-n-weak"
+      >
+        <div
+          v-for="attribute in loadedCustomAttributes"
+          :key="attribute.key"
+          class="flex items-center w-full min-w-0 gap-2"
+        >
+          <template v-if="isImageAttribute(attribute)">
+            <img
+              :src="attribute.fileURL"
+              :alt="attribute.label"
+              class="flex-shrink-0 object-cover w-6 h-6 rounded outline outline-1 outline-n-weak -outline-offset-1 cursor-pointer"
+              @click="openAttributeImagePreview(attribute)"
+            />
+            <span
+              class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-slate-11"
+            >
+              {{ attribute.label }}
+            </span>
+          </template>
+          <a
+            v-else-if="isPdfAttribute(attribute)"
+            :href="attribute.fileURL"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center min-w-0 gap-2 text-n-slate-11 hover:underline"
+          >
+            <span class="i-lucide-file-text text-sm flex-shrink-0" />
+            <span
+              class="overflow-hidden text-sm whitespace-nowrap text-ellipsis"
+            >
+              {{ attribute.label }}
+            </span>
+          </a>
+          <template v-else-if="attribute.type === 'file'">
+            <a
+              :href="attribute.fileURL"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center min-w-0 gap-2 text-n-slate-11 hover:underline"
+            >
+              <span class="i-lucide-paperclip text-sm flex-shrink-0" />
+              <span
+                class="overflow-hidden text-sm whitespace-nowrap text-ellipsis"
+              >
+                {{ attribute.label }}
+              </span>
+            </a>
+          </template>
+          <template v-else>
+            <span class="flex-shrink-0 text-sm font-medium text-n-slate-12">
+              {{ attribute.label }}:
+            </span>
+            <a
+              v-if="attribute.linkURL"
+              :href="attribute.linkURL"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-blue-11 hover:underline"
+            >
+              {{ attribute.displayValue }}
+            </a>
+            <span
+              v-else
+              class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-slate-11"
+            >
+              {{ attribute.displayValue }}
+            </span>
+          </template>
+        </div>
+        <ImagePreviewDialog
+          ref="attributeImageDialog"
+          :show-cancel-button="false"
+          :show-confirm-button="false"
+          width="lg"
+        >
+          <img
+            :src="previewImageSrc"
+            :alt="previewImageAlt"
+            class="w-full max-h-[70vh] object-contain rounded-lg"
+          />
+        </ImagePreviewDialog>
+      </div>
+    </div>
+  </div>
+  <div v-else class="relative items-center w-full p-4">
     <div
       aria-hidden="true"
       class="absolute inset-x-0 top-0 pointer-events-none h-[4.75rem] bg-gradient-to-b from-n-blue-3 to-transparent"
@@ -368,148 +540,17 @@ export default {
             </template>
           </ContactDeleteModal>
         </div>
-        <p v-if="additionalAttributes.description" class="break-words mb-0.5">
-          {{ additionalAttributes.description }}
-        </p>
-        <div class="flex flex-col items-start w-full gap-2">
-          <ContactInfoRow
-            :href="contact.email ? `mailto:${contact.email}` : ''"
-            :value="contact.email"
-            icon="mail"
-            emoji="✉️"
-            :title="$t('CONTACT_PANEL.EMAIL_ADDRESS')"
-            show-copy
-            editable
-            @update="value => onFieldUpdate('email', value)"
-          />
-          <ContactInfoRow
-            :href="contact.phone_number ? `tel:${contact.phone_number}` : ''"
-            :value="contact.phone_number"
-            icon="call"
-            emoji="📞"
-            :title="$t('CONTACT_PANEL.PHONE_NUMBER')"
-            show-copy
-            editable
-            @update="value => onFieldUpdate('phone_number', value)"
-          />
-          <ContactInfoRow
-            v-if="contact.identifier"
-            :value="contact.identifier"
-            icon="contact-identify"
-            emoji="🪪"
-            :title="$t('CONTACT_PANEL.IDENTIFIER')"
-          />
-          <ContactInfoRow
-            :value="additionalAttributes.address"
-            icon="location"
-            emoji="📍"
-            :title="$t('CONTACT_PANEL.ADDRESS')"
-            editable
-            @update="
-              value =>
-                updateContactField({
-                  additional_attributes: {
-                    ...additionalAttributes,
-                    address: value,
-                  },
-                })
-            "
-          />
-          <ContactInfoRow
-            v-if="locationLabel"
-            :href="googleMapsUrl"
-            :value="locationLabel"
-            icon="map"
-            emoji="🌍"
-            :title="$t('CONTACT_PANEL.LOCATION')"
-            :trailing-html="countryFlagHtml"
-          />
-          <SocialIcons :social-profiles="socialProfiles" />
-          <div
-            v-if="loadedCustomAttributes.length"
-            class="flex flex-col items-start w-full gap-2 pt-2 mt-1 border-t border-n-weak"
+        <div v-if="missingFields.length" class="flex flex-wrap gap-1.5 w-full">
+          <button
+            v-for="field in missingFields"
+            :key="field.key"
+            type="button"
+            class="inline-flex items-center gap-1 h-6 px-2 text-xs rounded-full border border-dashed border-n-strong !bg-transparent text-n-slate-11 hover:!bg-n-alpha-1"
+            @click="$emit('goContact')"
           >
-            <div
-              v-for="attribute in loadedCustomAttributes"
-              :key="attribute.key"
-              class="flex items-center w-full min-w-0 gap-2"
-            >
-              <template v-if="isImageAttribute(attribute)">
-                <img
-                  :src="attribute.fileURL"
-                  :alt="attribute.label"
-                  class="flex-shrink-0 object-cover w-6 h-6 rounded outline outline-1 outline-n-weak -outline-offset-1 cursor-pointer"
-                  @click="openAttributeImagePreview(attribute)"
-                />
-                <span
-                  class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-slate-11"
-                >
-                  {{ attribute.label }}
-                </span>
-              </template>
-              <a
-                v-else-if="isPdfAttribute(attribute)"
-                :href="attribute.fileURL"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex items-center min-w-0 gap-2 text-n-slate-11 hover:underline"
-              >
-                <span class="i-lucide-file-text text-sm flex-shrink-0" />
-                <span
-                  class="overflow-hidden text-sm whitespace-nowrap text-ellipsis"
-                >
-                  {{ attribute.label }}
-                </span>
-              </a>
-              <template v-else-if="attribute.type === 'file'">
-                <a
-                  :href="attribute.fileURL"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center min-w-0 gap-2 text-n-slate-11 hover:underline"
-                >
-                  <span class="i-lucide-paperclip text-sm flex-shrink-0" />
-                  <span
-                    class="overflow-hidden text-sm whitespace-nowrap text-ellipsis"
-                  >
-                    {{ attribute.label }}
-                  </span>
-                </a>
-              </template>
-              <template v-else>
-                <span class="flex-shrink-0 text-sm font-medium text-n-slate-12">
-                  {{ attribute.label }}:
-                </span>
-                <a
-                  v-if="attribute.linkURL"
-                  :href="attribute.linkURL"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-blue-11 hover:underline"
-                >
-                  {{ attribute.displayValue }}
-                </a>
-                <span
-                  v-else
-                  class="overflow-hidden text-sm whitespace-nowrap text-ellipsis text-n-slate-11"
-                >
-                  {{ attribute.displayValue }}
-                </span>
-              </template>
-            </div>
-            <ImagePreviewDialog
-              ref="attributeImageDialog"
-              :show-cancel-button="false"
-              :show-confirm-button="false"
-              width="lg"
-            >
-              <img
-                :src="previewImageSrc"
-                :alt="previewImageAlt"
-                class="w-full max-h-[70vh] object-contain rounded-lg"
-              />
-            </ImagePreviewDialog>
-          </div>
+            <span :class="field.icon" class="size-3" />
+            {{ $t(field.label) }}
+          </button>
         </div>
       </div>
       <EditContact

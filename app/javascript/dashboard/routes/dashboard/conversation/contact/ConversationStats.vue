@@ -30,18 +30,18 @@ const stats = computed(() => [
 </script>
 
 <template>
-  <div class="grid grid-cols-3 gap-2 px-4 pb-4">
+  <div class="grid grid-cols-3 gap-2">
     <div
       v-for="stat in stats"
       :key="stat.key"
-      class="flex flex-col gap-0.5 px-3 py-2 rounded-xl bg-n-alpha-1"
+      class="flex flex-col gap-0.5 min-w-0 px-2.5 py-2 border rounded-xl border-n-weak bg-n-slate-2"
     >
       <span
         class="text-base font-semibold tabular-nums text-n-slate-12 truncate"
       >
         {{ stat.value }}
       </span>
-      <span class="text-xs text-n-slate-11 truncate">
+      <span class="text-xs text-n-slate-10 truncate">
         {{ $t(`CONVERSATION_SIDEBAR.STATS.${stat.label}`) }}
       </span>
     </div>

@@ -21,6 +21,14 @@ export default {
       type: [Number, String],
       required: true,
     },
+    layout: {
+      type: String,
+      default: 'rows',
+    },
+    showLabels: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup() {
     const { agentsList } = useAgentsList(true, { includeAgentBots: true });
@@ -155,6 +163,19 @@ export default {
           });
       },
     },
+    fieldClass() {
+      return this.isGrid
+        ? 'flex flex-col gap-1 min-w-0'
+        : 'flex items-center justify-between gap-3';
+    },
+    labelClass() {
+      return this.isGrid
+        ? 'text-xs font-medium text-n-slate-11'
+        : 'text-sm shrink-0 text-n-slate-11';
+    },
+    isGrid() {
+      return this.layout === 'grid';
+    },
     showSelfAssign() {
       if (!this.assignedAgent) {
         return true;
@@ -226,77 +247,83 @@ export default {
 </script>
 
 <template>
-  <div class="flex flex-col gap-3 pb-1">
-    <div class="flex items-center justify-between gap-3">
-      <span class="text-sm shrink-0 text-n-slate-11">
-        {{ $t('CONVERSATION_SIDEBAR.ASSIGNEE_LABEL') }}
-      </span>
-      <MultiselectDropdown
-        class="flex-1 min-w-0"
-        :options="agentsList"
-        :selected-item="assignedAgent"
-        :multiselector-title="$t('AGENT_MGMT.MULTI_SELECTOR.TITLE.AGENT')"
-        :multiselector-placeholder="$t('AGENT_MGMT.MULTI_SELECTOR.PLACEHOLDER')"
-        :no-search-result="
-          $t('AGENT_MGMT.MULTI_SELECTOR.SEARCH.NO_RESULTS.AGENT')
-        "
-        :input-placeholder="
-          $t('AGENT_MGMT.MULTI_SELECTOR.SEARCH.PLACEHOLDER.AGENT')
-        "
-        @select="onClickAssignAgent"
-      />
+  <div class="flex flex-col gap-3">
+    <div class="grid gap-3" :class="isGrid ? 'grid-cols-2' : 'grid-cols-1'">
+      <div :class="fieldClass">
+        <span :class="labelClass">
+          {{ $t('CONVERSATION_SIDEBAR.ASSIGNEE_LABEL') }}
+        </span>
+        <MultiselectDropdown
+          class="flex-1 min-w-0"
+          :options="agentsList"
+          :selected-item="assignedAgent"
+          :multiselector-title="$t('AGENT_MGMT.MULTI_SELECTOR.TITLE.AGENT')"
+          :multiselector-placeholder="
+            $t('AGENT_MGMT.MULTI_SELECTOR.PLACEHOLDER')
+          "
+          :no-search-result="
+            $t('AGENT_MGMT.MULTI_SELECTOR.SEARCH.NO_RESULTS.AGENT')
+          "
+          :input-placeholder="
+            $t('AGENT_MGMT.MULTI_SELECTOR.SEARCH.PLACEHOLDER.AGENT')
+          "
+          @select="onClickAssignAgent"
+        />
+      </div>
+      <div :class="fieldClass">
+        <span :class="labelClass">
+          {{ $t('CONVERSATION_SIDEBAR.TEAM_LABEL') }}
+        </span>
+        <MultiselectDropdown
+          class="flex-1 min-w-0"
+          :options="teamsList"
+          :selected-item="assignedTeam"
+          show-emoji-icon
+          :multiselector-title="$t('AGENT_MGMT.MULTI_SELECTOR.TITLE.TEAM')"
+          :multiselector-placeholder="
+            $t('AGENT_MGMT.MULTI_SELECTOR.PLACEHOLDER')
+          "
+          :no-search-result="
+            $t('AGENT_MGMT.MULTI_SELECTOR.SEARCH.NO_RESULTS.TEAM')
+          "
+          :input-placeholder="
+            $t('AGENT_MGMT.MULTI_SELECTOR.SEARCH.PLACEHOLDER.TEAM')
+          "
+          @select="onClickAssignTeam"
+        />
+      </div>
+      <div :class="fieldClass">
+        <span :class="labelClass">
+          {{ $t('CONVERSATION.PRIORITY.TITLE') }}
+        </span>
+        <MultiselectDropdown
+          class="flex-1 min-w-0"
+          :options="priorityOptions"
+          :selected-item="assignedPriority"
+          :multiselector-title="$t('CONVERSATION.PRIORITY.TITLE')"
+          :multiselector-placeholder="
+            $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.SELECT_PLACEHOLDER')
+          "
+          :no-search-result="
+            $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.NO_RESULTS')
+          "
+          :input-placeholder="
+            $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.INPUT_PLACEHOLDER')
+          "
+          @select="onClickAssignPriority"
+        />
+      </div>
     </div>
     <NextButton
       v-if="showSelfAssign"
       link
       xs
-      icon="i-lucide-arrow-right"
-      class="!gap-1 self-end -mt-1"
+      icon="i-lucide-user-plus"
+      class="!gap-1.5 self-start"
       :label="$t('CONVERSATION_SIDEBAR.SELF_ASSIGN')"
       @click="onSelfAssign"
     />
-    <div class="flex items-center justify-between gap-3">
-      <span class="text-sm shrink-0 text-n-slate-11">
-        {{ $t('CONVERSATION_SIDEBAR.TEAM_LABEL') }}
-      </span>
-      <MultiselectDropdown
-        class="flex-1 min-w-0"
-        :options="teamsList"
-        :selected-item="assignedTeam"
-        show-emoji-icon
-        :multiselector-title="$t('AGENT_MGMT.MULTI_SELECTOR.TITLE.TEAM')"
-        :multiselector-placeholder="$t('AGENT_MGMT.MULTI_SELECTOR.PLACEHOLDER')"
-        :no-search-result="
-          $t('AGENT_MGMT.MULTI_SELECTOR.SEARCH.NO_RESULTS.TEAM')
-        "
-        :input-placeholder="
-          $t('AGENT_MGMT.MULTI_SELECTOR.SEARCH.PLACEHOLDER.TEAM')
-        "
-        @select="onClickAssignTeam"
-      />
-    </div>
-    <div class="flex items-center justify-between gap-3">
-      <span class="text-sm shrink-0 text-n-slate-11">
-        {{ $t('CONVERSATION.PRIORITY.TITLE') }}
-      </span>
-      <MultiselectDropdown
-        class="flex-1 min-w-0"
-        :options="priorityOptions"
-        :selected-item="assignedPriority"
-        :multiselector-title="$t('CONVERSATION.PRIORITY.TITLE')"
-        :multiselector-placeholder="
-          $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.SELECT_PLACEHOLDER')
-        "
-        :no-search-result="
-          $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.NO_RESULTS')
-        "
-        :input-placeholder="
-          $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.INPUT_PLACEHOLDER')
-        "
-        @select="onClickAssignPriority"
-      />
-    </div>
-    <div class="flex flex-col gap-1.5">
+    <div v-if="showLabels" class="flex flex-col gap-1.5">
       <span class="text-sm text-n-slate-11">
         {{ $t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_LABELS') }}
       </span>
