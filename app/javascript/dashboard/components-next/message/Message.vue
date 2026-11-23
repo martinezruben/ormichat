@@ -631,7 +631,7 @@ provideMessageContext({
   <div
     v-if="shouldRenderMessage"
     :id="`message${props.id}`"
-    class="flex w-full mb-2 message-bubble-container group/msg"
+    class="flex w-full mb-1.5 message-bubble-container group/msg"
     :data-message-id="props.id"
     :class="[
       flexOrientationClass,

@@ -50,7 +50,8 @@ const varaintBaseMap = {
   [MESSAGE_VARIANTS.AGENT]: 'bg-n-blue-3 text-n-slate-12',
   [MESSAGE_VARIANTS.PRIVATE]:
     'bg-n-solid-amber text-n-amber-12 border border-dashed border-n-amber-8 [&_.prosemirror-mention-node]:font-semibold',
-  [MESSAGE_VARIANTS.USER]: 'bg-n-slate-3 text-n-slate-12',
+  [MESSAGE_VARIANTS.USER]:
+    'bg-n-surface-1 text-n-slate-12 border border-n-weak shadow-sm',
   [MESSAGE_VARIANTS.ACTIVITY]: 'text-n-slate-11 text-xs',
   [MESSAGE_VARIANTS.BOT]: 'bg-n-solid-iris text-n-slate-12',
   [MESSAGE_VARIANTS.TEMPLATE]: 'bg-n-solid-iris text-n-slate-12',
@@ -127,7 +128,7 @@ const replyToPreview = computed(() => {
     :class="[
       messageClass,
       {
-        'max-w-lg': variant !== MESSAGE_VARIANTS.EMAIL,
+        'max-w-2xl': variant !== MESSAGE_VARIANTS.EMAIL,
       },
     ]"
   >
