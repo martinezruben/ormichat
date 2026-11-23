@@ -36,7 +36,8 @@ RSpec.describe 'ormichat:pharmacy_setup', type: :task do
   it 'replaces the legacy no-recommendation guardrail on an existing assistant' do
     assistant = account.captain_assistants.create!(
       name: 'Asistente de farmacia', description: 'x',
-      guardrails: ['Nunca diagnostiques, recomiendes tratamientos, indiques dosis ni sugieras cambiar un medicamento por otro. Deriva siempre al farmacéutico.']
+      guardrails: ['Nunca diagnostiques, recomiendes tratamientos, indiques dosis ni sugieras cambiar un medicamento por otro. ' \
+                   'Deriva siempre al farmacéutico.']
     )
 
     run_task
