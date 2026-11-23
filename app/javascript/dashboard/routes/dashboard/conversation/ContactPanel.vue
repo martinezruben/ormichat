@@ -11,6 +11,8 @@ import { useUISettings } from 'dashboard/composables/useUISettings';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 
 import ContactPanelSection from './ContactPanelSection.vue';
+import ContactPanelTimeline from './ContactPanelTimeline.vue';
+import ConversationLabels from './labels/LabelBox.vue';
 import ContactConversations from './ContactConversations.vue';
 import ConversationAction from './ConversationAction.vue';
 import ConversationParticipant from './ConversationParticipant.vue';
@@ -49,6 +51,7 @@ const TABS = [
 ];
 
 const activeTab = ref(TABS[0].key);
+const SECTION = 'CONVERSATION_SIDEBAR.ACCORDION';
 const query = ref('');
 
 const normalize = text =>
@@ -56,6 +59,11 @@ const normalize = text =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
+
+const selectTab = key => {
+  query.value = '';
+  activeTab.value = key;
+};
 
 const isSearching = computed(() => query.value.trim() !== '');
 
@@ -143,70 +151,98 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full min-w-0 overflow-x-hidden">
     <SidebarActionsHeader
       :title="$t('CONVERSATION.SIDEBAR.CONTACT')"
       @close="closeContactPanel"
     />
-    <ContactInfo :contact="contact" :channel-type="channelType" />
+    <ContactInfo
+      :contact="contact"
+      :channel-type="channelType"
+      @go-contact="selectTab('contact')"
+    />
     <div
       class="sticky top-0 z-10 flex flex-col gap-2 px-3 pt-2 border-b bg-n-surface-1 border-n-weak"
     >
-      <input
-        v-model="query"
-        type="search"
-        :aria-label="$t('CONVERSATION_SIDEBAR.SEARCH_PLACEHOLDER')"
-        :placeholder="$t('CONVERSATION_SIDEBAR.SEARCH_PLACEHOLDER')"
-        class="!m-0 !h-8 w-full !text-sm"
-      />
-      <div role="tablist" class="flex gap-0.5 -mx-1">
+      <div class="relative">
+        <span
+          class="absolute i-lucide-search size-4 start-2.5 top-2 text-n-slate-10"
+        />
+        <input
+          v-model="query"
+          type="search"
+          :aria-label="$t('CONVERSATION_SIDEBAR.SEARCH_PLACEHOLDER')"
+          :placeholder="$t('CONVERSATION_SIDEBAR.SEARCH_PLACEHOLDER')"
+          class="!m-0 !h-8 w-full !text-sm !ps-8 !rounded-lg"
+        />
+      </div>
+      <div role="tablist" class="flex gap-0.5">
         <button
           v-for="tab in TABS"
           :key="tab.key"
           type="button"
           role="tab"
           :aria-selected="!isSearching && activeTab === tab.key"
-          class="flex-1 px-2 py-2 text-sm font-medium transition-colors"
+          class="flex-1 min-w-0 px-1 py-2 text-xs font-medium truncate transition-colors"
           :class="
             !isSearching && activeTab === tab.key
               ? 'shadow-[inset_0_-2px_0_0] shadow-n-brand text-n-slate-12'
               : 'text-n-slate-11 hover:text-n-slate-12'
           "
-          @click="
-            query = '';
-            activeTab = tab.key;
-          "
+          @click="selectTab(tab.key)"
         >
           {{ $t(tab.label) }}
         </button>
       </div>
     </div>
-    <div class="flex flex-col gap-5 px-3 py-4">
+    <div class="flex flex-col gap-5 px-3 py-4 min-w-0">
       <template v-if="!isSearching && activeTab === 'summary'">
         <ConversationStats />
-        <ConversationAISummary :conversation-id="conversationId" />
       </template>
       <ContactPanelSection
-        v-if="
-          isVisible(
-            'summary',
-            'CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_ACTIONS'
-          )
-        "
-        :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_ACTIONS')"
+        v-if="isVisible('summary', 'CONVERSATION_SIDEBAR.QUICK_ACTIONS')"
+        :title="$t('CONVERSATION_SIDEBAR.QUICK_ACTIONS')"
       >
         <ConversationAction
           :conversation-id="conversationId"
-          :inbox-id="inboxId"
+          layout="grid"
+          :show-labels="false"
+        />
+      </ContactPanelSection>
+      <ContactPanelSection
+        v-if="isVisible('summary', `${SECTION}.CONVERSATION_LABELS`)"
+        :title="$t(`${SECTION}.CONVERSATION_LABELS`)"
+      >
+        <ConversationLabels :conversation-id="conversationId" />
+      </ContactPanelSection>
+      <ConversationAISummary
+        v-if="!isSearching && activeTab === 'summary'"
+        :conversation-id="conversationId"
+      />
+      <ContactPanelSection
+        v-if="isVisible('summary', `${SECTION}.CONTACT_NOTES`)"
+        :title="$t(`${SECTION}.CONTACT_NOTES`)"
+      >
+        <ContactNotes :contact-id="contactId" />
+      </ContactPanelSection>
+      <ContactPanelSection
+        v-if="isVisible('conversation', `${SECTION}.CONVERSATION_ACTIONS`)"
+        :title="$t(`${SECTION}.CONVERSATION_ACTIONS`)"
+      >
+        <ConversationAction
+          :conversation-id="conversationId"
+          :show-labels="false"
         />
       </ContactPanelSection>
       <ContactPanelSection
         v-if="
-          isVisible('summary', 'CONVERSATION_SIDEBAR.ACCORDION.CONTACT_NOTES')
+          activeTab === 'conversation' &&
+          !isSearching &&
+          isVisible('conversation', `${SECTION}.CONVERSATION_LABELS`)
         "
-        :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONTACT_NOTES')"
+        :title="$t(`${SECTION}.CONVERSATION_LABELS`)"
       >
-        <ContactNotes :contact-id="contactId" />
+        <ConversationLabels :conversation-id="conversationId" />
       </ContactPanelSection>
       <ContactPanelSection
         v-if="
@@ -220,25 +256,16 @@ onMounted(() => {
         />
       </ContactPanelSection>
       <woot-feature-toggle
-        v-if="
-          isVisible('conversation', 'CONVERSATION_SIDEBAR.ACCORDION.MACROS')
-        "
+        v-if="isVisible('conversation', `${SECTION}.MACROS`)"
         feature-key="macros"
       >
-        <ContactPanelSection
-          :title="$t('CONVERSATION_SIDEBAR.ACCORDION.MACROS')"
-        >
+        <ContactPanelSection :title="$t(`${SECTION}.MACROS`)">
           <MacrosList :conversation-id="conversationId" />
         </ContactPanelSection>
       </woot-feature-toggle>
       <ContactPanelSection
-        v-if="
-          isVisible(
-            'conversation',
-            'CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_INFO'
-          )
-        "
-        :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_INFO')"
+        v-if="isVisible('conversation', `${SECTION}.CONVERSATION_INFO`)"
+        :title="$t(`${SECTION}.CONVERSATION_INFO`)"
       >
         <ConversationInfo
           :conversation-attributes="conversationAdditionalAttributes"
@@ -249,12 +276,9 @@ onMounted(() => {
         v-if="
           isLinearFeatureEnabled &&
           isLinearClientIdConfigured &&
-          isVisible(
-            'conversation',
-            'CONVERSATION_SIDEBAR.ACCORDION.LINEAR_ISSUES'
-          )
+          isVisible('conversation', `${SECTION}.LINEAR_ISSUES`)
         "
-        :title="$t('CONVERSATION_SIDEBAR.ACCORDION.LINEAR_ISSUES')"
+        :title="$t(`${SECTION}.LINEAR_ISSUES`)"
       >
         <LinearSetupCTA v-if="!isLinearConnected" />
         <LinearIssuesList v-else :conversation-id="conversationId" />
@@ -262,23 +286,21 @@ onMounted(() => {
       <ContactPanelSection
         v-if="
           isShopifyFeatureEnabled &&
-          isVisible(
-            'conversation',
-            'CONVERSATION_SIDEBAR.ACCORDION.SHOPIFY_ORDERS'
-          )
+          isVisible('conversation', `${SECTION}.SHOPIFY_ORDERS`)
         "
-        :title="$t('CONVERSATION_SIDEBAR.ACCORDION.SHOPIFY_ORDERS')"
+        :title="$t(`${SECTION}.SHOPIFY_ORDERS`)"
       >
         <ShopifyOrdersList :contact-id="contactId" />
       </ContactPanelSection>
       <ContactPanelSection
-        v-if="
-          isVisible(
-            'contact',
-            'CONVERSATION_SIDEBAR.ACCORDION.CONTACT_ATTRIBUTES'
-          )
-        "
-        :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONTACT_ATTRIBUTES')"
+        v-if="isVisible('contact', `${SECTION}.CONTACT_DETAILS`)"
+        :title="$t(`${SECTION}.CONTACT_DETAILS`)"
+      >
+        <ContactInfo mode="details" :contact="contact" />
+      </ContactPanelSection>
+      <ContactPanelSection
+        v-if="isVisible('contact', `${SECTION}.CONTACT_ATTRIBUTES`)"
+        :title="$t(`${SECTION}.CONTACT_ATTRIBUTES`)"
       >
         <CustomAttributes
           attribute-type="contact_attribute"
@@ -290,14 +312,17 @@ onMounted(() => {
         />
       </ContactPanelSection>
       <ContactPanelSection
+        v-if="isVisible('activity', 'CONVERSATION_SIDEBAR.TABS.ACTIVITY')"
+        :title="$t('CONVERSATION_SIDEBAR.TABS.ACTIVITY')"
+      >
+        <ContactPanelTimeline />
+      </ContactPanelSection>
+      <ContactPanelSection
         v-if="
           contact.id &&
-          isVisible(
-            'activity',
-            'CONVERSATION_SIDEBAR.ACCORDION.PREVIOUS_CONVERSATION'
-          )
+          isVisible('activity', `${SECTION}.PREVIOUS_CONVERSATION`)
         "
-        :title="$t('CONVERSATION_SIDEBAR.ACCORDION.PREVIOUS_CONVERSATION')"
+        :title="$t(`${SECTION}.PREVIOUS_CONVERSATION`)"
       >
         <ContactConversations
           :contact-id="contact.id"
@@ -305,10 +330,8 @@ onMounted(() => {
         />
       </ContactPanelSection>
       <ContactPanelSection
-        v-if="
-          isVisible('activity', 'CONVERSATION_SIDEBAR.ACCORDION.SHARED_FILES')
-        "
-        :title="$t('CONVERSATION_SIDEBAR.ACCORDION.SHARED_FILES')"
+        v-if="isVisible('activity', `${SECTION}.SHARED_FILES`)"
+        :title="$t(`${SECTION}.SHARED_FILES`)"
       >
         <SharedFiles />
       </ContactPanelSection>
