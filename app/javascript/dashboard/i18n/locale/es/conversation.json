@@ -556,7 +556,14 @@
       "STARTED": "Iniciada",
       "FIRST_RESPONSE": "1ª respuesta",
       "LAST_ACTIVITY": "Última"
-    }
+    },
+    "TABS": {
+      "SUMMARY": "Resumen",
+      "CONVERSATION": "Conversación",
+      "CONTACT": "Contacto",
+      "ACTIVITY": "Actividad"
+    },
+    "SEARCH_PLACEHOLDER": "Buscar en los detalles…"
   },
   "CONVERSATION_CUSTOM_ATTRIBUTES": {
     "ADD_BUTTON_TEXT": "Crear atributo",
