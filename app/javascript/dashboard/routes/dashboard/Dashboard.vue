@@ -168,7 +168,7 @@ export default {
             :class="
               isChatRoute
                 ? 'md:gap-4'
-                : 'md:rounded-[1.25rem] md:border md:border-n-weak md:shadow-sm bg-n-surface-1'
+                : 'md:border md:border-n-weak md:shadow-sm bg-n-surface-1'
             "
           >
             <router-view />

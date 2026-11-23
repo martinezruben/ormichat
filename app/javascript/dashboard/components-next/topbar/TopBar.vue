@@ -55,7 +55,7 @@ const sectionLabel = computed(() => {
 
 <template>
   <header
-    class="flex flex-none gap-3 items-center px-6 h-14 bg-n-surface-1 border-b border-n-weak md:h-[3.75rem] md:rounded-[1.25rem] md:border md:shadow-sm"
+    class="flex flex-none gap-3 items-center px-6 h-14 bg-n-surface-1 border-b border-n-weak md:h-[3.75rem] md:border md:shadow-sm"
   >
     <button
       type="button"
