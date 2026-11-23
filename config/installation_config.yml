@@ -94,6 +94,11 @@
   display_title: 'Attachment size limit (MB)'
   description: 'Maximum attachment size in MB allowed for uploads'
   locked: false
+- name: DEFAULT_CURRENCY
+  value: 'DOP'
+  display_title: 'Currency'
+  description: 'ISO code of the currency used for product prices across the whole app (e.g. DOP)'
+  locked: false
 # ------- End of Account Related Config ------- #
 
 # ------- Email Related Config ------- #

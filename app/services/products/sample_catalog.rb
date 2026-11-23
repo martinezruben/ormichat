@@ -120,7 +120,7 @@ class Products::SampleCatalog
 
   def create_variant(product, (name, price, stock), index)
     product.variants.find_or_create_by!(sku: "#{sku}-#{index + 1}") do |variant|
-      variant.assign_attributes(name: name, price: price, stock: stock, currency: 'BOB')
+      variant.assign_attributes(name: name, price: price, stock: stock)
     end
   end
 end

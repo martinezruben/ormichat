@@ -15,7 +15,7 @@ json.variants product.variants do |variant|
   json.name variant.name
   json.sku variant.sku
   json.price variant.price.to_f
-  json.currency variant.currency
+  json.currency ProductVariant.app_currency
   json.stock variant.stock
   json.availability variant.availability
   json.active variant.active

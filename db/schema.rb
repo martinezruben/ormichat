@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_21_130000) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_23_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1383,7 +1383,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_21_130000) do
     t.string "name", null: false
     t.string "sku", null: false
     t.decimal "price", precision: 10, scale: 2, null: false
-    t.string "currency", default: "BOB", null: false
+    t.string "currency", default: "DOP", null: false
     t.integer "stock", default: 0, null: false
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false

@@ -4,7 +4,7 @@
 #
 #  id         :bigint           not null, primary key
 #  active     :boolean          default(TRUE), not null
-#  currency   :string           default("BOB"), not null
+#  currency   :string           default("DOP"), not null
 #  name       :string           not null
 #  price      :decimal(10, 2)   not null
 #  sku        :string           not null
@@ -26,6 +26,7 @@ class ProductVariant < ApplicationRecord
   belongs_to :account
 
   before_validation { self.account_id ||= product&.account_id }
+  before_validation { self.currency = self.class.app_currency }
 
   scope :active, -> { where(active: true) }
 
@@ -33,6 +34,11 @@ class ProductVariant < ApplicationRecord
   validates :price, numericality: { greater_than_or_equal_to: 0 }
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :sku, uniqueness: { scope: :account_id }
+
+  # One currency for the whole app, set in Super Admin → Settings (DEFAULT_CURRENCY).
+  def self.app_currency
+    GlobalConfig.get_value('DEFAULT_CURRENCY').presence || 'DOP'
+  end
 
   def availability
     return 'out_of_stock' unless stock.positive?
