@@ -138,7 +138,7 @@ export default {
 
 <template>
   <div
-    class="flex flex-grow overflow-hidden text-n-slate-12 bg-n-canvas md:p-6 md:gap-4"
+    class="flex flex-grow overflow-hidden text-n-slate-12 bg-n-canvas md:p-2 md:gap-2"
   >
     <NextSidebar
       :is-mobile-sidebar-open="isMobileSidebarOpen"
@@ -161,14 +161,14 @@ export default {
         />
       </UpgradePage>
       <template v-if="!showUpgradePage">
-        <div class="flex flex-col flex-1 min-w-0 min-h-0 md:gap-4">
+        <div class="flex flex-col flex-1 min-w-0 min-h-0 md:gap-2">
           <TopBar @open-key-shortcut-modal="toggleKeyShortcutModal" />
           <div
             class="flex flex-1 min-h-0 overflow-hidden"
             :class="
               isChatRoute
-                ? 'md:gap-4'
-                : 'md:rounded-[1.25rem] md:border md:border-n-weak md:shadow-sm bg-n-surface-1'
+                ? 'md:gap-2'
+                : 'md:border md:border-n-weak md:shadow-sm bg-n-surface-1'
             "
           >
             <router-view />
