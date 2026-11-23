@@ -48,7 +48,7 @@ RSpec.describe 'Products API' do
       expect(body['meta']).to include('count' => 2, 'current_page' => 1)
       expect(body['payload'].pluck('name')).to contain_exactly('Paracetamol 500 mg', 'Alcohol en gel')
       variant = body['payload'].find { |product| product['sku'] == 'P-1' }['variants'].first
-      expect(variant).to include('price' => 8.5, 'stock' => 20, 'availability' => 'in_stock', 'currency' => 'BOB')
+      expect(variant).to include('price' => 8.5, 'stock' => 20, 'availability' => 'in_stock', 'currency' => 'DOP')
     end
 
     it 'filters by search, category and stock' do

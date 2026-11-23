@@ -26,9 +26,9 @@ RSpec.describe Products::ChatFormatter do
     expect(text).to include('Product: Ibuprofeno 400 mg (SKU I-1)', 'Brand: Genérico', 'Category: Analgésicos')
     expect(text).to include('When to recommend and guidance: Recomendar para dolor muscular.')
     expect(text).to include('Photo: https://app.test/product-samples/i.svg')
-    expect(text).to include('- Caja x 10: 12.00 BOB, in stock, 80 units')
-    expect(text).to include('- Caja x 20: 21.50 BOB, low stock, 3 units')
-    expect(text).to include('- Caja x 30: 30.00 BOB, out of stock')
+    expect(text).to include('- Caja x 10: 12.00 DOP, in stock, 80 units')
+    expect(text).to include('- Caja x 20: 21.50 DOP, low stock, 3 units')
+    expect(text).to include('- Caja x 30: 30.00 DOP, out of stock')
   end
 
   it 'leaves out inactive varieties' do

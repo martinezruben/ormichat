@@ -48,6 +48,6 @@ class Products::ChatFormatter
   def variant_line(variant)
     price = Kernel.format('%.2f', variant.price)
     stock = variant.stock.positive? ? "#{AVAILABILITY[variant.availability]}, #{variant.stock} units" : AVAILABILITY[variant.availability]
-    "- #{variant.name}: #{price} #{variant.currency}, #{stock}"
+    "- #{variant.name}: #{price} #{ProductVariant.app_currency}, #{stock}"
   end
 end

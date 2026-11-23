@@ -87,6 +87,21 @@ RSpec.describe Product do
     end
   end
 
+  describe 'currency' do
+    it 'uses the app-wide currency from the system settings' do
+      allow(GlobalConfig).to receive(:get_value).with('DEFAULT_CURRENCY').and_return('USD')
+      variant = paracetamol.variants.create!(name: 'Caja', sku: 'PAR-CUR', price: 1)
+
+      expect(variant.currency).to eq('USD')
+    end
+
+    it 'defaults to DOP' do
+      allow(GlobalConfig).to receive(:get_value).with('DEFAULT_CURRENCY').and_return(nil)
+
+      expect(ProductVariant.app_currency).to eq('DOP')
+    end
+  end
+
   describe '.lookup' do
     it 'ignores accents and ñ in both the catalog and the query' do
       panales = account.products.create!(name: 'Pañales Bebé', sku: 'PAN-1', category: 'Cuidado del bebé', description: 'Para bebé')

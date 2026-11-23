@@ -33,7 +33,7 @@ RSpec.describe Captain::Tools::ProductCatalogTool do
   it 'answers with price, stock and guidance for what the customer needs' do
     result = tool.perform(nil, query: 'voy a la playa')
 
-    expect(result).to include('Protector solar FPS 50', 'Tubo 60 ml: 78.00 BOB, in stock, 28 units', 'playa')
+    expect(result).to include('Protector solar FPS 50', 'Tubo 60 ml: 78.00 DOP, in stock, 28 units', 'playa')
     expect(result).to include('Do not give medical advice')
   end
 
