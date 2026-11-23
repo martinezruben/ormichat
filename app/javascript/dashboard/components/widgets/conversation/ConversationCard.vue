@@ -133,8 +133,8 @@ watch(
     :class="{
       'active animate-card-select !bg-n-blue-3': isActiveChat,
       'selected !bg-n-slate-3': selected,
-      'px-2 py-2': compact,
-      'px-3 py-3': !compact,
+      'px-2 py-1.5': compact,
+      'px-3 py-2': !compact,
     }"
     @click="$emit('click', $event)"
     @contextmenu="$emit('contextmenu', $event)"
@@ -229,7 +229,7 @@ watch(
       </div>
       <div
         v-if="!isCompactList"
-        class="flex flex-wrap gap-1.5 items-center mt-1.5 min-w-0"
+        class="flex flex-wrap gap-1.5 items-center mt-1 min-w-0"
       >
         <InboxName
           v-if="showInboxName"
@@ -257,7 +257,7 @@ watch(
       <CardLabels
         v-if="showLabelsSection"
         :conversation-labels="chat.labels"
-        class="mx-0 mt-1.5 mb-0"
+        class="mx-0 mt-1 mb-0"
       >
         <template v-if="hasSlaPolicyId" #before>
           <SLACardLabel :chat="chat" class="ltr:mr-1 rtl:ml-1" />
