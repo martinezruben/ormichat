@@ -12,6 +12,7 @@ import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 
 import ContactPanelSection from './ContactPanelSection.vue';
 import ContactPanelTimeline from './ContactPanelTimeline.vue';
+import ContactPanelProfile from './ContactPanelProfile.vue';
 import ConversationLabels from './labels/LabelBox.vue';
 import ContactConversations from './ContactConversations.vue';
 import ConversationAction from './ConversationAction.vue';
@@ -52,6 +53,8 @@ const TABS = [
 
 const activeTab = ref(TABS[0].key);
 const SECTION = 'CONVERSATION_SIDEBAR.ACCORDION';
+const HEALTH_KEYS = ['seguro', 'estado_receta'];
+const PREFERENCE_KEYS = ['consentimiento_contacto'];
 const query = ref('');
 
 const normalize = text =>
@@ -123,6 +126,15 @@ const contactAdditionalAttributes = computed(
   () => contact.value.additional_attributes || {}
 );
 
+const missingCount = computed(
+  () =>
+    [
+      contact.value.email,
+      contact.value.phone_number,
+      contactAdditionalAttributes.value.address,
+    ].filter(value => !value).length
+);
+
 const getContactDetails = () => {
   if (contactId.value) {
     store.dispatch('contacts/show', { id: contactId.value });
@@ -156,11 +168,7 @@ onMounted(() => {
       :title="$t('CONVERSATION.SIDEBAR.CONTACT')"
       @close="closeContactPanel"
     />
-    <ContactInfo
-      :contact="contact"
-      :channel-type="channelType"
-      @go-contact="selectTab('contact')"
-    />
+    <ContactInfo :contact="contact" :channel-type="channelType" />
     <div
       class="sticky top-0 z-10 flex flex-col gap-2 px-3 pt-2 border-b bg-n-surface-1 border-n-weak"
     >
@@ -175,6 +183,12 @@ onMounted(() => {
           :placeholder="$t('CONVERSATION_SIDEBAR.SEARCH_PLACEHOLDER')"
           class="!m-0 !h-8 w-full !text-sm !ps-8 !rounded-lg"
         />
+        <kbd
+          v-if="!isSearching"
+          class="absolute px-1.5 text-xs border rounded end-2 top-1.5 border-n-weak text-n-slate-11"
+        >
+          /
+        </kbd>
       </div>
       <div role="tablist" class="flex gap-0.5">
         <button
@@ -195,59 +209,65 @@ onMounted(() => {
         </button>
       </div>
     </div>
-    <div class="flex flex-col gap-5 px-3 py-4 min-w-0">
-      <template v-if="!isSearching && activeTab === 'summary'">
-        <ConversationStats />
-      </template>
+    <div class="flex flex-col gap-3 p-3 min-w-0 bg-n-surface-2">
       <ContactPanelSection
-        v-if="isVisible('summary', 'CONVERSATION_SIDEBAR.QUICK_ACTIONS')"
-        :title="$t('CONVERSATION_SIDEBAR.QUICK_ACTIONS')"
+        v-if="isVisible('summary', `${SECTION}.CONTACT_DETAILS`)"
+        icon="i-lucide-user"
+        :title="$t(`${SECTION}.CONTACT_DETAILS`)"
+        :count="`${3 - missingCount} / 3`"
+      >
+        <ContactInfo mode="details" :contact="contact" />
+      </ContactPanelSection>
+      <ContactPanelSection
+        v-if="isVisible('summary', 'CONVERSATION_SIDEBAR.HEALTH')"
+        icon="i-lucide-shield-plus"
+        :title="$t('CONVERSATION_SIDEBAR.HEALTH')"
+      >
+        <CustomAttributes
+          attribute-type="contact_attribute"
+          attribute-from="conversation_contact_health"
+          :contact-id="contact.id"
+          :only-keys="HEALTH_KEYS"
+          :empty-state-message="
+            $t('CONVERSATION_CUSTOM_ATTRIBUTES.NO_RECORDS_FOUND')
+          "
+        />
+      </ContactPanelSection>
+      <ContactPanelSection
+        v-if="isVisible('summary', `${SECTION}.CONTACT_NOTES`)"
+        icon="i-lucide-notebook-pen"
+        :title="$t(`${SECTION}.CONTACT_NOTES`)"
+      >
+        <ContactNotes :contact-id="contactId" />
+      </ContactPanelSection>
+
+      <ConversationStats v-if="!isSearching && activeTab === 'conversation'" />
+      <ContactPanelSection
+        v-if="isVisible('conversation', `${SECTION}.CONVERSATION_ACTIONS`)"
+        icon="i-lucide-sliders-horizontal"
+        :title="$t(`${SECTION}.CONVERSATION_ACTIONS`)"
       >
         <ConversationAction
           :conversation-id="conversationId"
           layout="grid"
           :show-labels="false"
         />
-      </ContactPanelSection>
-      <ContactPanelSection
-        v-if="isVisible('summary', `${SECTION}.CONVERSATION_LABELS`)"
-        :title="$t(`${SECTION}.CONVERSATION_LABELS`)"
-      >
-        <ConversationLabels :conversation-id="conversationId" />
+        <div class="flex flex-col gap-1.5">
+          <span class="text-xs font-medium text-n-slate-11">
+            {{ $t(`${SECTION}.CONVERSATION_LABELS`) }}
+          </span>
+          <ConversationLabels :conversation-id="conversationId" />
+        </div>
       </ContactPanelSection>
       <ConversationAISummary
-        v-if="!isSearching && activeTab === 'summary'"
+        v-if="!isSearching && activeTab === 'conversation'"
         :conversation-id="conversationId"
       />
-      <ContactPanelSection
-        v-if="isVisible('summary', `${SECTION}.CONTACT_NOTES`)"
-        :title="$t(`${SECTION}.CONTACT_NOTES`)"
-      >
-        <ContactNotes :contact-id="contactId" />
-      </ContactPanelSection>
-      <ContactPanelSection
-        v-if="isVisible('conversation', `${SECTION}.CONVERSATION_ACTIONS`)"
-        :title="$t(`${SECTION}.CONVERSATION_ACTIONS`)"
-      >
-        <ConversationAction
-          :conversation-id="conversationId"
-          :show-labels="false"
-        />
-      </ContactPanelSection>
-      <ContactPanelSection
-        v-if="
-          activeTab === 'conversation' &&
-          !isSearching &&
-          isVisible('conversation', `${SECTION}.CONVERSATION_LABELS`)
-        "
-        :title="$t(`${SECTION}.CONVERSATION_LABELS`)"
-      >
-        <ConversationLabels :conversation-id="conversationId" />
-      </ContactPanelSection>
       <ContactPanelSection
         v-if="
           isVisible('conversation', 'CONVERSATION_PARTICIPANTS.SIDEBAR_TITLE')
         "
+        icon="i-lucide-users"
         :title="$t('CONVERSATION_PARTICIPANTS.SIDEBAR_TITLE')"
       >
         <ConversationParticipant
@@ -259,12 +279,16 @@ onMounted(() => {
         v-if="isVisible('conversation', `${SECTION}.MACROS`)"
         feature-key="macros"
       >
-        <ContactPanelSection :title="$t(`${SECTION}.MACROS`)">
+        <ContactPanelSection
+          icon="i-lucide-zap"
+          :title="$t(`${SECTION}.MACROS`)"
+        >
           <MacrosList :conversation-id="conversationId" />
         </ContactPanelSection>
       </woot-feature-toggle>
       <ContactPanelSection
         v-if="isVisible('conversation', `${SECTION}.CONVERSATION_INFO`)"
+        icon="i-lucide-info"
         :title="$t(`${SECTION}.CONVERSATION_INFO`)"
       >
         <ConversationInfo
@@ -278,6 +302,7 @@ onMounted(() => {
           isLinearClientIdConfigured &&
           isVisible('conversation', `${SECTION}.LINEAR_ISSUES`)
         "
+        icon="i-lucide-link"
         :title="$t(`${SECTION}.LINEAR_ISSUES`)"
       >
         <LinearSetupCTA v-if="!isLinearConnected" />
@@ -288,31 +313,53 @@ onMounted(() => {
           isShopifyFeatureEnabled &&
           isVisible('conversation', `${SECTION}.SHOPIFY_ORDERS`)
         "
+        icon="i-lucide-shopping-bag"
         :title="$t(`${SECTION}.SHOPIFY_ORDERS`)"
       >
         <ShopifyOrdersList :contact-id="contactId" />
       </ContactPanelSection>
-      <ContactPanelSection
-        v-if="isVisible('contact', `${SECTION}.CONTACT_DETAILS`)"
-        :title="$t(`${SECTION}.CONTACT_DETAILS`)"
-      >
-        <ContactInfo mode="details" :contact="contact" />
-      </ContactPanelSection>
+
       <ContactPanelSection
         v-if="isVisible('contact', `${SECTION}.CONTACT_ATTRIBUTES`)"
+        icon="i-lucide-list-checks"
         :title="$t(`${SECTION}.CONTACT_ATTRIBUTES`)"
       >
         <CustomAttributes
           attribute-type="contact_attribute"
           attribute-from="conversation_contact_panel"
           :contact-id="contact.id"
+          :except-keys="[...HEALTH_KEYS, ...PREFERENCE_KEYS]"
           :empty-state-message="
             $t('CONVERSATION_CUSTOM_ATTRIBUTES.NO_RECORDS_FOUND')
           "
         />
       </ContactPanelSection>
       <ContactPanelSection
+        v-if="isVisible('contact', 'CONVERSATION_SIDEBAR.PROFILE_TITLE')"
+        icon="i-lucide-id-card"
+        :title="$t('CONVERSATION_SIDEBAR.PROFILE_TITLE')"
+      >
+        <ContactPanelProfile :contact="contact" />
+      </ContactPanelSection>
+      <ContactPanelSection
+        v-if="isVisible('contact', 'CONVERSATION_SIDEBAR.PREFERENCES')"
+        icon="i-lucide-heart"
+        :title="$t('CONVERSATION_SIDEBAR.PREFERENCES')"
+      >
+        <CustomAttributes
+          attribute-type="contact_attribute"
+          attribute-from="conversation_contact_preferences"
+          :contact-id="contact.id"
+          :only-keys="PREFERENCE_KEYS"
+          :empty-state-message="
+            $t('CONVERSATION_CUSTOM_ATTRIBUTES.NO_RECORDS_FOUND')
+          "
+        />
+      </ContactPanelSection>
+
+      <ContactPanelSection
         v-if="isVisible('activity', 'CONVERSATION_SIDEBAR.TABS.ACTIVITY')"
+        icon="i-lucide-clock"
         :title="$t('CONVERSATION_SIDEBAR.TABS.ACTIVITY')"
       >
         <ContactPanelTimeline />
@@ -322,6 +369,7 @@ onMounted(() => {
           contact.id &&
           isVisible('activity', `${SECTION}.PREVIOUS_CONVERSATION`)
         "
+        icon="i-lucide-messages-square"
         :title="$t(`${SECTION}.PREVIOUS_CONVERSATION`)"
       >
         <ContactConversations
@@ -331,6 +379,7 @@ onMounted(() => {
       </ContactPanelSection>
       <ContactPanelSection
         v-if="isVisible('activity', `${SECTION}.SHARED_FILES`)"
+        icon="i-lucide-paperclip"
         :title="$t(`${SECTION}.SHARED_FILES`)"
       >
         <SharedFiles />

@@ -565,7 +565,15 @@
     },
     "SEARCH_PLACEHOLDER": "Buscar en los detalles…",
     "QUICK_ACTIONS": "Acciones rápidas",
-    "NO_ACTIVITY": "Aún no hay actividad"
+    "NO_ACTIVITY": "Aún no hay actividad",
+    "HEALTH": "Seguro y receta",
+    "PROFILE_TITLE": "Perfil del cliente",
+    "PREFERENCES": "Preferencias",
+    "PROFILE": {
+      "SINCE": "Cliente desde",
+      "CHANNEL": "Canal",
+      "LAST_SEEN": "Última actividad"
+    }
   },
   "CONVERSATION_CUSTOM_ATTRIBUTES": {
     "ADD_BUTTON_TEXT": "Crear atributo",

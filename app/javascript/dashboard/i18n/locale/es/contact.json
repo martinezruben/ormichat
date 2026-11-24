@@ -60,10 +60,7 @@
       "NO_RECORDS_FOUND": "No se encontraron atributos"
     },
     "ADDRESS": "Dirección",
-    "VIEW_ON_MAPS": "Ver en Google Maps",
-    "ADD_EMAIL": "Añadir correo",
-    "ADD_PHONE": "Añadir teléfono",
-    "ADD_ADDRESS": "Añadir dirección"
+    "VIEW_ON_MAPS": "Ver en Google Maps"
   },
   "EDIT_CONTACT": {
     "BUTTON_LABEL": "Editar Contacto",
