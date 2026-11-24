@@ -60,10 +60,7 @@
       "CONTACT_LABELS": "Contact Labels",
       "PREVIOUS_CONVERSATIONS": "Previous Conversations",
       "NO_RECORDS_FOUND": "No attributes found"
-    },
-    "ADD_EMAIL": "Add email",
-    "ADD_PHONE": "Add phone",
-    "ADD_ADDRESS": "Add address"
+    }
   },
   "EDIT_CONTACT": {
     "BUTTON_LABEL": "Edit Contact",

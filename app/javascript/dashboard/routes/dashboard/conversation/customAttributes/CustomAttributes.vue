@@ -17,6 +17,9 @@ const props = defineProps({
     default: 'conversation_attribute',
   },
   contactId: { type: Number, default: null },
+  // Limit to (onlyKeys) or hide (exceptKeys) specific attribute keys
+  onlyKeys: { type: Array, default: null },
+  exceptKeys: { type: Array, default: () => [] },
   attributeFrom: {
     type: String,
     required: true,
@@ -74,18 +77,24 @@ const toggleButtonText = computed(() =>
 );
 
 const filteredCustomAttributes = computed(() =>
-  attributes.value.map(attribute => {
-    // Check if the attribute key exists in customAttributes
-    const hasValue = attribute.attribute_key in customAttributes.value;
+  attributes.value
+    .filter(
+      ({ attribute_key: key }) =>
+        !props.exceptKeys.includes(key) &&
+        (!props.onlyKeys || props.onlyKeys.includes(key))
+    )
+    .map(attribute => {
+      // Check if the attribute key exists in customAttributes
+      const hasValue = attribute.attribute_key in customAttributes.value;
 
-    return {
-      ...attribute,
-      type: 'custom_attribute',
-      key: attribute.attribute_key,
-      // Set value from customAttributes if it exists, otherwise use ''
-      value: hasValue ? customAttributes.value[attribute.attribute_key] : '',
-    };
-  })
+      return {
+        ...attribute,
+        type: 'custom_attribute',
+        key: attribute.attribute_key,
+        // Set value from customAttributes if it exists, otherwise use ''
+        value: hasValue ? customAttributes.value[attribute.attribute_key] : '',
+      };
+    })
 );
 
 // Order key name for UI settings

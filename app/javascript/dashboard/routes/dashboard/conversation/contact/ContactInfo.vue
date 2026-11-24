@@ -54,7 +54,7 @@ export default {
       default: 'header',
     },
   },
-  emits: ['panelClose', 'goContact'],
+  emits: ['panelClose'],
   setup() {
     const { isAdmin } = useAdmin();
     return {
@@ -76,26 +76,6 @@ export default {
       currentChat: 'getSelectedChat',
       getAttributesByModel: 'attributes/getAttributesByModel',
     }),
-    missingFields() {
-      const { email, phone_number: phone } = this.contact;
-      return [
-        !email && {
-          key: 'email',
-          icon: 'i-lucide-mail',
-          label: 'CONTACT_PANEL.ADD_EMAIL',
-        },
-        !phone && {
-          key: 'phone',
-          icon: 'i-lucide-phone',
-          label: 'CONTACT_PANEL.ADD_PHONE',
-        },
-        !this.additionalAttributes.address && {
-          key: 'address',
-          icon: 'i-lucide-map-pin',
-          label: 'CONTACT_PANEL.ADD_ADDRESS',
-        },
-      ].filter(Boolean);
-    },
     loadedCustomAttributes() {
       const values = this.contact.custom_attributes || {};
       return this.getAttributesByModel('contact_attribute')
@@ -539,18 +519,6 @@ export default {
               />
             </template>
           </ContactDeleteModal>
-        </div>
-        <div v-if="missingFields.length" class="flex flex-wrap gap-1.5 w-full">
-          <button
-            v-for="field in missingFields"
-            :key="field.key"
-            type="button"
-            class="inline-flex items-center gap-1 h-6 px-2 text-xs rounded-full border border-dashed border-n-strong !bg-transparent text-n-slate-11 hover:!bg-n-alpha-1"
-            @click="$emit('goContact')"
-          >
-            <span :class="field.icon" class="size-3" />
-            {{ $t(field.label) }}
-          </button>
         </div>
       </div>
       <EditContact

@@ -565,7 +565,15 @@
     },
     "SEARCH_PLACEHOLDER": "Search in details…",
     "QUICK_ACTIONS": "Quick actions",
-    "NO_ACTIVITY": "No activity yet"
+    "NO_ACTIVITY": "No activity yet",
+    "HEALTH": "Insurance & prescription",
+    "PROFILE_TITLE": "Customer profile",
+    "PREFERENCES": "Preferences",
+    "PROFILE": {
+      "SINCE": "Customer since",
+      "CHANNEL": "Channel",
+      "LAST_SEEN": "Last activity"
+    }
   },
   "CONVERSATION_CUSTOM_ATTRIBUTES": {
     "ADD_BUTTON_TEXT": "Create attribute",
